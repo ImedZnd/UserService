@@ -19,6 +19,7 @@ class CountryService(
 
     fun getAllIsFraudstersByCountry(fraud: Boolean) =
         countryDatabaseRepository.findAllIsFraudstersByCountry(fraud)
+
+    object CountryWithCodeNotFound
 }
 
-  object CountryWithCodeNotFound

@@ -1,4 +1,4 @@
-package tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.person.repository
+package tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.person.service
 
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.onEach
@@ -12,25 +12,26 @@ import org.springframework.test.context.ContextConfiguration
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.repository.CountryRepository
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
-import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.repository.PersonRepository
+import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.service.PersonService
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.repository.CountryReactiveRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.initializer.Initializer
-import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonDatabaseRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReactiveRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year
 
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 @ContextConfiguration(initializers = [Initializer::class])
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class PersonDatabaseRepositoryTest(
+internal class PersonServiceTest(
     @Autowired private val countryReactiveRepository: CountryReactiveRepository,
     @Autowired private val countryRepository: CountryRepository,
     @Autowired private val personReactiveRepository: PersonReactiveRepository,
-    @Autowired private val personDatabaseRepository: PersonDatabaseRepository
-) {
+    @Autowired private val personService: PersonService,
+
+    ){
     @BeforeAll
     fun beforeAll() {
         personReactiveRepository.deleteAll().subscribe()
@@ -48,13 +49,12 @@ internal class PersonDatabaseRepositoryTest(
         personReactiveRepository.deleteAll().subscribe()
         countryReactiveRepository.deleteAll().subscribe()
     }
-//
-//    @AfterAll
-//    fun afterAll() {
-//        personReactiveRepository.deleteAll().subscribe()
-//        countryReactiveRepository.deleteAll().subscribe()
-//    }
 
+    @AfterAll
+    fun afterAll() {
+        personReactiveRepository.deleteAll().subscribe()
+        countryReactiveRepository.deleteAll().subscribe()
+    }
 
     @Test
     fun `get all person return one element if repository have one valid person with one country`() {
@@ -112,9 +112,9 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository.findAllPerson()
+                personService.getAllPersons()
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
@@ -177,14 +177,15 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository.findAllPersonByBirthYear(birthYear)
+                personService.getAllPersonsByBirthYear(birthYear)
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
     }
+
 
     @Test
     fun `one element on get person by country if repository have one valid person with one country`() {
@@ -242,9 +243,9 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository.findAllPersonByCountry(code)
+                personService.getAllPersonByCountry(code)
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
@@ -307,9 +308,9 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository.findAllPersonByCreatedDateInRange(
+                personService.getAllPersonByCreatedDateInRange(
                     LocalDate.of(2010, 10, 10),
                     LocalDate.of(2021, 10, 10),
                 )
@@ -375,9 +376,9 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository.findAllPersonByTermsVersion(termsVersion)
+                personService.getAllPersonByTermsVersion(termsVersion)
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
@@ -440,10 +441,10 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository
-                    .findAllPersonByTermsVersionBetween(
+                personService
+                    .getAllPersonByTermsVersionBetween(
                         termsVersion,
                         LocalDate.now()
                     )
@@ -509,10 +510,10 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository
-                    .findAllPersonByPhoneCountry(
+                personService
+                    .getAllPersonByPhoneCountry(
                         phoneCountry
                     )
             result.onEach { print(it) }
@@ -577,10 +578,10 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository
-                    .findAllPersonByKYC(
+                personService
+                    .getAllPersonByKYC(
                         kyc
                     )
             result.onEach { print(it) }
@@ -588,7 +589,6 @@ internal class PersonDatabaseRepositoryTest(
             assert(y == 1)
         }
     }
-
 
     @Test
     fun `one element on get person by hasEmail if repository have one valid person with one country`() {
@@ -646,10 +646,10 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository
-                    .findAllPersonByHasEmail(
+                personService
+                    .getAllPersonByHasEmail(
                         hasEmail
                     )
             result.onEach { print(it) }
@@ -714,10 +714,10 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository
-                    .findAllPersonByHasEmail(
+                personService
+                    .getAllPersonByHasEmail(
                         !hasEmail
                     )
             result.onEach { print(it) }
@@ -782,10 +782,10 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository
-                    .findAllPersonByNumberOfFlags(
+                personService
+                    .getAllPersonByNumberOfFlags(
                         numberOfFlags
                     )
             result.onEach { print(it) }
@@ -850,10 +850,10 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository
-                    .findAllPersonByNumberOfFlagsGreaterThan(
+                personService
+                    .getAllPersonByNumberOfFlagsGreaterThan(
                         2
                     )
             result.onEach { print(it) }
@@ -918,10 +918,10 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository
-                    .findAllPersonByNumberOfFlagsLessThan(
+                personService
+                    .getAllPersonByNumberOfFlagsLessThan(
                         2
                     )
             result.onEach { print(it) }
@@ -986,10 +986,10 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository
-                    .findAllPersonByFraudsterAndCountryCode(
+                personService
+                    .getAllPersonByFraudsterAndCountryCode(
                         true, code
                     )
             result.onEach { print(it) }
@@ -997,7 +997,6 @@ internal class PersonDatabaseRepositoryTest(
             assert(y == 0)
         }
     }
-
     @Test
     fun `one on get person by FraudsterAndCountryCode if repository have one valid person `() {
         runBlocking {
@@ -1054,10 +1053,10 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val result =
-                personDatabaseRepository
-                    .findAllPersonByFraudsterAndCountryCode(
+                personService
+                    .getAllPersonByFraudsterAndCountryCode(
                         false,
                         code
                     )
@@ -1120,11 +1119,11 @@ internal class PersonDatabaseRepositoryTest(
                     phoneCode
                 ).get()
             countryRepository.saveCountry(countrySave)
-            personDatabaseRepository.savePerson(resultPerson)
-            val result = personDatabaseRepository
-                    .countByBirthYear(
-                        birthYear
-                    )
+            personService.savePerson(resultPerson)
+            val result = personService
+                .countByBirthYear(
+                    birthYear
+                )
             val resNumber = 1
             assert(result == resNumber.toLong())
         }
@@ -1183,11 +1182,11 @@ internal class PersonDatabaseRepositoryTest(
                     phoneCode
                 ).get()
             countryRepository.saveCountry(countrySave)
-            personDatabaseRepository.savePerson(resultPerson)
-            val result = personDatabaseRepository
-                    .countAllPersonByState(
-                        state
-                    )
+            personService.savePerson(resultPerson)
+            val result = personService
+                .countAllPersonByState(
+                    state
+                )
             val resNumber = 1
             assert(result == resNumber.toLong())
         }
@@ -1246,16 +1245,15 @@ internal class PersonDatabaseRepositoryTest(
                     phoneCode
                 ).get()
             countryRepository.saveCountry(countrySave)
-            personDatabaseRepository.savePerson(resultPerson)
-            val result = personDatabaseRepository
-                    .countAllPersonByTermsVersion(
-                        termsVersion
-                    )
+            personService.savePerson(resultPerson)
+            val result = personService
+                .countAllPersonByTermsVersion(
+                    termsVersion
+                )
             val resNumber = 1
             assert(result == resNumber.toLong())
         }
     }
-
 
     @Test
     fun `one on count person by Fraudster if repository have one valid person `() {
@@ -1310,11 +1308,11 @@ internal class PersonDatabaseRepositoryTest(
                     phoneCode
                 ).get()
             countryRepository.saveCountry(countrySave)
-            personDatabaseRepository.savePerson(resultPerson)
-            val result = personDatabaseRepository
-                    .countAllPersonByFraudster(
-                        fraudster
-                    )
+            personService.savePerson(resultPerson)
+            val result = personService
+                .countAllPersonByFraudster(
+                    fraudster
+                )
             val resNumber = 1
             assert(result == resNumber.toLong())
         }
@@ -1373,11 +1371,11 @@ internal class PersonDatabaseRepositoryTest(
                     phoneCode
                 ).get()
             countryRepository.saveCountry(countrySave)
-            personDatabaseRepository.savePerson(resultPerson)
-            val result = personDatabaseRepository
-                    .countAllPersonByCountry(
-                        code
-                    )
+            personService.savePerson(resultPerson)
+            val result = personService
+                .countAllPersonByCountry(
+                    code
+                )
             val resNumber = 1
             assert(result == resNumber.toLong())
         }
@@ -1436,14 +1434,13 @@ internal class PersonDatabaseRepositoryTest(
                     phoneCode
                 ).get()
             countryRepository.saveCountry(countrySave)
-            personDatabaseRepository.savePerson(resultPerson)
-            val result = personDatabaseRepository
-                    .countAllPerson()
+            personService.savePerson(resultPerson)
+            val result = personService
+                .countAllPerson()
             val resNumber = 1
             assert(result == resNumber.toLong())
         }
     }
-
 
     @Test
     fun `two element on get person by fraudster if repository have two valid fraudster with one country`() {
@@ -1501,7 +1498,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -1516,14 +1513,15 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByIsFraudster(fraudster)
+                personService.getAllPersonByIsFraudster(fraudster)
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
     }
+
     @Test
     fun `two element on get person by birth year and email if repository have two valid fraudster with one country`() {
         runBlocking {
@@ -1580,7 +1578,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -1595,14 +1593,15 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByBirthYearAndHasEmail(birthYear,hasEmail)
+                personService.getAllPersonByBirthYearAndHasEmail(birthYear,hasEmail)
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
     }
+
     @Test
     fun `two element on get person by birth yearbefore if repository have two valid fraudster with one country`() {
         runBlocking {
@@ -1659,7 +1658,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -1674,14 +1673,15 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByBirthYearBefore(birthYear.plusYears(1))
+                personService.getAllPersonByBirthYearBefore(birthYear.plusYears(1))
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
     }
+
     @Test
     fun `two element on get person by birth yearAfter if repository have two valid fraudster with one country`() {
         runBlocking {
@@ -1738,7 +1738,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -1753,14 +1753,15 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByBirthYearAfter(birthYear.minusYears(1))
+                personService.getAllPersonByBirthYearAfter(birthYear.minusYears(1))
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
     }
+
     @Test
     fun `two element on get person by birth yearBetween if repository have two valid fraudster with one country`() {
         runBlocking {
@@ -1817,7 +1818,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -1832,14 +1833,15 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByBirthYearBetween(birthYear.minusYears(1),birthYear.plusYears(1))
+                personService.getAllPersonByBirthYearBetween(birthYear.minusYears(1),birthYear.plusYears(1))
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
     }
+
     @Test
     fun `two element on get person by CreatedDate after if repository have two valid fraudster with one country`() {
         runBlocking {
@@ -1896,7 +1898,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -1911,14 +1913,15 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByCreatedDateAfter(createdDate.minusYears(1))
+                personService.getAllPersonByCreatedDateAfter(createdDate.minusYears(1))
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
     }
+
     @Test
     fun `two element on get person by CreatedDate before if repository have two valid fraudster with one country`() {
         runBlocking {
@@ -1975,7 +1978,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -1990,14 +1993,15 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByCreatedDateBefore(createdDate.plusYears(1))
+                personService.getAllPersonByCreatedDateBefore(createdDate.plusYears(1))
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
     }
+
     @Test
     fun `two element on get person by TermsVersion before if repository have two valid fraudster with one country`() {
         runBlocking {
@@ -2054,7 +2058,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -2069,14 +2073,15 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByTermsVersionBefore(termsVersion.plusYears(1))
+                personService.getAllPersonByTermsVersionBefore(termsVersion.plusYears(1))
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
     }
+
     @Test
     fun `two element on get person by TermsVersion after if repository have two valid fraudster with one country`() {
         runBlocking {
@@ -2133,7 +2138,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -2148,14 +2153,15 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByTermsVersionAfter(termsVersion.minusYears(1))
+                personService.getAllPersonByTermsVersionAfter(termsVersion.minusYears(1))
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
     }
+
     @Test
     fun `two element on get person by FailedSignInAttempts greater if repository have two valid fraudster with one country`() {
         runBlocking {
@@ -2212,7 +2218,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -2227,14 +2233,15 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByFailedSignInAttemptsGreaterThan(1)
+                personService.getAllPersonByFailedSignInAttemptsGreaterThan(1)
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
     }
+
     @Test
     fun `two element on get person by FailedSignInAttempts less if repository have two valid fraudster with one country`() {
         runBlocking {
@@ -2291,7 +2298,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -2306,14 +2313,15 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByFailedSignInAttemptsLessThan(6)
+                personService.getAllPersonByFailedSignInAttemptsLessThan(6)
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
     }
+
     @Test
     fun `two element on get person by BirthYearAndCountryCode if repository have two valid fraudster with one country`() {
         runBlocking {
@@ -2370,7 +2378,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -2385,9 +2393,9 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByBirthYearAndCountryCode(birthYear,code)
+                personService.getAllPersonByBirthYearAndCountryCode(birthYear,code)
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
@@ -2450,7 +2458,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson)
+            personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
                 seqUser,
                 failedSignInAttempts,
@@ -2465,9 +2473,9 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            personService.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByState(state)
+                personService.getAllPersonsByState(state)
             result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
@@ -2515,11 +2523,13 @@ internal class PersonDatabaseRepositoryTest(
                 fraudster,
             ).get()
             val result =
-                personDatabaseRepository.savePerson(resultPerson)
+                personService.savePerson(resultPerson)
                     .left
             assertAll(
-                { assert(result is PersonRepository.PersonRepositoryIOError) },
+                { assert(result is PersonService.PersonServiceIOError) },
             )
         }
     }
+
+
 }
