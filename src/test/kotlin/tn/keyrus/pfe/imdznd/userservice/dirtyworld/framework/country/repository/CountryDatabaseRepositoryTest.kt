@@ -104,7 +104,7 @@ internal class CountryDatabaseRepositoryTest(
     }
 
     @Test
-    fun `get all countries return one element if repository have one person with one country`() {
+    fun `get all countries by person return one element if repository have one person with one country`() {
         runBlocking {
             val code = "PY"
             val name = "Paraguay"

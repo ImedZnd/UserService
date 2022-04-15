@@ -32,9 +32,9 @@ class PersonDatabaseRepository(
         findAllByCriteria { it.findAllByState(state) }
 
     override fun findAllPersonByCountry(countryCode: String) =
-        findAllByCriteria { it.findAllByCountry(countryCode) }
+        findAllByCriteria { it.findAllByCountryCode(countryCode) }
 
-    override fun findAllPersonByCreatedDateInRange(startDate: LocalDate, endDate: LocalDate) =
+    override fun findAllPersonByCreatedDateInRange(startDate: LocalDate, endDate: LocalDate ) =
         findAllByCriteria {
             it.findAllByCreatedDateBetween(
                 LocalDateTime.of(startDate, LocalTime.now()),
@@ -65,9 +65,6 @@ class PersonDatabaseRepository(
 
     override fun findAllPersonByNumberOfFlagsLessThan(numberOfFlags: Int) =
         findAllByCriteria { it.findAllByNumberOfFlagsLessThan(numberOfFlags)}
-
-    override fun findAllPersonGroupByCountry(countryCode: String) =
-        findAllByCriteria { it.findAllByCountry(countryCode) }
 
     override fun findAllPersonByIsFraudster(isFraudster: Boolean) =
         findAllByCriteria { it.findAllByFraudster(isFraudster) }
@@ -108,17 +105,21 @@ class PersonDatabaseRepository(
     override fun findAllPersonByFraudsterAndCountryCode(isFraudster: Boolean, country: String)=
         findAllByCriteria { it.findAllByFraudsterAndCountryCode(isFraudster,country) }
 
-    override fun countAllPersonByBirthYear(birthYear: Year)=
-        countPeronByCriteria {it.countByBirthYear(birthYear.value) }
+    override suspend fun countByBirthYear(birthYear: Year): Long {
+        return findAllPerson()
+            .filter { it.birthYear == birthYear }
+            .count()
+            .toLong()
+    }
 
-    override fun countAllPersonByState(state: Person.PersonState)=
-        countPeronByCriteria {it.countByState(state) }
+    override suspend fun countAllPersonByState(state: Person.PersonState)=
+        countPersonByCriteria {it.state ==  state}
 
-    override fun countAllPersonByTermsVersion(termsVersion: LocalDate)=
-        countPeronByCriteria {it.countByTermsVersion(termsVersion) }
+    override suspend fun countAllPersonByTermsVersion(termsVersion: LocalDate)=
+        countPersonByCriteria {it.termsVersion ==  termsVersion}
 
-    override fun countAllPersonByFraudster(isFraudster: Boolean)=
-        countPeronByCriteria {it.countByFraudster(isFraudster) }
+    override suspend fun countAllPersonByFraudster(isFraudster: Boolean)=
+        countPersonByCriteria { it.fraudster ==  isFraudster}
 
     override suspend fun savePerson(person: Person): Either<PersonRepository.PersonRepositoryIOError, Person> =
         try {
@@ -134,20 +135,10 @@ class PersonDatabaseRepository(
     }
 
     override suspend fun countAllPerson() =
-        findAllPerson().count()
-
-    override suspend fun countAllPersonByFraudsters(isFraudster: Boolean)=
-        findAllPerson()
-            .filter { it.fraudster == isFraudster}
-            .count()
+        countPersonByCriteria { true }
 
     override suspend fun countAllPersonByCountry(countryCode: String)=
-        findAllPerson()
-            .filter { it.countryCode == countryCode }
-            .count()
-
-    private fun countPeronByCriteria(criteria: (PersonReactiveRepository) -> Mono<Long>): Mono<Long> =
-        criteria(personReactiveRepository)
+        countPersonByCriteria { it.countryCode == countryCode }
 
     private fun findAllByCriteria(criteria: (PersonReactiveRepository) -> Flux<PersonDAO>): Flow<Person> =
         criteria(personReactiveRepository)
@@ -155,4 +146,11 @@ class PersonDatabaseRepository(
             .map { it.toPerson() }
             .filter { it.isRight }
             .map { it.get() }
+
+    private suspend fun countPersonByCriteria(predicate: (Person) -> Boolean): Long{
+        return findAllPerson()
+            .filter { predicate(it) }
+            .count()
+            .toLong()
+    }
 }

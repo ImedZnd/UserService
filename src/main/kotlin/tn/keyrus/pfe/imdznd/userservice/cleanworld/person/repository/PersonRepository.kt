@@ -22,7 +22,6 @@ interface PersonRepository {
     fun findAllPersonByNumberOfFlags(numberOfFlags: Int): Flow<Person>
     fun findAllPersonByNumberOfFlagsGreaterThan(numberOfFlags: Int): Flow<Person>
     fun findAllPersonByNumberOfFlagsLessThan(numberOfFlags: Int): Flow<Person>
-    fun findAllPersonGroupByCountry(countryCode: String): Flow<Person>
     fun findAllPersonByIsFraudster(isFraudster: Boolean): Flow<Person>
 
     fun findAllPersonByBirthYearAndCountryCode(year: Year,countryCode: String): Flow<Person>
@@ -38,17 +37,18 @@ interface PersonRepository {
     fun findAllPersonByFailedSignInAttemptsGreaterThan(failedSignInAttempts: Int): Flow<Person>
     fun findAllPersonByFailedSignInAttemptsLessThan(failedSignInAttempts: Int): Flow<Person>
     fun findAllPersonByFraudsterAndCountryCode(isFraudster: Boolean, country: String): Flow<Person>
-
-    fun countAllPersonByBirthYear(birthYear: Year): Mono<Long>
-    fun countAllPersonByState(state: Person.PersonState): Mono<Long>
-    fun countAllPersonByTermsVersion(termsVersion: LocalDate): Mono<Long>
-    fun countAllPersonByFraudster(isFraudster: Boolean): Mono<Long>
-
+//    @Query(
+//        """select count(p.id)
+//                from person p
+//                where p.birth_year = :1"""
+//    )
+    suspend fun countByBirthYear(birthYear: Year): Long
+    suspend fun countAllPersonByState(state: Person.PersonState): Long
+    suspend fun countAllPersonByTermsVersion(termsVersion: LocalDate): Long
+    suspend fun countAllPersonByFraudster(isFraudster: Boolean): Long
     suspend fun savePerson(person: Person): Either<PersonRepositoryIOError, Person>
-
-    suspend fun countAllPerson(): Int
-    suspend fun countAllPersonByFraudsters(isFraud :Boolean): Int
-    suspend fun countAllPersonByCountry(countryCode: String): Int
+    suspend fun countAllPerson(): Long
+    suspend fun countAllPersonByCountry(countryCode: String): Long
 
     object PersonRepositoryIOError
 
