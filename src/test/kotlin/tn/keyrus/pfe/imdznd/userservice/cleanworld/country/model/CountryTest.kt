@@ -93,6 +93,48 @@ internal class CountryTest {
     }
 
     @Test
+    fun `code3 country error Country code3 less than 3`() {
+        val code = "PY"
+        val name = "Paraguay"
+        val code3 = "h"
+        val numCode = 600
+        val phoneCode = 595
+        val result =
+            Country.of(
+                code,
+                name,
+                code3,
+                numCode,
+                phoneCode
+            ).left
+        assertAll(
+            { assert(result.count() == 1) },
+            { assert(result.all { it is Country.CountryError.CountryCode3Error }) },
+        )
+    }
+
+    @Test
+    fun `code3 country error Country code3 greater than 3`() {
+        val code = "PY"
+        val name = "Paraguay"
+        val code3 = "dddddd"
+        val numCode = 600
+        val phoneCode = 595
+        val result =
+            Country.of(
+                code,
+                name,
+                code3,
+                numCode,
+                phoneCode
+            ).left
+        assertAll(
+            { assert(result.count() == 1) },
+            { assert(result.all { it is Country.CountryError.CountryCode3Error }) },
+        )
+    }
+
+    @Test
     fun `numCode country error Country empty code`() {
         val code = "PY"
         val name = "Paraguay"

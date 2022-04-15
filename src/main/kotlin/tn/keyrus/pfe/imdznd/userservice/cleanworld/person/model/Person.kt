@@ -1,6 +1,7 @@
 package tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model
 
 import io.vavr.control.Either
+import org.apache.logging.log4j.util.Strings
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -12,7 +13,7 @@ class Person private constructor(
     val failedSignInAttempts: Int,
     val birthYear: Year,
     val state: PersonState,
-    val country: Country,
+    val countryCode: String,
     val createdDate: LocalDateTime,
     val termsVersion: LocalDate,
     val phoneCountry: String,
@@ -20,14 +21,14 @@ class Person private constructor(
     val hasEmail: Boolean,
     val numberOfFlags: Int,
     val fraudster: Boolean,
-    ) {
+) {
 
     companion object Builder {
         fun of(
             seqUser: Int,
             failedSignInAttempts: Int,
             birthYear: Year,
-            country: Country,
+            countryCode: String,
             createdDate: LocalDateTime,
             termsVersion: LocalDate,
             phoneCountry: String,
@@ -41,7 +42,7 @@ class Person private constructor(
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
-                country,
+                countryCode,
                 createdDate,
                 termsVersion,
                 phoneCountry,
@@ -54,7 +55,7 @@ class Person private constructor(
                         failedSignInAttempts,
                         birthYear,
                         state,
-                        country,
+                        countryCode,
                         createdDate,
                         termsVersion,
                         phoneCountry,
@@ -71,7 +72,7 @@ class Person private constructor(
             failedSignInAttempts: Int,
             birthYear: Year,
             state: PersonState,
-            country: Country,
+            countryCode: String,
             createdDate: LocalDateTime,
             termsVersion: LocalDate,
             phoneCountry: String,
@@ -87,7 +88,7 @@ class Person private constructor(
                         failedSignInAttempts,
                         birthYear,
                         state,
-                        country,
+                        countryCode,
                         createdDate,
                         termsVersion,
                         phoneCountry,
@@ -104,7 +105,7 @@ class Person private constructor(
             seqUser: Int,
             failedSignInAttempts: Int,
             birthYear: Year,
-            country: Country,
+            countryCode: String,
             createdDate: LocalDateTime,
             termsVersion: LocalDate,
             phoneCountry: String,
@@ -114,7 +115,7 @@ class Person private constructor(
                 checkSeqUser(seqUser),
                 checkFailedSignInAttempts(failedSignInAttempts),
                 checkBirthYear(birthYear),
-                checkCountry(country),
+                checkCountry(countryCode),
                 checkCreatedDate(createdDate),
                 checkTermsVersion(termsVersion),
                 checkPhoneCountry(phoneCountry),
@@ -145,19 +146,12 @@ class Person private constructor(
                 PersonError.PersonCreatedDateError,
             ) { createdDate.isAfter(LocalDateTime.now()).not() }
 
-        private fun checkCountry(country: Country) =
+        private fun checkCountry(country: String) =
             checkField(
                 country,
                 PersonError.PersonCountryError,
-            ) {
-                Country.of(
-                    country.code,
-                    country.name,
-                    country.code3,
-                    country.numCode,
-                    country.phoneCode
-                ).isRight
-            }
+                String::isNotEmpty
+            )
 
         private fun checkBirthYear(birthYear: Year) =
             checkField(
@@ -169,9 +163,9 @@ class Person private constructor(
             checkIntegerFields(seqUser, PersonError.PersonSeqUserError)
 
         private fun checkFailedSignInAttempts(failedSignInAttempts: Int) =
-            checkIntegerFields(failedSignInAttempts , PersonError.PersonFailedSignInAttemptsError)
+            checkIntegerFields(failedSignInAttempts, PersonError.PersonFailedSignInAttemptsError)
 
-        private fun checkIntegerFields(int: Int ,personError:PersonError ) =
+        private fun checkIntegerFields(int: Int, personError: PersonError) =
             checkField(
                 int,
                 personError,
