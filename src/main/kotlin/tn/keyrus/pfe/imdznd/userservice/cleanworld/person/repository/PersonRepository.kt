@@ -32,8 +32,6 @@ interface PersonRepository {
     fun findAllPersonByTermsVersion(termsVersion: LocalDate): Flow<Person>
     fun findAllPersonByTermsVersionBefore(termsVersion: LocalDate): Flow<Person>
     fun findAllPersonByTermsVersionAfter(termsVersion: LocalDate): Flow<Person>
-    fun findAllPersonByFailedSignInAttemptsGreaterThan(failedSignInAttempts: Int): Flow<Person>
-    fun findAllPersonByFailedSignInAttemptsLessThan(failedSignInAttempts: Int): Flow<Person>
     fun findAllPersonByFraudsterAndCountryCode(isFraudster: Boolean, country: String): Flow<Person>
     suspend fun countByBirthYear(birthYear: Year): Long
     suspend fun countAllPersonByState(state: Person.PersonState): Long

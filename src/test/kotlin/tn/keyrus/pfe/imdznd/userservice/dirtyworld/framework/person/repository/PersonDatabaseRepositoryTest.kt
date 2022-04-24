@@ -48,12 +48,12 @@ internal class PersonDatabaseRepositoryTest(
         personReactiveRepository.deleteAll().subscribe()
         countryReactiveRepository.deleteAll().subscribe()
     }
-//
-//    @AfterAll
-//    fun afterAll() {
-//        personReactiveRepository.deleteAll().subscribe()
-//        countryReactiveRepository.deleteAll().subscribe()
-//    }
+
+    @AfterAll
+    fun afterAll() {
+        personReactiveRepository.deleteAll().subscribe()
+        countryReactiveRepository.deleteAll().subscribe()
+    }
 
 
     @Test
@@ -2156,164 +2156,7 @@ internal class PersonDatabaseRepositoryTest(
             assert(y == 2)
         }
     }
-    @Test
-    fun `two element on get person by FailedSignInAttempts greater if repository have two valid fraudster with one country`() {
-        runBlocking {
-            val code = "PY"
-            val name = "Paraguay"
-            val code3 = "pRY"
-            val numCode = 600
-            val phoneCode = 595
-            val countrySave =
-                Country.of(
-                    code,
-                    name,
-                    code3,
-                    numCode,
-                    phoneCode
-                ).get()
-            countryRepository
-                .saveCountry(
-                    countrySave
-                )
-            val seqUser = 2993
-            val failedSignInAttempts = 2
-            val birthYear = Year.of(1975)
-            val state = Person.PersonState.ACTIVE
-            val createdDate = LocalDateTime.of(
-                2020,
-                10,
-                20,
-                5,
-                5,
-                5
-            )
-            val termsVersion = LocalDate.of(
-                2020,
-                10,
-                20,
-            )
-            val phoneCountry = "GB||JE||IM||GG"
-            val kyc = Person.PersonKYC.PASSED
-            val hasEmail = true
-            val numberOfFlags = 6
-            val fraudster = true
-            val resultPerson = Person.of(
-                seqUser,
-                failedSignInAttempts,
-                birthYear,
-                code,
-                createdDate,
-                termsVersion,
-                phoneCountry,
-                kyc,
-                state,
-                hasEmail,
-                numberOfFlags,
-                fraudster,
-            ).get()
-            personDatabaseRepository.savePerson(resultPerson)
-            val resultPerson2 = Person.of(
-                seqUser,
-                failedSignInAttempts,
-                birthYear,
-                code,
-                createdDate,
-                termsVersion,
-                phoneCountry,
-                kyc,
-                state,
-                hasEmail,
-                numberOfFlags,
-                fraudster,
-            ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
-            val result =
-                personDatabaseRepository.findAllPersonByFailedSignInAttemptsGreaterThan(1)
-            result.onEach { print(it) }
-            val y = result.count()
-            assert(y == 2)
-        }
-    }
-    @Test
-    fun `two element on get person by FailedSignInAttempts less if repository have two valid fraudster with one country`() {
-        runBlocking {
-            val code = "PY"
-            val name = "Paraguay"
-            val code3 = "pRY"
-            val numCode = 600
-            val phoneCode = 595
-            val countrySave =
-                Country.of(
-                    code,
-                    name,
-                    code3,
-                    numCode,
-                    phoneCode
-                ).get()
-            countryRepository
-                .saveCountry(
-                    countrySave
-                )
-            val seqUser = 2993
-            val failedSignInAttempts = 2
-            val birthYear = Year.of(1975)
-            val state = Person.PersonState.ACTIVE
-            val createdDate = LocalDateTime.of(
-                2020,
-                10,
-                20,
-                5,
-                5,
-                5
-            )
-            val termsVersion = LocalDate.of(
-                2020,
-                10,
-                20,
-            )
-            val phoneCountry = "GB||JE||IM||GG"
-            val kyc = Person.PersonKYC.PASSED
-            val hasEmail = true
-            val numberOfFlags = 3
-            val fraudster = true
-            val resultPerson = Person.of(
-                seqUser,
-                failedSignInAttempts,
-                birthYear,
-                code,
-                createdDate,
-                termsVersion,
-                phoneCountry,
-                kyc,
-                state,
-                hasEmail,
-                numberOfFlags,
-                fraudster,
-            ).get()
-            personDatabaseRepository.savePerson(resultPerson)
-            val resultPerson2 = Person.of(
-                seqUser,
-                failedSignInAttempts,
-                birthYear,
-                code,
-                createdDate,
-                termsVersion,
-                phoneCountry,
-                kyc,
-                state,
-                hasEmail,
-                numberOfFlags,
-                fraudster,
-            ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
-            val result =
-                personDatabaseRepository.findAllPersonByFailedSignInAttemptsLessThan(6)
-            result.onEach { print(it) }
-            val y = result.count()
-            assert(y == 2)
-        }
-    }
+
     @Test
     fun `two element on get person by BirthYearAndCountryCode if repository have two valid fraudster with one country`() {
         runBlocking {

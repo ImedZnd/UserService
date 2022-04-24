@@ -11,13 +11,13 @@ data class CountryDTO(
 ) {
 
     companion object Builder {
-        fun toCountryDTO(country: Country) =
+        fun Country.toCountryDTO() =
             CountryDTO(
-                country.code,
-                country.name,
-                country.code3,
-                country.numCode,
-                country.phoneCode,
+                this.code,
+                this.name,
+                this.code3,
+                this.numCode,
+                this.phoneCode,
             )
     }
 }

@@ -9,12 +9,12 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.rest.handler.CountryH
 class CountryRouter {
 
     @Bean
-    fun routes(countryHandler: CountryHandler) = coRouter {
+    fun countryRoutes(countryHandler: CountryHandler) = coRouter {
         "/country".nest {
             GET("/all") { countryHandler.getAllCountries() }
             GET("/code/{code}") { countryHandler.getCountryByCode(it) }
             GET("/personPerCountry") { countryHandler.getAllCountryByNumberOfPersons() }
-            GET("/fraudPerCountry") { countryHandler.getAllIsFraudstersByCountry(it) }
+            GET("/fraudPerCountry/{code}") { countryHandler.getAllIsFraudstersByCountry(it) }
         }
     }
 }

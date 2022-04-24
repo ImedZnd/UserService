@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.repository.PersonRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonDAO
@@ -34,7 +33,7 @@ class PersonDatabaseRepository(
     override fun findAllPersonByCountry(countryCode: String) =
         findAllByCriteria { it.findAllByCountryCode(countryCode) }
 
-    override fun findAllPersonByCreatedDateInRange(startDate: LocalDate, endDate: LocalDate ) =
+    override fun findAllPersonByCreatedDateInRange(startDate: LocalDate, endDate: LocalDate) =
         findAllByCriteria {
             it.findAllByCreatedDateBetween(
                 LocalDateTime.of(startDate, LocalTime.now()),
@@ -61,19 +60,19 @@ class PersonDatabaseRepository(
         findAllByCriteria { it.findAllByNumberOfFlags(numberOfFlags) }
 
     override fun findAllPersonByNumberOfFlagsGreaterThan(numberOfFlags: Int) =
-        findAllByCriteria { it.findAllByNumberOfFlagsGreaterThan(numberOfFlags)}
+        findAllByCriteria { it.findAllByNumberOfFlagsGreaterThan(numberOfFlags) }
 
     override fun findAllPersonByNumberOfFlagsLessThan(numberOfFlags: Int) =
-        findAllByCriteria { it.findAllByNumberOfFlagsLessThan(numberOfFlags)}
+        findAllByCriteria { it.findAllByNumberOfFlagsLessThan(numberOfFlags) }
 
     override fun findAllPersonByIsFraudster(isFraudster: Boolean) =
         findAllByCriteria { it.findAllByFraudster(isFraudster) }
 
     override fun findAllPersonByBirthYearAndCountryCode(year: Year, countryCode: String) =
-        findAllByCriteria { it.findAllByBirthYearAndCountryCode(year.value,countryCode) }
+        findAllByCriteria { it.findAllByBirthYearAndCountryCode(year.value, countryCode) }
 
     override fun findAllPersonByBirthYearAndHasEmail(birthYear: Year, hasEmail: Boolean) =
-        findAllByCriteria { it.findAllByBirthYearAndHasEmail(birthYear.value,hasEmail) }
+        findAllByCriteria { it.findAllByBirthYearAndHasEmail(birthYear.value, hasEmail) }
 
     override fun findAllPersonByBirthYearBefore(birthYear: Year) =
         findAllByCriteria { it.findAllByBirthYearBefore(birthYear.value) }
@@ -81,29 +80,23 @@ class PersonDatabaseRepository(
     override fun findAllPersonByBirthYearAfter(birthYear: Year) =
         findAllByCriteria { it.findAllByBirthYearAfter(birthYear.value) }
 
-    override fun findAllPersonByBirthYearBetween(startYear: Year, endYear: Year)=
-        findAllByCriteria { it.findAllByBirthYearBetween(startYear.value,endYear.value) }
+    override fun findAllPersonByBirthYearBetween(startYear: Year, endYear: Year) =
+        findAllByCriteria { it.findAllByBirthYearBetween(startYear.value, endYear.value) }
 
-    override fun findAllPersonByCreatedDateAfter(creationDate: LocalDateTime)=
+    override fun findAllPersonByCreatedDateAfter(creationDate: LocalDateTime) =
         findAllByCriteria { it.findAllByCreatedDateAfter(creationDate) }
 
-    override fun findAllPersonByCreatedDateBefore(creationDate: LocalDateTime)=
+    override fun findAllPersonByCreatedDateBefore(creationDate: LocalDateTime) =
         findAllByCriteria { it.findAllByCreatedDateBefore(creationDate) }
 
-    override fun findAllPersonByTermsVersionBefore(termsVersion: LocalDate)=
+    override fun findAllPersonByTermsVersionBefore(termsVersion: LocalDate) =
         findAllByCriteria { it.findAllByTermsVersionBefore(termsVersion) }
 
-    override fun findAllPersonByTermsVersionAfter(termsVersion: LocalDate)=
+    override fun findAllPersonByTermsVersionAfter(termsVersion: LocalDate) =
         findAllByCriteria { it.findAllByTermsVersionAfter(termsVersion) }
 
-    override fun findAllPersonByFailedSignInAttemptsGreaterThan(failedSignInAttempts: Int)=
-        findAllByCriteria { it.findAllByFailedSignInAttemptsGreaterThan(failedSignInAttempts) }
-
-    override fun findAllPersonByFailedSignInAttemptsLessThan(failedSignInAttempts: Int)=
-        findAllByCriteria { it.findAllByFailedSignInAttemptsLessThan(failedSignInAttempts) }
-
-    override fun findAllPersonByFraudsterAndCountryCode(isFraudster: Boolean, country: String)=
-        findAllByCriteria { it.findAllByFraudsterAndCountryCode(isFraudster,country) }
+    override fun findAllPersonByFraudsterAndCountryCode(isFraudster: Boolean, country: String) =
+        findAllByCriteria { it.findAllByFraudsterAndCountryCode(isFraudster, country) }
 
     override suspend fun countByBirthYear(birthYear: Year): Long {
         return findAllPerson()
@@ -112,42 +105,45 @@ class PersonDatabaseRepository(
             .toLong()
     }
 
-    override suspend fun countAllPersonByState(state: Person.PersonState)=
-        countPersonByCriteria {it.state ==  state}
+    override suspend fun countAllPersonByState(state: Person.PersonState) =
+        countPersonByCriteria { it.state == state }
 
-    override suspend fun countAllPersonByTermsVersion(termsVersion: LocalDate)=
-        countPersonByCriteria {it.termsVersion ==  termsVersion}
+    override suspend fun countAllPersonByTermsVersion(termsVersion: LocalDate) =
+        countPersonByCriteria { it.termsVersion == termsVersion }
 
-    override suspend fun countAllPersonByFraudster(isFraudster: Boolean)=
-        countPersonByCriteria { it.fraudster ==  isFraudster}
+    override suspend fun countAllPersonByFraudster(isFraudster: Boolean) =
+        countPersonByCriteria { it.fraudster == isFraudster }
 
     override suspend fun savePerson(person: Person): Either<PersonRepository.PersonRepositoryIOError, Person> =
         try {
-        personReactiveRepository.save(person.toDAO())
-            .map { it.toPerson() }
-            .filter { it.isRight }
-            .map { it.get() }
-            .map { Either.right<PersonRepository.PersonRepositoryIOError, Person>(it) }
-            .awaitSingleOrNull()
-            ?: Either.left(PersonRepository.PersonRepositoryIOError)
-    } catch (exception: Exception) {
-        Either.left(PersonRepository.PersonRepositoryIOError)
-    }
+            personReactiveRepository.save(person.toDAO())
+                .map { it.toPerson() }
+                .filter { it.isRight }
+                .map { it.get() }
+                .map { Either.right<PersonRepository.PersonRepositoryIOError, Person>(it) }
+                .awaitSingleOrNull()
+                ?: Either.left(PersonRepository.PersonRepositoryIOError)
+        } catch (exception: Exception) {
+            Either.left(PersonRepository.PersonRepositoryIOError)
+        }
 
     override suspend fun countAllPerson() =
         countPersonByCriteria { true }
 
-    override suspend fun countAllPersonByCountry(countryCode: String)=
+    override suspend fun countAllPersonByCountry(countryCode: String) =
         countPersonByCriteria { it.countryCode == countryCode }
 
-    private fun findAllByCriteria(criteria: (PersonReactiveRepository) -> Flux<PersonDAO>): Flow<Person> =
-        criteria(personReactiveRepository)
+    private fun findAllByCriteria(criteria: (PersonReactiveRepository) -> Flux<PersonDAO>): Flow<Person> {
+        return criteria(personReactiveRepository)
             .asFlow()
             .map { it.toPerson() }
             .filter { it.isRight }
             .map { it.get() }
+            .also(::print)
 
-    private suspend fun countPersonByCriteria(predicate: (Person) -> Boolean): Long{
+    }
+
+    private suspend fun countPersonByCriteria(predicate: (Person) -> Boolean): Long {
         return findAllPerson()
             .filter { predicate(it) }
             .count()

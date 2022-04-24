@@ -1,8 +1,6 @@
 package tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model
 
 import io.vavr.control.Either
-import org.apache.logging.log4j.util.Strings
-import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year

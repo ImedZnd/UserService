@@ -14,12 +14,6 @@ class PersonService(
     fun getAllPersons() =
         personDatabaseRepository.findAllPerson()
 
-    fun getAllPersonsByFailedSignInAttemptsLessThan(failedSignInAttempts:Int) =
-        personDatabaseRepository.findAllPersonByFailedSignInAttemptsLessThan(failedSignInAttempts)
-
-    fun getAllPersonsByFailedSignInAttemptsGreaterThan(failedSignInAttempts:Int) =
-        personDatabaseRepository.findAllPersonByFailedSignInAttemptsGreaterThan(failedSignInAttempts)
-
     fun getAllPersonsByBirthYear(birthYear: Year) =
         personDatabaseRepository.findAllPersonByBirthYear(birthYear)
 
@@ -29,10 +23,10 @@ class PersonService(
     fun getAllPersonByCountry(countryCode: String) =
         personDatabaseRepository.findAllPersonByCountry(countryCode)
 
-    fun getAllPersonByCreatedDateInRange(startDate: LocalDate, endDate: LocalDate = startDate) =
+    fun getAllPersonByCreatedDateInRange(startDate: LocalDate, endDate: LocalDate = startDate.plusDays(1)) =
         personDatabaseRepository.findAllPersonByCreatedDateInRange(startDate,endDate)
 
-    fun getAllPersonByTermsVersionBetween(startDate: LocalDate, endDate: LocalDate = startDate) =
+    fun getAllPersonByTermsVersionBetween(startDate: LocalDate, endDate: LocalDate = startDate.plusDays(1)) =
         personDatabaseRepository.findAllPersonByTermsVersionBetween(startDate,endDate)
 
     fun getAllPersonByPhoneCountry(phoneCountry: String) =
@@ -85,12 +79,6 @@ class PersonService(
 
     fun getAllPersonByTermsVersionAfter(termsVersion: LocalDate) =
         personDatabaseRepository.findAllPersonByTermsVersionAfter(termsVersion)
-
-    fun getAllPersonByFailedSignInAttemptsGreaterThan(failedSignInAttempts: Int) =
-        personDatabaseRepository.findAllPersonByFailedSignInAttemptsGreaterThan(failedSignInAttempts)
-
-    fun getAllPersonByFailedSignInAttemptsLessThan(failedSignInAttempts: Int) =
-        personDatabaseRepository.findAllPersonByFailedSignInAttemptsLessThan(failedSignInAttempts)
 
     fun getAllPersonByFraudsterAndCountryCode(isFraudster: Boolean, country: String) =
         personDatabaseRepository.findAllPersonByFraudsterAndCountryCode(isFraudster,country)

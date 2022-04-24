@@ -97,9 +97,8 @@ internal class CountryDatabaseRepositoryTest(
             val result =
                 countryRepository
                     .findCountryByCode(code)
-            result.onEach { print(it) }
-            val y = result.count()
-            assert(y == 1)
+            assert(result.isPresent)
+            assert(result.get() is Country)
         }
     }
 

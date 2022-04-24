@@ -5,8 +5,9 @@ import kotlinx.coroutines.flow.map
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.bodyAndAwait
+import org.springframework.web.reactive.function.server.buildAndAwait
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.service.CountryService
-import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.dto.CountryDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.dto.CountryDTO.Builder.toCountryDTO
 
 class CountryHandler(
     private val countryService: CountryService
@@ -17,7 +18,7 @@ class CountryHandler(
                 countryService
                     .getAllCountries()
                     .map {
-                        CountryDTO.toCountryDTO(it)
+                        it.toCountryDTO()
                     }
             )
 
@@ -27,7 +28,7 @@ class CountryHandler(
                 .getCountryByCode(
                     request.pathVariable("code")
                 )
-        return if (countryCode.isRight)
+        return if (countryCode.isPresent)
             ServerResponse
                 .ok()
                 .bodyAndAwait(
@@ -35,26 +36,27 @@ class CountryHandler(
                 )
         else ServerResponse
             .badRequest()
-            .bodyAndAwait(
-                flowOf(CountryWithCodeNotFound)
-            )
+            .header("error", CountryWithCodeNotFound.toString())
+            .buildAndAwait()
+
     }
 
     suspend fun getAllCountryByNumberOfPersons() =
-        ServerResponse.ok()
+        ServerResponse
+            .ok()
             .bodyAndAwait(
                 countryService
                     .getAllCountryByNumberOfPersons()
             )
 
     suspend fun getAllIsFraudstersByCountry(request: ServerRequest) =
-        ServerResponse.ok()
-            .bodyAndAwait(
-                countryService
-                    .getAllIsFraudstersByCountry(
-                        request.pathVariable("code").toBoolean()
-                    )
-            )
+            ServerResponse.ok()
+                .bodyAndAwait(
+                    countryService
+                        .getAllIsFraudstersByCountry(
+                            request.pathVariable("code").toBoolean()
+                        )
+                )
 
     object CountryWithCodeNotFound
 }

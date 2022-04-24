@@ -25,8 +25,6 @@ interface PersonReactiveRepository : ReactiveCrudRepository<PersonDAO, Long> {
     fun findAllByTermsVersionBefore(termsVersion: LocalDate): Flux<PersonDAO>
     fun findAllByTermsVersionAfter(termsVersion: LocalDate): Flux<PersonDAO>
     fun findAllByTermsVersionBetween(termsVersionStart: LocalDate, termsVersionEnd: LocalDate): Flux<PersonDAO>
-    fun findAllByFailedSignInAttemptsGreaterThan(failedSignInAttempts: Int): Flux<PersonDAO>
-    fun findAllByFailedSignInAttemptsLessThan(failedSignInAttempts: Int): Flux<PersonDAO>
     fun findAllByKyc(kyc: Person.PersonKYC): Flux<PersonDAO>
     fun findAllByHasEmail(hasEmail: Boolean): Flux<PersonDAO>
     fun findAllByNumberOfFlags(numberOfFlags: Int): Flux<PersonDAO>

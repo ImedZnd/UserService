@@ -1,8 +1,8 @@
 package tn.keyrus.pfe.imdznd.userservice.cleanworld.country.service
 
-import io.vavr.control.Either
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.repository.CountryRepository
+import java.util.Optional
 
 class CountryService(
     private val countryDatabaseRepository: CountryRepository
@@ -10,9 +10,8 @@ class CountryService(
     fun getAllCountries() =
         countryDatabaseRepository.findAllCountry()
 
-    suspend fun getCountryByCode(code: String): Either<CountryWithCodeNotFound, Country> =
+    suspend fun getCountryByCode(code: String):Optional<Country> =
         countryDatabaseRepository.findCountryByCode(code)
-            .mapLeft { CountryWithCodeNotFound }
 
     fun getAllCountryByNumberOfPersons() =
         countryDatabaseRepository.findAllCountryByNumberOfPersons()
@@ -20,6 +19,5 @@ class CountryService(
     fun getAllIsFraudstersByCountry(fraud: Boolean) =
         countryDatabaseRepository.findAllIsFraudstersByCountry(fraud)
 
-    object CountryWithCodeNotFound
 }
 
