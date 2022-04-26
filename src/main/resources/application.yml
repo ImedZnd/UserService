@@ -10,6 +10,24 @@ spring:
     url: r2dbc:postgresql://localhost:5432/postgres
     username: postgres
     password: example
+  cloud:
+    function:
+      definition: flagPersonQueueListener;
+    stream:
+      bindings:
+        flagPersonQueueListener-in-0:
+          destination: flagpersonexchange
+          group: flagpersonqueue
+      rabbit:
+        bindings:
+          flagPersonQueueListener-in-0:
+            consumer:
+              queueNameGroupOnly: true
+              binding-routing-key-delimiter: ","
+              bindingRoutingKey: "flagpersonroutingkey"
+              exchangeType: direct
+              autoBindDlq: false
+
 logging:
   level:
     org:

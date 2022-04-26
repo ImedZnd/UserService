@@ -137,7 +137,7 @@ internal class CountryServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -205,7 +205,7 @@ internal class CountryServiceTest(
             val fraudster = false
             val resultPerson =
                 Person.of(
-                    UUID.randomUUID(),
+                    null,
                     seqUser,
                     failedSignInAttempts,
                     birthYear,
@@ -221,7 +221,7 @@ internal class CountryServiceTest(
                 ).get()
             val person2 =
                 Person.of(
-                    UUID.randomUUID(),
+                    null,
                     seqUser,
                     failedSignInAttempts,
                     birthYear,
@@ -294,7 +294,7 @@ internal class CountryServiceTest(
             val fraudster = true
             val resultPerson =
                 Person.of(
-                    UUID.randomUUID(),
+                    null,
                     seqUser,
                     failedSignInAttempts,
                     birthYear,
@@ -310,7 +310,7 @@ internal class CountryServiceTest(
                 ).get()
             val person2 =
                 Person.of(
-                    UUID.randomUUID(),
+                    null,
                     seqUser,
                     failedSignInAttempts,
                     birthYear,

@@ -22,9 +22,8 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReact
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year
-import java.util.*
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 @ContextConfiguration(initializers = [Initializer::class])
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -162,7 +161,7 @@ internal class CountryRouterTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -229,7 +228,7 @@ internal class CountryRouterTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -297,7 +296,7 @@ internal class CountryRouterTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -364,7 +363,7 @@ internal class CountryRouterTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -389,7 +388,7 @@ internal class CountryRouterTest(
             val x = countryRepository.saveCountry(countrySave)
             println(x.isPresent)
             val flag = "true"
-            personReactiveRepository.save(resultPerson.toDAO()).blockOptional().get()
+            personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             webTestClient
                 .get()
                 .uri("/country/fraudPerCountry/$flag")

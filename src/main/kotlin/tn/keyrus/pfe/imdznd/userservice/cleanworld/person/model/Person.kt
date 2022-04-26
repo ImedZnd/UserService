@@ -5,10 +5,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year
 import java.util.Optional
-import java.util.UUID
 
 class Person private constructor(
-    val personId:UUID,
+    val personId : Long ? = null,
     val seqUser: Int,
     val failedSignInAttempts: Int,
     val birthYear: Year,
@@ -25,7 +24,7 @@ class Person private constructor(
 
     companion object Builder {
         fun of(
-            personId:UUID,
+            id:Long ?= null,
             seqUser: Int,
             failedSignInAttempts: Int,
             birthYear: Year,
@@ -52,7 +51,7 @@ class Person private constructor(
                 .let {
                     checkPersonErrors(
                         it,
-                        personId,
+                        id,
                         seqUser,
                         failedSignInAttempts,
                         birthYear,
@@ -70,7 +69,7 @@ class Person private constructor(
 
         private fun checkPersonErrors(
             personErrors: Sequence<PersonError>,
-            personId:UUID,
+            id:Long ?= null,
             seqUser: Int,
             failedSignInAttempts: Int,
             birthYear: Year,
@@ -87,7 +86,7 @@ class Person private constructor(
             if (personErrors.count() == 0)
                 Either.right(
                     Person(
-                        personId,
+                        id,
                         seqUser,
                         failedSignInAttempts,
                         birthYear,

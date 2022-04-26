@@ -1,21 +1,19 @@
 package tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao
 
-import org.apache.logging.log4j.util.Strings
 import org.springframework.data.annotation.Id
-import org.springframework.data.domain.Persistable
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year
-import java.util.UUID
 
 @Table("person")
 data class PersonDAO(
+
     @Id
     @Column("id")
-    var personId: UUID =UUID.randomUUID() ,
+    val personId: Long ?= null ,
     val seqUser: Int = 0,
     val failedSignInAttempts: Int = 0,
     val birthYear: Int = 1990,
@@ -28,7 +26,7 @@ data class PersonDAO(
     val hasEmail: Boolean = false,
     val numberOfFlags: Int = 0,
     val fraudster: Boolean = false,
-): Persistable<UUID> {
+) {
     fun toPerson() =
         Person.of(
             personId,
@@ -64,9 +62,5 @@ data class PersonDAO(
                 fraudster = fraudster,
             )
     }
-
-    override fun isNew(): Boolean = Strings.isNotEmpty(this.personId.toString())
-
-    override fun getId(): UUID = personId
 
 }

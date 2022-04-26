@@ -3,7 +3,6 @@ package tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.person.service
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
@@ -115,7 +114,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -181,7 +180,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -210,10 +209,11 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson)
             val result =
                 personService.getAllPersonsByBirthYear(birthYear)
-            result.onEach { print(it) }
             val resultQueue = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
 
             val y = result.count()
+            println(y)
+            println(resultQueue)
             assert(y == 1)
             assert(resultQueue == 1)
         }
@@ -251,7 +251,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -317,7 +317,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -386,7 +386,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -452,7 +452,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -485,8 +485,10 @@ internal class PersonServiceTest(
                         termsVersion,
                         LocalDate.now()
                     )
+            val resultf = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
             result.onEach { print(it) }
             val y = result.count()
+            assert(resultf == 1)
             assert(y == 1)
         }
     }
@@ -522,7 +524,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -591,7 +593,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -660,7 +662,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -729,7 +731,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -798,7 +800,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -867,7 +869,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -936,7 +938,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1005,7 +1007,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1074,7 +1076,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1144,7 +1146,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1208,7 +1210,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1272,7 +1274,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1336,7 +1338,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1400,7 +1402,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1464,7 +1466,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1538,7 +1540,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1554,7 +1556,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1620,7 +1622,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1636,7 +1638,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1702,7 +1704,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1718,7 +1720,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1784,7 +1786,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1800,7 +1802,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1866,7 +1868,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1882,7 +1884,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1948,7 +1950,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1964,7 +1966,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2030,7 +2032,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2046,7 +2048,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2112,7 +2114,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2128,7 +2130,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2194,7 +2196,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2210,7 +2212,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2276,7 +2278,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 3
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2292,7 +2294,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2358,7 +2360,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2374,7 +2376,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2391,7 +2393,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson2)
             val result =
                 personService.getAllPersonsByState(state)
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -2424,7 +2425,7 @@ internal class PersonServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2477,9 +2478,8 @@ internal class PersonServiceTest(
             val hasEmail = true
             val numberOfFlags = 6
             val fraudster = false
-            val id = UUID.randomUUID()
             val resultPerson = Person.of(
-                id,
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2505,9 +2505,9 @@ internal class PersonServiceTest(
                 .saveCountry(
                     countrySave
                 )
-            personService.savePerson(resultPerson)
+            val idOfPerson = personService.savePerson(resultPerson).get().personId
             val resultPerson2 = Person.of(
-                id,
+                idOfPerson,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2526,11 +2526,13 @@ internal class PersonServiceTest(
                 personService.getAllPersons()
             val y = result.count()
             val resultf = rabbitAdmin.getQueueInfo("updatepersonqueue").messageCount
+            val resultl = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
             println("ddddddddddddd"+y)
             result.onEach { print(it) }
             println(mm.isRight)
             println("ddddddddddddd"+y)
             assert(resultf == 1)
+            assert(resultl == 1)
             assert(y == 1)
         }
     }
@@ -2565,9 +2567,8 @@ internal class PersonServiceTest(
             val hasEmail = true
             val numberOfFlags = 6
             val fraudster = false
-            val id = UUID.randomUUID()
             val resultPerson = Person.of(
-                id,
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2593,23 +2594,8 @@ internal class PersonServiceTest(
                 .saveCountry(
                     countrySave
                 )
-            personService.savePerson(resultPerson)
-            val resultPerson2 = Person.of(
-                id,
-                seqUser,
-                failedSignInAttempts,
-                birthYear,
-                code,
-                createdDate,
-                termsVersion,
-                phoneCountry,
-                kyc,
-                state,
-                false,
-                numberOfFlags,
-                fraudster,
-            ).get()
-            personService.deletePerson(resultPerson2.personId)
+            val savedPerson = personService.savePerson(resultPerson).get()
+            savedPerson.personId?.let { personService.deletePerson(it) }
             val result =
                 personService.getAllPersons()
             val y = result.count()
@@ -2650,9 +2636,9 @@ internal class PersonServiceTest(
             val hasEmail = true
             val numberOfFlags = 6
             val fraudster = false
-            val id = UUID.randomUUID()
+            val id:Long =5
             val resultPerson = Person.of(
-                id,
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2678,8 +2664,8 @@ internal class PersonServiceTest(
                 .saveCountry(
                     countrySave
                 )
-            personService.savePerson(resultPerson)
-            personService.flagPerson(resultPerson.personId)
+            val savedPerson = personService.savePerson(resultPerson).get()
+            savedPerson.personId?.let { personService.flagPerson(it) }
             val result =
                 personService.getAllPersons()
             val y = result.count()

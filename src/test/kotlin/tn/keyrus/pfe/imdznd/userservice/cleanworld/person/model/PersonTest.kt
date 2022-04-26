@@ -35,9 +35,8 @@ internal class PersonTest {
         val hasEmail = true
         val numberOfFlags = 6
         val fraudster = false
-        val id = UUID.randomUUID()
         val result = Person.of(
-            id,
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -94,7 +93,7 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
-            UUID.randomUUID(),
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -140,7 +139,7 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
-            UUID.randomUUID(),
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -186,7 +185,7 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
-            UUID.randomUUID(),
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -232,7 +231,7 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
-            UUID.randomUUID(),
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -278,7 +277,7 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
-            UUID.randomUUID(),
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -324,7 +323,7 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
-            UUID.randomUUID(),
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -370,7 +369,7 @@ internal class PersonTest {
         val numberOfFlags = -5
         val fraudster = false
         val result = Person.of(
-            UUID.randomUUID(),
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,

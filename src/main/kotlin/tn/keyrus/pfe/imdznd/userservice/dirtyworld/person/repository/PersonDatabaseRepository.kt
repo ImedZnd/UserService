@@ -29,7 +29,7 @@ class PersonDatabaseRepository(
     private val personQueueSetting: PersonQueueSetting
 ) : PersonRepository {
 
-    override fun findPersonByID(id: UUID): Mono<Optional<Person>> {
+    override fun findPersonByID(id: Long): Mono<Optional<Person>> {
         return personReactiveRepository.findById(id)
             .map { it.toPerson() }
             .filter { it.isRight }
@@ -145,14 +145,14 @@ class PersonDatabaseRepository(
         }
 
     override suspend fun updatePerson(person: Person): Either<PersonRepository.PersonNotExistPersonRepositoryError, Person> =
-        if (findPersonByID(person.personId).awaitSingle().isEmpty)
+        if ((person.personId == null) or (person.personId?.let { findPersonByID(it).awaitSingle().isEmpty } == true))
             Either.left(PersonRepository.PersonNotExistPersonRepositoryError)
         else {
             savePerson(person)
             Either.right(person)
         }
 
-    override suspend fun deletePerson(id: UUID): Either<PersonRepository.PersonNotExistPersonRepositoryError, Person> {
+    override suspend fun deletePerson(id: Long): Either<PersonRepository.PersonNotExistPersonRepositoryError, Person> {
         return try {
             val doesPersonExist = findPersonByID(id)
                 .filter { it.isPresent }
@@ -166,7 +166,7 @@ class PersonDatabaseRepository(
         }
     }
 
-    override suspend fun flagPerson(id: UUID): Either<PersonRepository.PersonNotExistPersonRepositoryError, Person> {
+    override suspend fun flagPerson(id: Long): Either<PersonRepository.PersonNotExistPersonRepositoryError, Person> {
         val personToFlag = findPersonByID(id)
             .awaitSingleOrNull()
         if (personToFlag != null) {
@@ -196,9 +196,7 @@ class PersonDatabaseRepository(
         return Either.left(PersonRepository.PersonNotExistPersonRepositoryError)
     }
 
-    override fun publishSavePerson(id: UUID) {
-        println("personQueueSetting = ${personQueueSetting.save?.queue}")
-        println("rrrrrrrrrrrrrrrrrrrddddddddddr")
+    override fun publishSavePerson(id: Long) {
         publishEvent(
             id.toString(),
             "savepersonexchange",
@@ -206,7 +204,7 @@ class PersonDatabaseRepository(
         )
     }
 
-    override fun publishUpdatePerson(id: UUID) {
+    override fun publishUpdatePerson(id: Long) {
         publishEvent(
             id.toString(),
             "updatepersonexchange",
@@ -214,7 +212,7 @@ class PersonDatabaseRepository(
         )
     }
 
-    override fun publishDeletePerson(id: UUID) {
+    override fun publishDeletePerson(id: Long) {
         publishEvent(
             id.toString(),
             "deletepersonexchange",
@@ -222,7 +220,7 @@ class PersonDatabaseRepository(
         )
     }
 
-    override fun publishFlagPerson(id: UUID) {
+    override fun publishFlagPerson(id: Long) {
         publishEvent(
             id.toString(),
             "flagpersonexchange",

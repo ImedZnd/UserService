@@ -21,7 +21,6 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReact
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year
-import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
@@ -106,7 +105,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -135,7 +134,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson)
             val result =
                 personDatabaseRepository.findAllPerson()
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -172,7 +170,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -201,7 +199,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson)
             val result =
                 personDatabaseRepository.findAllPersonByBirthYear(birthYear)
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -238,7 +235,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -267,7 +264,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson)
             val result =
                 personDatabaseRepository.findAllPersonByCountry(code)
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -304,7 +300,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -336,7 +332,6 @@ internal class PersonDatabaseRepositoryTest(
                     LocalDate.of(2010, 10, 10),
                     LocalDate.of(2021, 10, 10),
                 )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -373,7 +368,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -402,7 +397,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson)
             val result =
                 personDatabaseRepository.findAllPersonByTermsVersion(termsVersion)
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -439,7 +433,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -472,7 +466,6 @@ internal class PersonDatabaseRepositoryTest(
                         termsVersion,
                         LocalDate.now()
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -509,7 +502,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -541,7 +534,6 @@ internal class PersonDatabaseRepositoryTest(
                     .findAllPersonByPhoneCountry(
                         phoneCountry
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -578,7 +570,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -610,7 +602,6 @@ internal class PersonDatabaseRepositoryTest(
                     .findAllPersonByKYC(
                         kyc
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -648,7 +639,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -674,13 +665,13 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            personDatabaseRepository.savePerson(resultPerson)
+            val x = personDatabaseRepository.savePerson(resultPerson)
+            println(x.isRight)
             val result =
                 personDatabaseRepository
                     .findAllPersonByHasEmail(
                         hasEmail
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -717,7 +708,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -749,7 +740,6 @@ internal class PersonDatabaseRepositoryTest(
                     .findAllPersonByHasEmail(
                         !hasEmail
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 0)
         }
@@ -786,7 +776,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -818,7 +808,6 @@ internal class PersonDatabaseRepositoryTest(
                     .findAllPersonByNumberOfFlags(
                         numberOfFlags
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -855,7 +844,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -887,7 +876,6 @@ internal class PersonDatabaseRepositoryTest(
                     .findAllPersonByNumberOfFlagsGreaterThan(
                         2
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -924,7 +912,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -956,7 +944,6 @@ internal class PersonDatabaseRepositoryTest(
                     .findAllPersonByNumberOfFlagsLessThan(
                         2
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 0)
         }
@@ -993,7 +980,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1025,7 +1012,6 @@ internal class PersonDatabaseRepositoryTest(
                     .findAllPersonByFraudsterAndCountryCode(
                         true, code
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 0)
         }
@@ -1062,7 +1048,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1095,7 +1081,6 @@ internal class PersonDatabaseRepositoryTest(
                         false,
                         code
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -1132,7 +1117,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1196,7 +1181,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1260,7 +1245,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1325,7 +1310,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1389,7 +1374,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1453,7 +1438,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1528,7 +1513,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1544,7 +1529,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1561,7 +1546,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson2)
             val result =
                 personDatabaseRepository.findAllPersonByIsFraudster(fraudster)
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -1610,7 +1594,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1626,7 +1610,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1643,7 +1627,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson2)
             val result =
                 personDatabaseRepository.findAllPersonByBirthYearAndHasEmail(birthYear, hasEmail)
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -1692,7 +1675,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1708,7 +1691,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1725,7 +1708,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson2)
             val result =
                 personDatabaseRepository.findAllPersonByBirthYearBefore(birthYear.plusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -1774,7 +1756,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1790,7 +1772,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1807,7 +1789,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson2)
             val result =
                 personDatabaseRepository.findAllPersonByBirthYearAfter(birthYear.minusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -1856,7 +1837,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1872,7 +1853,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1892,7 +1873,6 @@ internal class PersonDatabaseRepositoryTest(
                     birthYear.minusYears(1),
                     birthYear.plusYears(1)
                 )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -1941,7 +1921,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1957,7 +1937,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -1974,7 +1954,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson2)
             val result =
                 personDatabaseRepository.findAllPersonByCreatedDateAfter(createdDate.minusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -2023,7 +2002,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2039,7 +2018,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2105,7 +2084,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2121,7 +2100,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2187,7 +2166,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2203,7 +2182,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2220,7 +2199,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson2)
             val result =
                 personDatabaseRepository.findAllPersonByTermsVersionAfter(termsVersion.minusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -2269,7 +2247,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 3
             val fraudster = true
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2285,7 +2263,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2351,7 +2329,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2367,7 +2345,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson)
             val resultPerson2 = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2381,10 +2359,11 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            personDatabaseRepository.savePerson(resultPerson2)
+            val per = personDatabaseRepository.savePerson(resultPerson2).get()
             val result =
                 personDatabaseRepository.findAllPersonByState(state)
             val y = result.count()
+            println(y)
             assert(y == 2)
         }
     }
@@ -2416,7 +2395,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2465,8 +2444,9 @@ internal class PersonDatabaseRepositoryTest(
             val hasEmail = true
             val numberOfFlags = 6
             val fraudster = false
+            val id : Long ? = 5
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                id,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2481,7 +2461,7 @@ internal class PersonDatabaseRepositoryTest(
                 fraudster,
             ).get()
 
-            personDatabaseRepository.publishSavePerson(resultPerson.personId)
+            personDatabaseRepository.publishSavePerson(5)
             Thread.sleep(1000)
             val result = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
             println(result)
@@ -2515,8 +2495,9 @@ internal class PersonDatabaseRepositoryTest(
             val hasEmail = true
             val numberOfFlags = 6
             val fraudster = false
+            val id:Long = 5
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                id,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2531,7 +2512,7 @@ internal class PersonDatabaseRepositoryTest(
                 fraudster,
             ).get()
 
-            personDatabaseRepository.publishUpdatePerson(resultPerson.personId)
+            personDatabaseRepository.publishUpdatePerson(id)
             Thread.sleep(1000)
             val result = rabbitAdmin.getQueueInfo("updatepersonqueue").messageCount
             println(result)
@@ -2542,6 +2523,10 @@ internal class PersonDatabaseRepositoryTest(
     fun `publishDeletePerson `() {
         runBlocking {
             val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
             val birthYear = Year.of(1975)
@@ -2565,7 +2550,7 @@ internal class PersonDatabaseRepositoryTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
-                UUID.randomUUID(),
+                null,
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -2579,8 +2564,20 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-
-            personDatabaseRepository.publishDeletePerson(resultPerson.personId)
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            countryRepository
+                .saveCountry(
+                    countrySave
+                )
+            val savedPerson = personDatabaseRepository.savePerson(resultPerson).get()
+            savedPerson.personId?.let { personDatabaseRepository.publishDeletePerson(it) }
             Thread.sleep(1000)
             val result = rabbitAdmin.getQueueInfo("deletepersonqueue").messageCount
             println(result)
@@ -2590,7 +2587,7 @@ internal class PersonDatabaseRepositoryTest(
     @Test
     fun `publishFlagPerson `() {
         runBlocking {
-            personDatabaseRepository.publishFlagPerson(UUID.randomUUID())
+            personDatabaseRepository.publishFlagPerson(5)
             Thread.sleep(1000)
             val result = rabbitAdmin.getQueueInfo("flagpersonqueue").messageCount
             println(result)

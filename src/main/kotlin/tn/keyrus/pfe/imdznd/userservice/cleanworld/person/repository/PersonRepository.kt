@@ -11,7 +11,7 @@ import java.util.*
 
 interface PersonRepository {
 
-    fun findPersonByID(id:UUID): Mono<Optional<Person>>
+    fun findPersonByID(id:Long): Mono<Optional<Person>>
     fun findAllPerson(): Flow<Person>
     fun findAllPersonByBirthYear(year: Year): Flow<Person>
     fun findAllPersonByState(state: Person.PersonState): Flow<Person>
@@ -44,12 +44,12 @@ interface PersonRepository {
     suspend fun countAllPersonByCountry(countryCode: String): Long
     suspend fun savePerson(person: Person): Either<PersonRepositoryIOError, Person>
     suspend fun updatePerson(person: Person): Either<PersonNotExistPersonRepositoryError, Person>
-    suspend fun deletePerson(id: UUID): Either<PersonNotExistPersonRepositoryError, Person>
-    suspend fun flagPerson(id: UUID): Either<PersonNotExistPersonRepositoryError, Person>
-    fun publishSavePerson(id: UUID)
-    fun publishUpdatePerson(id: UUID)
-    fun publishDeletePerson(id: UUID)
-    fun publishFlagPerson(id: UUID)
+    suspend fun deletePerson(id: Long): Either<PersonNotExistPersonRepositoryError, Person>
+    suspend fun flagPerson(id: Long): Either<PersonNotExistPersonRepositoryError, Person>
+    fun publishSavePerson(id: Long)
+    fun publishUpdatePerson(id: Long)
+    fun publishDeletePerson(id: Long)
+    fun publishFlagPerson(id: Long)
 
     object PersonRepositoryIOError
     object PersonNotExistPersonRepositoryError
