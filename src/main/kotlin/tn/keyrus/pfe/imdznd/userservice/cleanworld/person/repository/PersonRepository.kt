@@ -2,13 +2,16 @@ package tn.keyrus.pfe.imdznd.userservice.cleanworld.person.repository
 
 import io.vavr.control.Either
 import kotlinx.coroutines.flow.Flow
+import reactor.core.publisher.Mono
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year
+import java.util.*
 
 interface PersonRepository {
 
+    fun findPersonByID(id:UUID): Mono<Optional<Person>>
     fun findAllPerson(): Flow<Person>
     fun findAllPersonByBirthYear(year: Year): Flow<Person>
     fun findAllPersonByState(state: Person.PersonState): Flow<Person>
@@ -37,10 +40,18 @@ interface PersonRepository {
     suspend fun countAllPersonByState(state: Person.PersonState): Long
     suspend fun countAllPersonByTermsVersion(termsVersion: LocalDate): Long
     suspend fun countAllPersonByFraudster(isFraudster: Boolean): Long
-    suspend fun savePerson(person: Person): Either<PersonRepositoryIOError, Person>
     suspend fun countAllPerson(): Long
     suspend fun countAllPersonByCountry(countryCode: String): Long
+    suspend fun savePerson(person: Person): Either<PersonRepositoryIOError, Person>
+    suspend fun updatePerson(person: Person): Either<PersonNotExistPersonRepositoryError, Person>
+    suspend fun deletePerson(id: UUID): Either<PersonNotExistPersonRepositoryError, Person>
+    suspend fun flagPerson(id: UUID): Either<PersonNotExistPersonRepositoryError, Person>
+    fun publishSavePerson(id: UUID)
+    fun publishUpdatePerson(id: UUID)
+    fun publishDeletePerson(id: UUID)
+    fun publishFlagPerson(id: UUID)
 
     object PersonRepositoryIOError
+    object PersonNotExistPersonRepositoryError
 
 }

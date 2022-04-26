@@ -5,17 +5,19 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year
 import java.util.Optional
+import java.util.UUID
 
 class Person private constructor(
+    val personId:UUID,
     val seqUser: Int,
     val failedSignInAttempts: Int,
     val birthYear: Year,
-    val state: PersonState,
     val countryCode: String,
     val createdDate: LocalDateTime,
     val termsVersion: LocalDate,
     val phoneCountry: String,
     val kyc: PersonKYC,
+    val state: PersonState,
     val hasEmail: Boolean,
     val numberOfFlags: Int,
     val fraudster: Boolean,
@@ -23,6 +25,7 @@ class Person private constructor(
 
     companion object Builder {
         fun of(
+            personId:UUID,
             seqUser: Int,
             failedSignInAttempts: Int,
             birthYear: Year,
@@ -49,6 +52,7 @@ class Person private constructor(
                 .let {
                     checkPersonErrors(
                         it,
+                        personId,
                         seqUser,
                         failedSignInAttempts,
                         birthYear,
@@ -66,6 +70,7 @@ class Person private constructor(
 
         private fun checkPersonErrors(
             personErrors: Sequence<PersonError>,
+            personId:UUID,
             seqUser: Int,
             failedSignInAttempts: Int,
             birthYear: Year,
@@ -82,15 +87,16 @@ class Person private constructor(
             if (personErrors.count() == 0)
                 Either.right(
                     Person(
+                        personId,
                         seqUser,
                         failedSignInAttempts,
                         birthYear,
-                        state,
                         countryCode,
                         createdDate,
                         termsVersion,
                         phoneCountry,
                         kyc,
+                        state,
                         hasEmail,
                         numberOfFlags,
                         fraudster,

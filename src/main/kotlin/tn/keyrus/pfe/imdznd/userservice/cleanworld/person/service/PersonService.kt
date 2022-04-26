@@ -6,10 +6,14 @@ import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.repository.PersonRepos
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year
+import java.util.UUID
 
 class PersonService(
     private val personDatabaseRepository : PersonRepository
 ) {
+
+    fun getPersonByID(id:UUID) =
+        personDatabaseRepository.findPersonByID(id)
 
     fun getAllPersons() =
         personDatabaseRepository.findAllPerson()
@@ -101,8 +105,24 @@ class PersonService(
     suspend fun countAllPersonByCountry(countryCode: String) =
         personDatabaseRepository.countAllPersonByCountry(countryCode)
 
-    suspend fun savePerson(event:Person): Either<PersonServiceIOError, Person> =
-        personDatabaseRepository.savePerson(event)
+    suspend fun savePerson(person:Person): Either<PersonServiceIOError, Person> =
+        personDatabaseRepository.savePerson(person)
+            .also { personDatabaseRepository.publishSavePerson(person.personId) }
+            .mapLeft { PersonServiceIOError }
+
+    suspend fun updatePerson(person:Person): Either<PersonServiceIOError, Person> =
+        personDatabaseRepository.updatePerson(person)
+            .also { personDatabaseRepository.publishUpdatePerson(person.personId) }
+            .mapLeft { PersonServiceIOError }
+
+    suspend fun deletePerson(id: UUID): Either<PersonServiceIOError, Person> =
+        personDatabaseRepository.deletePerson(id)
+            .also { personDatabaseRepository.publishDeletePerson(id) }
+            .mapLeft { PersonServiceIOError }
+
+    suspend fun flagPerson(id: UUID): Either<PersonServiceIOError, Person> =
+        personDatabaseRepository.flagPerson(id)
+            .also { personDatabaseRepository.publishFlagPerson(id) }
             .mapLeft { PersonServiceIOError }
 
     object PersonServiceIOError

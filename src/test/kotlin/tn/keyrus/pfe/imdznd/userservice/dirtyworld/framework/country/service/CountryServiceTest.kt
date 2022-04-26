@@ -21,6 +21,7 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReact
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year
+import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
@@ -136,6 +137,7 @@ internal class CountryServiceTest(
             val numberOfFlags = 6
             val fraudster = false
             val resultPerson = Person.of(
+                UUID.randomUUID(),
                 seqUser,
                 failedSignInAttempts,
                 birthYear,
@@ -203,6 +205,7 @@ internal class CountryServiceTest(
             val fraudster = false
             val resultPerson =
                 Person.of(
+                    UUID.randomUUID(),
                     seqUser,
                     failedSignInAttempts,
                     birthYear,
@@ -218,6 +221,7 @@ internal class CountryServiceTest(
                 ).get()
             val person2 =
                 Person.of(
+                    UUID.randomUUID(),
                     seqUser,
                     failedSignInAttempts,
                     birthYear,
@@ -290,6 +294,7 @@ internal class CountryServiceTest(
             val fraudster = true
             val resultPerson =
                 Person.of(
+                    UUID.randomUUID(),
                     seqUser,
                     failedSignInAttempts,
                     birthYear,
@@ -305,6 +310,7 @@ internal class CountryServiceTest(
                 ).get()
             val person2 =
                 Person.of(
+                    UUID.randomUUID(),
                     seqUser,
                     failedSignInAttempts,
                     birthYear,

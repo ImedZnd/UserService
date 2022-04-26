@@ -6,20 +6,37 @@ import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
+import org.springframework.amqp.rabbit.core.RabbitTemplate
+import org.springframework.beans.factory.annotation.Autowired
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.repository.PersonRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonDAO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonDAO.Companion.toDAO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.queue.setting.PersonQueueSetting
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
+import java.util.*
 
 class PersonDatabaseRepository(
-    private val personReactiveRepository: PersonReactiveRepository
+    private val personReactiveRepository: PersonReactiveRepository,
+    @Autowired private val rabbitTemplate: RabbitTemplate,
+    private val personQueueSetting: PersonQueueSetting
 ) : PersonRepository {
+
+    override fun findPersonByID(id: UUID): Mono<Optional<Person>> {
+        return personReactiveRepository.findById(id)
+            .map { it.toPerson() }
+            .filter { it.isRight }
+            .map { it.get() }
+            .map { Optional.of(it) }
+            .switchIfEmpty(Mono.just(Optional.empty()))
+    }
 
     override fun findAllPerson() =
         findAllByCriteria { it.findAll() }
@@ -126,6 +143,104 @@ class PersonDatabaseRepository(
         } catch (exception: Exception) {
             Either.left(PersonRepository.PersonRepositoryIOError)
         }
+
+    override suspend fun updatePerson(person: Person): Either<PersonRepository.PersonNotExistPersonRepositoryError, Person> =
+        if (findPersonByID(person.personId).awaitSingle().isEmpty)
+            Either.left(PersonRepository.PersonNotExistPersonRepositoryError)
+        else {
+            savePerson(person)
+            Either.right(person)
+        }
+
+    override suspend fun deletePerson(id: UUID): Either<PersonRepository.PersonNotExistPersonRepositoryError, Person> {
+        return try {
+            val doesPersonExist = findPersonByID(id)
+                .filter { it.isPresent }
+                .map { Either.right<PersonRepository.PersonNotExistPersonRepositoryError, Person>(it.get()) }
+                .awaitSingleOrNull()
+                ?: Either.left(PersonRepository.PersonNotExistPersonRepositoryError)
+            personReactiveRepository.deleteById(id).subscribe()
+            doesPersonExist
+        } catch (exception: java.lang.Exception) {
+            Either.left(PersonRepository.PersonNotExistPersonRepositoryError)
+        }
+    }
+
+    override suspend fun flagPerson(id: UUID): Either<PersonRepository.PersonNotExistPersonRepositoryError, Person> {
+        val personToFlag = findPersonByID(id)
+            .awaitSingleOrNull()
+        if (personToFlag != null) {
+            if (personToFlag.isEmpty)
+                return Either.left(PersonRepository.PersonNotExistPersonRepositoryError)
+            val person = personToFlag.get()
+            val personToUpdate = Person.of(
+                person.personId,
+                person.seqUser,
+                person.failedSignInAttempts,
+                person.birthYear,
+                person.countryCode,
+                person.createdDate,
+                person.termsVersion,
+                person.phoneCountry,
+                person.kyc,
+                person.state,
+                person.hasEmail,
+                person.numberOfFlags + 1,
+                person.fraudster,
+            ).get()
+            updatePerson(
+                personToUpdate
+            )
+            return Either.right(personToUpdate)
+        }
+        return Either.left(PersonRepository.PersonNotExistPersonRepositoryError)
+    }
+
+    override fun publishSavePerson(id: UUID) {
+        println("personQueueSetting = ${personQueueSetting.save?.queue}")
+        println("rrrrrrrrrrrrrrrrrrrddddddddddr")
+        publishEvent(
+            id.toString(),
+            "savepersonexchange",
+            "savepersonroutingkey"
+        )
+    }
+
+    override fun publishUpdatePerson(id: UUID) {
+        publishEvent(
+            id.toString(),
+            "updatepersonexchange",
+            "updatepersonroutingkey"
+        )
+    }
+
+    override fun publishDeletePerson(id: UUID) {
+        publishEvent(
+            id.toString(),
+            "deletepersonexchange",
+            "deletepersonroutingkey"
+        )
+    }
+
+    override fun publishFlagPerson(id: UUID) {
+        publishEvent(
+            id.toString(),
+            "flagpersonexchange",
+            "flagpersonroutingkey"
+        )
+    }
+
+    private fun publishEvent(
+        personId: String,
+        exchange: String,
+        routingKey: String
+    ) {
+        rabbitTemplate.convertAndSend(
+            exchange,
+            routingKey,
+            personId
+        )
+    }
 
     override suspend fun countAllPerson() =
         countPersonByCriteria { true }

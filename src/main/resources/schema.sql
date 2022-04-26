@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS country (
                                        phone_code INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS person (
-                                     id SERIAL PRIMARY KEY,
+                                     id UUID PRIMARY KEY,
                                      failed_sign_in_attempts INTEGER NOT NULL ,
                                      seq_user INTEGER NOT NULL ,
                                      birth_year INTEGER NOT NULL ,

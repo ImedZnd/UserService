@@ -6,6 +6,7 @@ import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year
+import java.util.*
 
 internal class PersonTest {
 
@@ -34,7 +35,9 @@ internal class PersonTest {
         val hasEmail = true
         val numberOfFlags = 6
         val fraudster = false
+        val id = UUID.randomUUID()
         val result = Person.of(
+            id,
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -91,6 +94,7 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            UUID.randomUUID(),
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -136,6 +140,7 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            UUID.randomUUID(),
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -181,6 +186,7 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            UUID.randomUUID(),
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -226,6 +232,7 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            UUID.randomUUID(),
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -271,6 +278,7 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            UUID.randomUUID(),
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -316,6 +324,7 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            UUID.randomUUID(),
             seqUser,
             failedSignInAttempts,
             birthYear,
@@ -361,6 +370,7 @@ internal class PersonTest {
         val numberOfFlags = -5
         val fraudster = false
         val result = Person.of(
+            UUID.randomUUID(),
             seqUser,
             failedSignInAttempts,
             birthYear,

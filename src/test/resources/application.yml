@@ -11,3 +11,18 @@ logging:
     org:
       springframework:
         r2dbc: DEBUG
+
+person:
+  event:
+    save:
+      queue: savequeue
+      exchange: saveexchange
+      routingKey: saveroutingkey
+    update:
+      queue: updatequeue
+      exchange: updateexchange
+      routingkey: updateroutingkey
+    delete:
+      queue: deletequeue
+      exchange: deleteexchange
+      routingkey: deleteroutingkey

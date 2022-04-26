@@ -1,5 +1,6 @@
 package tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.configuration
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.MessageSource
 import org.springframework.context.annotation.Bean
@@ -7,6 +8,7 @@ import org.springframework.context.annotation.Configuration
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.service.CountryService
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.repository.PersonRepository
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.service.PersonService
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.queue.setting.PersonQueueSetting
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonDatabaseRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReactiveRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHandler
@@ -16,9 +18,11 @@ class PersonConfiguration {
 
     @Bean
     fun personDatabaseRepository(
-        reactiveDatabaseRepository: PersonReactiveRepository
+        reactiveDatabaseRepository: PersonReactiveRepository,
+        @Autowired  rabbitTemplate: RabbitTemplate,
+        personQueueSetting: PersonQueueSetting
     ): PersonRepository =
-        PersonDatabaseRepository(reactiveDatabaseRepository)
+        PersonDatabaseRepository(reactiveDatabaseRepository,rabbitTemplate,personQueueSetting)
 
     @Bean
     fun personService(
