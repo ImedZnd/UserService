@@ -4781,7 +4781,79 @@ internal class PersonRouterTest(
     }
 
     @Test
-    fun `one person on flag valid person`() {
+    fun `error person not found on flag person not exist`() {
+        runBlocking {
+            val id :Long = 10
+            val personId = PersonIdDTO(id)
+            println(personId.id)
+            Thread.sleep(1000)
+            webTestClient
+                .post()
+                .uri("/person/flag")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(personId))
+                .exchange()
+                .expectHeader()
+                .valueMatches("notFound", messageSource.getMessage("PersonNotExist", null, Locale.US))
+        }
+    }
+
+    @Test
+    fun `error person not found on update person not exist`() {
+        runBlocking {
+            val code = "PY"
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = Year.of(2020)
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2010,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                10,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            Thread.sleep(1000)
+            webTestClient
+                .post()
+                .uri("/person/update")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(resultPerson))
+                .exchange()
+                .expectHeader()
+                .valueMatches("notFound", messageSource.getMessage("PersonNotExist", null, Locale.US))
+        }
+    }
+
+
+    @Test
+    fun `get one valid peron on get person by id`() {
         runBlocking {
             val code = "PY"
             val name = "Paraguay"
@@ -4835,13 +4907,14 @@ internal class PersonRouterTest(
                 ).get()
             val x = countryRepository.saveCountry(countrySave)
             println(x.isPresent)
-            val savedId = personService.savePerson(resultPerson).get().personId
+            val per = personService.savePerson(resultPerson)
+            println(per.isRight)
+            val savedId = per.get().personId
             val personId = PersonIdDTO(savedId!!)
-            println(personId.id)
-            Thread.sleep(1000)
+            println(personId)
             webTestClient
                 .post()
-                .uri("/person/flag")
+                .uri("/person/id")
                 .accept(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(personId))
                 .exchange()
@@ -4851,4 +4924,5 @@ internal class PersonRouterTest(
                 .hasSize(1)
         }
     }
+
 }
