@@ -131,47 +131,47 @@ class PersonDatabaseRepository(
     override suspend fun countAllPersonByFraudster(isFraudster: Boolean) =
         countPersonByCriteria { it.fraudster == isFraudster }
 
-    override suspend fun savePerson(person: Person): Either<PersonRepository.PersonRepositoryIOError, Person> =
+    override suspend fun savePerson(person: Person): Either<PersonRepository.PersonRepositoryError, Person> =
         try {
             personReactiveRepository.save(person.toDAO())
                 .map { it.toPerson() }
                 .filter { it.isRight }
                 .map { it.get() }
-                .map { Either.right<PersonRepository.PersonRepositoryIOError, Person>(it) }
+                .map { Either.right<PersonRepository.PersonRepositoryError, Person>(it) }
                 .awaitSingleOrNull()
-                ?: Either.left(PersonRepository.PersonRepositoryIOError)
+                ?: Either.left(PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError)
         } catch (exception: Exception) {
-            Either.left(PersonRepository.PersonRepositoryIOError)
+            Either.left(PersonRepository.PersonRepositoryError.PersonRepositoryIOError)
         }
 
-    override suspend fun updatePerson(person: Person): Either<PersonRepository.PersonNotExistPersonRepositoryError, Person> =
+    override suspend fun updatePerson(person: Person): Either<PersonRepository.PersonRepositoryError, Person> =
         if ((person.personId == null) or (person.personId?.let { findPersonByID(it).awaitSingle().isEmpty } == true))
-            Either.left(PersonRepository.PersonNotExistPersonRepositoryError)
+            Either.left(PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError)
         else {
             savePerson(person)
             Either.right(person)
         }
 
-    override suspend fun deletePerson(id: Long): Either<PersonRepository.PersonNotExistPersonRepositoryError, Person> {
+    override suspend fun deletePerson(id: Long): Either<PersonRepository.PersonRepositoryError, Person> {
         return try {
             val doesPersonExist = findPersonByID(id)
                 .filter { it.isPresent }
-                .map { Either.right<PersonRepository.PersonNotExistPersonRepositoryError, Person>(it.get()) }
+                .map { Either.right<PersonRepository.PersonRepositoryError, Person>(it.get()) }
                 .awaitSingleOrNull()
-                ?: Either.left(PersonRepository.PersonNotExistPersonRepositoryError)
+                ?: Either.left(PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError)
             personReactiveRepository.deleteById(id).subscribe()
-            doesPersonExist
+            Either.right(doesPersonExist.get())
         } catch (exception: java.lang.Exception) {
-            Either.left(PersonRepository.PersonNotExistPersonRepositoryError)
+            Either.left(PersonRepository.PersonRepositoryError.PersonRepositoryIOError)
         }
     }
 
-    override suspend fun flagPerson(id: Long): Either<PersonRepository.PersonNotExistPersonRepositoryError, Person> {
+    override suspend fun flagPerson(id: Long): Either<PersonRepository.PersonRepositoryError, Person> {
         val personToFlag = findPersonByID(id)
             .awaitSingleOrNull()
         if (personToFlag != null) {
             if (personToFlag.isEmpty)
-                return Either.left(PersonRepository.PersonNotExistPersonRepositoryError)
+                return Either.left(PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError)
             val person = personToFlag.get()
             val personToUpdate = Person.of(
                 person.personId,
@@ -193,7 +193,7 @@ class PersonDatabaseRepository(
             )
             return Either.right(personToUpdate)
         }
-        return Either.left(PersonRepository.PersonNotExistPersonRepositoryError)
+        return Either.left(PersonRepository.PersonRepositoryError.PersonRepositoryIOError)
     }
 
     override fun publishSavePerson(id: Long) {

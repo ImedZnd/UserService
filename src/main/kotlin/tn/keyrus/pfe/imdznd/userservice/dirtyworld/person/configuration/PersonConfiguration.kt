@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.service.CountryService
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.repository.PersonRepository
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.service.PersonService
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.queue.handler.PersonQueueHandler
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.queue.setting.PersonQueueSetting
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonDatabaseRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReactiveRepository
@@ -37,5 +38,11 @@ class PersonConfiguration {
         @Autowired messageSource: MessageSource
     ): PersonHandler =
         PersonHandler(personService,countryService,messageSource)
+
+    @Bean
+    fun personQueueHandler(
+        personService: PersonService,
+    ): PersonQueueHandler =
+        PersonQueueHandler(personService,)
 
 }

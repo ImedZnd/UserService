@@ -22,7 +22,6 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReact
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year
-import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
@@ -206,7 +205,8 @@ internal class PersonServiceTest(
                 .saveCountry(
                     countrySave
                 )
-            personService.savePerson(resultPerson)
+            val personSaved = personService.savePerson(resultPerson).get()
+            println(personSaved.personId)
             val result =
                 personService.getAllPersonsByBirthYear(birthYear)
             val resultQueue = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
@@ -486,6 +486,7 @@ internal class PersonServiceTest(
                         LocalDate.now()
                     )
             val resultf = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
+            Thread.sleep(1000)
             result.onEach { print(it) }
             val y = result.count()
             assert(resultf == 1)
@@ -2529,11 +2530,11 @@ internal class PersonServiceTest(
             val resultl = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
             println("ddddddddddddd"+y)
             result.onEach { print(it) }
-            println(mm.isRight)
             println("ddddddddddddd"+y)
             assert(resultf == 1)
             assert(resultl == 1)
             assert(y == 1)
+            assert(!mm.get().hasEmail)
         }
     }
 
@@ -2634,9 +2635,8 @@ internal class PersonServiceTest(
             val phoneCountry = "GB||JE||IM||GG"
             val kyc = Person.PersonKYC.PASSED
             val hasEmail = true
-            val numberOfFlags = 6
+            val numberOfFlagsBefore = 6
             val fraudster = false
-            val id:Long =5
             val resultPerson = Person.of(
                 null,
                 seqUser,
@@ -2649,7 +2649,7 @@ internal class PersonServiceTest(
                 kyc,
                 state,
                 hasEmail,
-                numberOfFlags,
+                numberOfFlagsBefore,
                 fraudster,
             ).get()
             val countrySave =
@@ -2669,12 +2669,13 @@ internal class PersonServiceTest(
             val result =
                 personService.getAllPersons()
             val y = result.count()
-            val mm = result.first().numberOfFlags
+            val numberOfFlags = result.first().numberOfFlags
             val resultf = rabbitAdmin.getQueueInfo("flagpersonqueue").messageCount
             println(y)
-            println(mm)
+            println("number of flags before "+numberOfFlagsBefore)
+            println("number of flags after "+numberOfFlags)
             assert(y == 1)
-            assert(mm == 7)
+            assert(numberOfFlags == 7)
             assert(resultf == 1)
         }
     }

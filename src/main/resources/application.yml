@@ -12,19 +12,19 @@ spring:
     password: example
   cloud:
     function:
-      definition: flagPersonQueueListener;
+      definition: flagPersonTransactionQueueListener;
     stream:
       bindings:
-        flagPersonQueueListener-in-0:
-          destination: flagpersonexchange
-          group: flagpersonqueue
+        flagPersonTransactionQueueListener-in-0:
+          destination: flagpersontransactionexchange
+          group: flagpersontransactionqueue
       rabbit:
         bindings:
-          flagPersonQueueListener-in-0:
+          flagPersonTransactionQueueListener-in-0:
             consumer:
               queueNameGroupOnly: true
               binding-routing-key-delimiter: ","
-              bindingRoutingKey: "flagpersonroutingkey"
+              bindingRoutingKey: "flagpersonransactionroutingkey"
               exchangeType: direct
               autoBindDlq: false
 

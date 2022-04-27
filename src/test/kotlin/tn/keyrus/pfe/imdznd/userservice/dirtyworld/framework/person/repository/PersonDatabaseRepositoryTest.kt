@@ -2413,7 +2413,7 @@ internal class PersonDatabaseRepositoryTest(
                 personDatabaseRepository.savePerson(resultPerson)
                     .left
             assertAll(
-                { assert(result is PersonRepository.PersonRepositoryIOError) },
+                { assert(result is PersonRepository.PersonRepositoryError.PersonRepositoryIOError) },
             )
         }
     }

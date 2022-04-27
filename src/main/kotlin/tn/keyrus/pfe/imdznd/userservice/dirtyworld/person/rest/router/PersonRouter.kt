@@ -37,6 +37,11 @@ class PersonRouter {
             POST("/countAllUsersByTermsVersion") { personHandler.countAllUsersByTermsVersion(it) }
             GET("/countAllUsersByIsFraud/{isFraud}") { personHandler.countAllUsersByIsFraud(it) }
             GET("/countAllUsersByCountry/{country}") { personHandler.countAllUsersByCountry(it) }
+            POST("/save") { personHandler.savePerson(it) }
+            POST("/update") { personHandler.updatePerson(it) }
+            POST("/delete") { personHandler.deletePerson(it) }
+            POST("/flag") { personHandler.flagPerson(it) }
+            POST("/id") { personHandler.getPersonById(it) }
         }
     }
 }

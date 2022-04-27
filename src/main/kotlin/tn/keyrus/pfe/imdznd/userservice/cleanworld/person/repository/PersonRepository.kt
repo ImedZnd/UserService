@@ -11,7 +11,7 @@ import java.util.*
 
 interface PersonRepository {
 
-    fun findPersonByID(id:Long): Mono<Optional<Person>>
+    fun findPersonByID(id: Long): Mono<Optional<Person>>
     fun findAllPerson(): Flow<Person>
     fun findAllPersonByBirthYear(year: Year): Flow<Person>
     fun findAllPersonByState(state: Person.PersonState): Flow<Person>
@@ -25,7 +25,7 @@ interface PersonRepository {
     fun findAllPersonByNumberOfFlagsGreaterThan(numberOfFlags: Int): Flow<Person>
     fun findAllPersonByNumberOfFlagsLessThan(numberOfFlags: Int): Flow<Person>
     fun findAllPersonByIsFraudster(isFraudster: Boolean): Flow<Person>
-    fun findAllPersonByBirthYearAndCountryCode(year: Year,countryCode: String): Flow<Person>
+    fun findAllPersonByBirthYearAndCountryCode(year: Year, countryCode: String): Flow<Person>
     fun findAllPersonByBirthYearAndHasEmail(birthYear: Year, hasEmail: Boolean): Flow<Person>
     fun findAllPersonByBirthYearBefore(birthYear: Year): Flow<Person>
     fun findAllPersonByBirthYearAfter(birthYear: Year): Flow<Person>
@@ -42,16 +42,17 @@ interface PersonRepository {
     suspend fun countAllPersonByFraudster(isFraudster: Boolean): Long
     suspend fun countAllPerson(): Long
     suspend fun countAllPersonByCountry(countryCode: String): Long
-    suspend fun savePerson(person: Person): Either<PersonRepositoryIOError, Person>
-    suspend fun updatePerson(person: Person): Either<PersonNotExistPersonRepositoryError, Person>
-    suspend fun deletePerson(id: Long): Either<PersonNotExistPersonRepositoryError, Person>
-    suspend fun flagPerson(id: Long): Either<PersonNotExistPersonRepositoryError, Person>
+    suspend fun savePerson(person: Person): Either<PersonRepositoryError, Person>
+    suspend fun updatePerson(person: Person): Either<PersonRepositoryError, Person>
+    suspend fun deletePerson(id: Long): Either<PersonRepositoryError, Person>
+    suspend fun flagPerson(id: Long): Either<PersonRepositoryError, Person>
     fun publishSavePerson(id: Long)
     fun publishUpdatePerson(id: Long)
     fun publishDeletePerson(id: Long)
     fun publishFlagPerson(id: Long)
-
-    object PersonRepositoryIOError
-    object PersonNotExistPersonRepositoryError
+    sealed interface PersonRepositoryError {
+        object PersonRepositoryIOError: PersonRepositoryError
+        object PersonNotExistPersonRepositoryError: PersonRepositoryError
+    }
 
 }

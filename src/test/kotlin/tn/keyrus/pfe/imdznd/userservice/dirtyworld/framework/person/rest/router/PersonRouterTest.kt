@@ -1,5 +1,6 @@
 package tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.person.rest.router
 
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
@@ -15,6 +16,7 @@ import org.springframework.web.reactive.function.BodyInserters
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.repository.CountryRepository
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
+import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.service.PersonService
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.repository.CountryReactiveRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.initializer.Initializer
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.*
@@ -35,12 +37,13 @@ internal class PersonRouterTest(
     @Autowired private val countryReactiveRepository: CountryReactiveRepository,
     @Autowired private val personReactiveRepository: PersonReactiveRepository,
     @Autowired private val countryRepository: CountryRepository,
-    @Autowired private val messageSource: MessageSource
-){
+    @Autowired private val messageSource: MessageSource,
+    @Autowired private val personService: PersonService,
+    ) {
 
     @BeforeAll
     fun beforeAll() {
-        runBlocking{
+        runBlocking {
             personReactiveRepository.deleteAll().awaitSingleOrNull()
             countryReactiveRepository.deleteAll().awaitSingleOrNull()
         }
@@ -48,7 +51,7 @@ internal class PersonRouterTest(
 
     @BeforeEach
     fun beforeEach() {
-        runBlocking{
+        runBlocking {
             personReactiveRepository.deleteAll().awaitSingleOrNull()
             countryReactiveRepository.deleteAll().awaitSingleOrNull()
         }
@@ -56,7 +59,7 @@ internal class PersonRouterTest(
 
     @AfterEach
     fun afterEach() {
-        runBlocking{
+        runBlocking {
             personReactiveRepository.deleteAll().awaitSingleOrNull()
             countryReactiveRepository.deleteAll().awaitSingleOrNull()
         }
@@ -64,7 +67,7 @@ internal class PersonRouterTest(
 
     @AfterAll
     fun afterAll() {
-        runBlocking{
+        runBlocking {
             personReactiveRepository.deleteAll().awaitSingleOrNull()
             countryReactiveRepository.deleteAll().awaitSingleOrNull()
         }
@@ -239,6 +242,7 @@ internal class PersonRouterTest(
                 .hasSize(2)
         }
     }
+
     @Test
     fun `error of conversion to Year if year is negative`() {
         runBlocking {
@@ -321,7 +325,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("YearConversionError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("YearConversionError", null, Locale.US))
         }
     }
 
@@ -493,7 +497,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("YearConversionError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("YearConversionError", null, Locale.US))
         }
     }
 
@@ -579,7 +583,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("YearConversionError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("YearConversionError", null, Locale.US))
         }
     }
 
@@ -741,7 +745,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val f = YearRangeDTO(YearDTO(2010),YearDTO(2021))
+            val f = YearRangeDTO(YearDTO(2010), YearDTO(2021))
             webTestClient
                 .post()
                 .uri("/person/birthYearBetween")
@@ -827,7 +831,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val f = YearRangeDTO(YearDTO(2022),YearDTO(2015))
+            val f = YearRangeDTO(YearDTO(2022), YearDTO(2015))
             webTestClient
                 .post()
                 .uri("/person/birthYearBetween")
@@ -837,7 +841,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("YearRangeError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("YearRangeError", null, Locale.US))
         }
     }
 
@@ -1004,7 +1008,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("statePersonProblem", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("statePersonProblem", null, Locale.US))
         }
     }
 
@@ -1171,7 +1175,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("CountryCodeError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("CountryCodeError", null, Locale.US))
         }
     }
 
@@ -1247,7 +1251,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateRangeDTO = DateRangeDTO(DateDTO(2015,10,10),DateDTO(2021,10,10))
+            val dateRangeDTO = DateRangeDTO(DateDTO(2015, 10, 10), DateDTO(2021, 10, 10))
             webTestClient
                 .post()
                 .uri("/person/createdDateRange")
@@ -1333,7 +1337,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateRangeDTO = DateRangeDTO(DateDTO(2020,10,10),DateDTO(215,10,10))
+            val dateRangeDTO = DateRangeDTO(DateDTO(2020, 10, 10), DateDTO(215, 10, 10))
             webTestClient
                 .post()
                 .uri("/person/createdDateRange")
@@ -1343,7 +1347,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("DateRangeError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("DateRangeError", null, Locale.US))
         }
     }
 
@@ -1419,7 +1423,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateRangeDTO = DateRangeDTO(DateDTO(2015,10,10),DateDTO(2021,10,10))
+            val dateRangeDTO = DateRangeDTO(DateDTO(2015, 10, 10), DateDTO(2021, 10, 10))
             webTestClient
                 .post()
                 .uri("/person/termVersionInRange")
@@ -1505,7 +1509,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateRangeDTO = DateRangeDTO(DateDTO(2022,10,10),DateDTO(2020,10,10))
+            val dateRangeDTO = DateRangeDTO(DateDTO(2022, 10, 10), DateDTO(2020, 10, 10))
             webTestClient
                 .post()
                 .uri("/person/termVersionInRange")
@@ -1515,9 +1519,10 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("DateRangeError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("DateRangeError", null, Locale.US))
         }
     }
+
     @Test
     fun `tow persons if thy have term version before the provided range`() {
         runBlocking {
@@ -1590,7 +1595,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateDTO = DateDTO(2015,10,10)
+            val dateDTO = DateDTO(2015, 10, 10)
             webTestClient
                 .post()
                 .uri("/person/termVersionBefore")
@@ -1676,7 +1681,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateDTO = DateDTO(2009,10,10)
+            val dateDTO = DateDTO(2009, 10, 10)
             webTestClient
                 .post()
                 .uri("/person/termVersionAfter")
@@ -1854,7 +1859,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("KYCProblem", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("KYCProblem", null, Locale.US))
         }
     }
 
@@ -2020,7 +2025,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("errorInNumberOfFlags", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("errorInNumberOfFlags", null, Locale.US))
         }
     }
 
@@ -2103,7 +2108,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("errorInNumberOfFlags", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("errorInNumberOfFlags", null, Locale.US))
         }
     }
 
@@ -2269,9 +2274,10 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("errorInNumberOfFlags", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("errorInNumberOfFlags", null, Locale.US))
         }
     }
+
     @Test
     fun `error if the number of flags greater  in not a number`() {
         runBlocking {
@@ -2351,7 +2357,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("errorInNumberOfFlags", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("errorInNumberOfFlags", null, Locale.US))
         }
     }
 
@@ -2517,7 +2523,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("errorInNumberOfFlags", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("errorInNumberOfFlags", null, Locale.US))
         }
     }
 
@@ -2600,7 +2606,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("errorInNumberOfFlags", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("errorInNumberOfFlags", null, Locale.US))
         }
     }
 
@@ -2935,6 +2941,7 @@ internal class PersonRouterTest(
                 .hasSize(0)
         }
     }
+
     @Test
     fun `tow persons if they phone Country provided`() {
         runBlocking {
@@ -3097,7 +3104,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("PhoneCountryProblem", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("PhoneCountryProblem", null, Locale.US))
         }
     }
 
@@ -3173,7 +3180,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateDTO = DateDTO(2021,1,1)
+            val dateDTO = DateDTO(2021, 1, 1)
             webTestClient
                 .post()
                 .uri("/person/createdDateBefore")
@@ -3186,6 +3193,7 @@ internal class PersonRouterTest(
                 .hasSize(2)
         }
     }
+
     @Test
     fun `error date not valid on find all by created date before`() {
         runBlocking {
@@ -3258,7 +3266,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateDTO = DateDTO(2021,20,1)
+            val dateDTO = DateDTO(2021, 20, 1)
             webTestClient
                 .post()
                 .uri("/person/createdDateBefore")
@@ -3268,7 +3276,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("DateError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("DateError", null, Locale.US))
         }
     }
 
@@ -3344,7 +3352,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateDTO = DateDTO(2015,1,1)
+            val dateDTO = DateDTO(2015, 1, 1)
             webTestClient
                 .post()
                 .uri("/person/createdDateAfter")
@@ -3357,6 +3365,7 @@ internal class PersonRouterTest(
                 .hasSize(2)
         }
     }
+
     @Test
     fun `error date not valid on find all by created date after`() {
         runBlocking {
@@ -3429,7 +3438,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateDTO = DateDTO(2021,20,1)
+            val dateDTO = DateDTO(2021, 20, 1)
             webTestClient
                 .post()
                 .uri("/person/createdDateAfter")
@@ -3439,9 +3448,10 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("DateError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("DateError", null, Locale.US))
         }
     }
+
     @Test
     fun `error date not valid on find all by term version  after`() {
         runBlocking {
@@ -3514,7 +3524,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateDTO = DateDTO(2021,20,1)
+            val dateDTO = DateDTO(2021, 20, 1)
             webTestClient
                 .post()
                 .uri("/person/termVersionBefore")
@@ -3524,7 +3534,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("DateError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("DateError", null, Locale.US))
         }
     }
 
@@ -3600,7 +3610,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateDTO = DateDTO(2021,20,1)
+            val dateDTO = DateDTO(2021, 20, 1)
             webTestClient
                 .post()
                 .uri("/person/termVersionAfter")
@@ -3610,7 +3620,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("DateError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("DateError", null, Locale.US))
         }
     }
 
@@ -3686,7 +3696,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val inputs = FraudsterAndCountryCodeDTO(true,code)
+            val inputs = FraudsterAndCountryCodeDTO(true, code)
             webTestClient
                 .post()
                 .uri("/person/fraudAndCountryCode")
@@ -3699,6 +3709,7 @@ internal class PersonRouterTest(
                 .hasSize(0)
         }
     }
+
     @Test
     fun `no element if they are no fraudsters and in the country provided`() {
         runBlocking {
@@ -3771,7 +3782,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val inputs = FraudsterAndCountryCodeDTO(false,code)
+            val inputs = FraudsterAndCountryCodeDTO(false, code)
             webTestClient
                 .post()
                 .uri("/person/fraudAndCountryCode")
@@ -3857,7 +3868,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val inputs = FraudsterAndCountryCodeDTO(false,"code")
+            val inputs = FraudsterAndCountryCodeDTO(false, "code")
             webTestClient
                 .post()
                 .uri("/person/fraudAndCountryCode")
@@ -3867,7 +3878,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("CountryCodeError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("CountryCodeError", null, Locale.US))
         }
     }
 
@@ -4116,7 +4127,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("statePersonProblem", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("statePersonProblem", null, Locale.US))
         }
     }
 
@@ -4192,7 +4203,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateDTO = DateDTO(2015,10,10)
+            val dateDTO = DateDTO(2015, 10, 10)
             webTestClient
                 .post()
                 .uri("/person/countAllUsersByTermsVersion")
@@ -4278,7 +4289,7 @@ internal class PersonRouterTest(
             println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val dateDTO = DateDTO(2025,20,10)
+            val dateDTO = DateDTO(2025, 20, 10)
             webTestClient
                 .post()
                 .uri("/person/countAllUsersByTermsVersion")
@@ -4288,7 +4299,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("DateError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("DateError", null, Locale.US))
         }
     }
 
@@ -4537,7 +4548,307 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error",messageSource.getMessage("CountryCodeError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("CountryCodeError", null, Locale.US))
+        }
+    }
+
+
+    @Test
+    fun `one person on save valid person`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = Year.of(2020)
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2010,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            val x = countryRepository.saveCountry(countrySave)
+            println(x.isPresent)
+            webTestClient
+                .post()
+                .uri("/person/save")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(resultPerson.toDAO()))
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBodyList<PersonDTO>()
+                .hasSize(1)
+        }
+    }
+    @Test
+    fun `one person on update valid person`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = Year.of(2020)
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2010,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            val x = countryRepository.saveCountry(countrySave)
+            println(x.isPresent)
+            val per = personService.savePerson(resultPerson)
+            println(per.isRight)
+            val savedId = per.get().personId
+            println(savedId)
+            val secondePerson = Person.of(
+                savedId,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                10,
+                fraudster,
+            ).get()
+            webTestClient
+                .post()
+                .uri("/person/update")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(secondePerson.toDAO()))
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBodyList<PersonDTO>()
+                .hasSize(1)
+        }
+    }
+
+    @Test
+    fun `one person on delete valid person`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = Year.of(2020)
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2010,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            val x = countryRepository.saveCountry(countrySave)
+            println(x.isPresent)
+            val per = personService.savePerson(resultPerson)
+            println(per.isRight)
+            val savedId = per.get().personId
+            val personId = PersonIdDTO(savedId!!)
+            println(personId)
+            webTestClient
+                .post()
+                .uri("/person/delete")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(personId))
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBodyList<PersonDTO>()
+                .hasSize(1)
+        }
+    }
+
+    @Test
+    fun `one person on flag valid person`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = Year.of(2020)
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2010,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            val x = countryRepository.saveCountry(countrySave)
+            println(x.isPresent)
+            val savedId = personService.savePerson(resultPerson).get().personId
+            val personId = PersonIdDTO(savedId!!)
+            println(personId.id)
+            Thread.sleep(1000)
+            webTestClient
+                .post()
+                .uri("/person/flag")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(personId))
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBodyList<PersonDTO>()
+                .hasSize(1)
         }
     }
 }

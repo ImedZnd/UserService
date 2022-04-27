@@ -6,6 +6,23 @@ spring:
   sql:
     init:
       mode: always
+  cloud:
+    function:
+      definition: flagPersonTransactionQueueListener;
+    stream:
+      bindings:
+        flagPersonTransactionQueueListener-in-0:
+          destination: flagpersontransactionexchange
+          group: flagpersontransactionqueue
+      rabbit:
+        bindings:
+          flagPersonTransactionQueueListener-in-0:
+            consumer:
+              queueNameGroupOnly: true
+              binding-routing-key-delimiter: ","
+              bindingRoutingKey: "flagpersonransactionroutingkey"
+              exchangeType: direct
+              autoBindDlq: false
 logging:
   level:
     org:
