@@ -2,18 +2,20 @@ package tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dto
 
 import io.vavr.control.Either
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
-import java.time.LocalDate
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.DateDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.DateDTO.Builder.toDateDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.YearDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.YearDTO.Builder.toYearDTO
 import java.time.LocalDateTime
-import java.time.Year
 
 class PersonDTO (
     val personId: Long? = null,
     val seqUser: Int,
     val failedSignInAttempts: Int,
-    val birthYear: Year,
+    val birthYear: YearDTO,
     val countryCode: String,
     val createdDate: LocalDateTime,
-    val termsVersion: LocalDate,
+    val termsVersion: DateDTO,
     val phoneCountry: String,
     val kyc: Person.PersonKYC,
     val state: Person.PersonState,
@@ -28,10 +30,10 @@ class PersonDTO (
                 this.personId,
                 this.seqUser,
                 this.failedSignInAttempts,
-                this.birthYear,
+                this.birthYear.toYearDTO(),
                 this.countryCode,
                 this.createdDate,
-                this.termsVersion,
+                this.termsVersion.toDateDTO(),
                 this.phoneCountry,
                 this.kyc,
                 this.state,
@@ -46,10 +48,10 @@ class PersonDTO (
             this.personId,
             this.seqUser,
             this.failedSignInAttempts,
-            this.birthYear,
+            this.birthYear.toYear().get(),
             this.countryCode,
             this.createdDate,
-            this.termsVersion,
+            this.termsVersion.toLocalDate().get(),
             this.phoneCountry,
             this.kyc,
             this.state,

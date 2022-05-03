@@ -5,16 +5,16 @@ import java.time.DateTimeException
 import java.time.LocalDate
 
 data class DateDTO(
-    val year: Int = 0,
-    val month: Int = 0,
-    val day: Int = 0,
+    val year: Int ,
+    val monthOfYear: Int ,
+    val day: Int ,
 ) {
     companion object Builder {
         fun LocalDate.toDateDTO() =
-            LocalDate.of(
-                this.year,
-                this.month,
-                this.dayOfMonth
+            DateDTO(
+                year,
+                month.value,
+                dayOfMonth
             )
     }
 
@@ -23,7 +23,7 @@ data class DateDTO(
              Either.right(
                 LocalDate.of(
                     year,
-                    month,
+                    monthOfYear,
                     day
                 )
             )

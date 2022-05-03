@@ -1,6 +1,5 @@
 package tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.person.rest.router
 
-import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
@@ -22,6 +21,7 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.initializer.Initial
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.*
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonDAO.Companion.toDAO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dto.PersonDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dto.PersonDTO.Builder.toPersonDTO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReactiveRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -4612,7 +4612,7 @@ internal class PersonRouterTest(
                 .post()
                 .uri("/person/save")
                 .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(resultPerson.toDAO()))
+                .body(BodyInserters.fromValue(resultPerson.toPersonDTO()))
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -4698,7 +4698,7 @@ internal class PersonRouterTest(
                 .post()
                 .uri("/person/update")
                 .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(secondePerson.toDAO()))
+                .body(BodyInserters.fromValue(secondePerson.toPersonDTO()))
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -4779,6 +4779,225 @@ internal class PersonRouterTest(
                 .hasSize(1)
         }
     }
+    @Test
+    fun `one person on flag a valid person`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = Year.of(2020)
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2010,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            val x = countryRepository.saveCountry(countrySave)
+            println(x.isPresent)
+            val per = personService.savePerson(resultPerson)
+            println(per.isRight)
+            val savedId = per.get().personId
+            val personId = PersonIdDTO(savedId!!)
+            println(personId)
+            webTestClient
+                .post()
+                .uri("/person/flag")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(personId))
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBodyList<PersonDTO>()
+                .hasSize(1)
+
+        }
+    }
+    @Test
+    fun `one person on fraud a valid person`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = Year.of(2020)
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2010,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            val x = countryRepository.saveCountry(countrySave)
+            println(x.isPresent)
+            val per = personService.savePerson(resultPerson)
+            println(per.isRight)
+            val savedId = per.get().personId
+            val personId = PersonIdDTO(savedId!!)
+            println(personId)
+            webTestClient
+                .post()
+                .uri("/person/fraud")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(personId))
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBodyList<PersonDTO>()
+                .hasSize(1)
+
+        }
+    }
+    @Test
+    fun `one person on unfraud a valid person`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = Year.of(2020)
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2010,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = true
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            val x = countryRepository.saveCountry(countrySave)
+            println(x.isPresent)
+            val per = personService.savePerson(resultPerson)
+            println(per.isRight)
+            val savedId = per.get().personId
+            val personId = PersonIdDTO(savedId!!)
+            println(personId)
+            webTestClient
+                .post()
+                .uri("/person/unfraud")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(personId))
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBodyList<PersonDTO>()
+                .hasSize(1)
+
+        }
+    }
 
     @Test
     fun `error person not found on flag person not exist`() {
@@ -4786,7 +5005,6 @@ internal class PersonRouterTest(
             val id :Long = 10
             val personId = PersonIdDTO(id)
             println(personId.id)
-            Thread.sleep(1000)
             webTestClient
                 .post()
                 .uri("/person/flag")
@@ -4839,12 +5057,11 @@ internal class PersonRouterTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            Thread.sleep(1000)
             webTestClient
                 .post()
                 .uri("/person/update")
                 .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(resultPerson))
+                .body(BodyInserters.fromValue(resultPerson.toPersonDTO()))
                 .exchange()
                 .expectHeader()
                 .valueMatches("notFound", messageSource.getMessage("PersonNotExist", null, Locale.US))

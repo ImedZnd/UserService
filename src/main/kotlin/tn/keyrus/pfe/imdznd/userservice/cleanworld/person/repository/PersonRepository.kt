@@ -46,13 +46,18 @@ interface PersonRepository {
     suspend fun updatePerson(person: Person): Either<PersonRepositoryError, Person>
     suspend fun deletePerson(id: Long): Either<PersonRepositoryError, Person>
     suspend fun flagPerson(id: Long): Either<PersonRepositoryError, Person>
+    suspend fun fraudPerson(id: Long): Either<PersonRepositoryError, Person>
+    suspend fun unFraudPerson(id: Long): Either<PersonRepositoryError, Person>
     fun publishSavePerson(id: Long)
     fun publishUpdatePerson(id: Long)
     fun publishDeletePerson(id: Long)
     fun publishFlagPerson(id: Long)
+    fun publishFraudPerson(id: Long)
+    fun publishUnFraudPerson(id: Long)
     sealed interface PersonRepositoryError {
         object PersonRepositoryIOError: PersonRepositoryError
         object PersonNotExistPersonRepositoryError: PersonRepositoryError
+        object PersonAlreadyFraudsterRepositoryError:PersonRepositoryError
     }
 
 }

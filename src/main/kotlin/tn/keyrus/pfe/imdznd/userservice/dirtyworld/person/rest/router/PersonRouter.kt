@@ -42,6 +42,8 @@ class PersonRouter {
             POST("/delete") { personHandler.deletePerson(it) }
             POST("/flag") { personHandler.flagPerson(it) }
             POST("/id") { personHandler.getPersonById(it) }
+            POST("/fraud") { personHandler.fraudPerson(it) }
+            POST("/unfraud") { personHandler.unFraudPerson(it) }
         }
     }
 }

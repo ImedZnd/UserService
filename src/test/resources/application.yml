@@ -20,7 +20,7 @@ spring:
             consumer:
               queueNameGroupOnly: true
               binding-routing-key-delimiter: ","
-              bindingRoutingKey: "flagpersonransactionroutingkey"
+              bindingRoutingKey: "flagpersontransactionroutingkey"
               exchangeType: direct
               autoBindDlq: false
 logging:
@@ -32,14 +32,26 @@ logging:
 person:
   event:
     save:
-      queue: savequeue
-      exchange: saveexchange
-      routingKey: saveroutingkey
+      queue: savepersonqueue
+      exchange: savepersonexchange
+      routingKey: savepersonroutingkey
     update:
-      queue: updatequeue
-      exchange: updateexchange
-      routingkey: updateroutingkey
+      queue: updatepersonqueue
+      exchange: updatepersonexchange
+      routingkey: updatepersonroutingkey
     delete:
-      queue: deletequeue
-      exchange: deleteexchange
-      routingkey: deleteroutingkey
+      queue: deletepersonqueue
+      exchange: deletepersonexchange
+      routingkey: deletepersonroutingkey
+    flag:
+      queue: flagpersonqueue
+      exchange: flagpersonexchange
+      routingkey: flagpersonroutingkey
+    fraud:
+      queue: fraudpersonqueue
+      exchange: fraudpersonexchange
+      routingkey: fraudpersonroutingkey
+    unfraud:
+      queue: unfraudpersonqueue
+      exchange: unfraudpersonexchange
+      routingkey: unfraudpersonroutingkey

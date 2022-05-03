@@ -18,27 +18,39 @@ data class PersonQueueInitializer(
     fun onStart() {
         createCommunicationPipe(
             rabbitAdmin,
-            "savepersonqueue",
-            "savepersonexchange",
-            "savepersonroutingkey"
+            personQueueSetting.save?.queue?:"",
+            personQueueSetting.save?.exchange?:"",
+            personQueueSetting.save?.routingkey?:""
         )
         createCommunicationPipe(
             rabbitAdmin,
-            "updatepersonqueue",
-            "updatepersonexchange",
-            "updatepersonroutingkey"
+            personQueueSetting.update?.queue?:"",
+            personQueueSetting.update?.exchange?:"",
+            personQueueSetting.update?.routingkey?:""
         )
         createCommunicationPipe(
             rabbitAdmin,
-            "deletepersonqueue",
-            "deletepersonexchange",
-            "deletepersonroutingkey"
+            personQueueSetting.delete?.queue?:"",
+            personQueueSetting.delete?.exchange?:"",
+            personQueueSetting.delete?.routingkey?:""
         )
         createCommunicationPipe(
             rabbitAdmin,
-            "flagpersonqueue",
-            "flagpersonexchange",
-            "flagpersonroutingkey"
+            personQueueSetting.flag?.queue?:"",
+            personQueueSetting.flag?.exchange?:"",
+            personQueueSetting.flag?.routingkey?:""
+        )
+        createCommunicationPipe(
+            rabbitAdmin,
+            personQueueSetting.fraud?.queue?:"",
+            personQueueSetting.fraud?.exchange?:"",
+            personQueueSetting.fraud?.routingkey?:""
+        )
+        createCommunicationPipe(
+            rabbitAdmin,
+            personQueueSetting.unfraud?.queue?:"",
+            personQueueSetting.unfraud?.exchange?:"",
+            personQueueSetting.unfraud?.routingkey?:""
         )
     }
 

@@ -51,3 +51,11 @@ person:
       queue: flagpersonqueue
       exchange: flagpersonexchange
       routingkey: flagpersonroutingkey
+    fraud:
+      queue: fraudpersonqueue
+      exchange: fraudpersonexchange
+      routingkey: fraudpersonroutingkey
+    unfraud:
+      queue: unfraudpersonqueue
+      exchange: unfraudpersonexchange
+      routingkey: unfraudpersonroutingkey

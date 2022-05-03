@@ -25,10 +25,5 @@ data class YearDTO(
         }
     }
 
-    fun checkYear(): Either<YearConversionError,YearDTO> =
-        if (this.toYear().isLeft){
-            Either.left(YearConversionError)
-        }else Either.right(this)
-
     object YearConversionError
 }

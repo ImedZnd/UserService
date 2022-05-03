@@ -112,7 +112,6 @@ class PersonService(
             personSaved.get().personId?.let { it1 -> personDatabaseRepository.publishSavePerson(it1) }
             Either.right(personSaved.get())
         }
-
     }
 
     suspend fun updatePerson(person: Person): Either<PersonServiceIOError, Person> =
@@ -128,6 +127,16 @@ class PersonService(
     suspend fun flagPerson(id: Long): Either<PersonServiceIOError, Person> =
         personDatabaseRepository.flagPerson(id)
             .also { personDatabaseRepository.publishFlagPerson(id) }
+            .mapLeft { PersonServiceIOError }
+
+    suspend fun fraudPerson(id: Long): Either<PersonServiceIOError, Person> =
+        personDatabaseRepository.fraudPerson(id)
+            .also { personDatabaseRepository.publishFraudPerson(id) }
+            .mapLeft { PersonServiceIOError }
+
+    suspend fun unFraudPerson(id: Long): Either<PersonServiceIOError, Person> =
+        personDatabaseRepository.unFraudPerson(id)
+            .also { personDatabaseRepository.publishUnFraudPerson(id) }
             .mapLeft { PersonServiceIOError }
 
     object PersonServiceIOError

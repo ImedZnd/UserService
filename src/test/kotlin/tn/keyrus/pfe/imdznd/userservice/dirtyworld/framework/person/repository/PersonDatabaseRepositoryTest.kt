@@ -814,7 +814,7 @@ internal class PersonDatabaseRepositoryTest(
     }
 
     @Test
-    fun `one person on get person by NumberOfFlagsGreater if repository have one valid person with no email`() {
+    fun `one person on get person by NumberOfFlagsGreater if repository have one valid person `() {
         runBlocking {
             val code = "PY"
             val name = "Paraguay"
@@ -2359,7 +2359,7 @@ internal class PersonDatabaseRepositoryTest(
                 numberOfFlags,
                 fraudster,
             ).get()
-            val per = personDatabaseRepository.savePerson(resultPerson2).get()
+            personDatabaseRepository.savePerson(resultPerson2).get()
             val result =
                 personDatabaseRepository.findAllPersonByState(state)
             val y = result.count()
@@ -2421,48 +2421,7 @@ internal class PersonDatabaseRepositoryTest(
     @Test
     fun `publishSavePerson `() {
         runBlocking {
-            val code = "PY"
-            val seqUser = 2993
-            val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
-            val state = Person.PersonState.ACTIVE
-            val createdDate = LocalDateTime.of(
-                2020,
-                10,
-                20,
-                5,
-                5,
-                5
-            )
-            val termsVersion = LocalDate.of(
-                2020,
-                10,
-                20,
-            )
-            val phoneCountry = "GB||JE||IM||GG"
-            val kyc = Person.PersonKYC.PASSED
-            val hasEmail = true
-            val numberOfFlags = 6
-            val fraudster = false
-            val id : Long ? = 5
-            val resultPerson = Person.of(
-                id,
-                seqUser,
-                failedSignInAttempts,
-                birthYear,
-                code,
-                createdDate,
-                termsVersion,
-                phoneCountry,
-                kyc,
-                state,
-                hasEmail,
-                numberOfFlags,
-                fraudster,
-            ).get()
-
             personDatabaseRepository.publishSavePerson(5)
-            Thread.sleep(1000)
             val result = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
             println(result)
             assert(result == 1)
@@ -2472,48 +2431,8 @@ internal class PersonDatabaseRepositoryTest(
     @Test
     fun `publishUpdatePerson `() {
         runBlocking {
-            val code = "PY"
-            val seqUser = 2993
-            val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
-            val state = Person.PersonState.ACTIVE
-            val createdDate = LocalDateTime.of(
-                2020,
-                10,
-                20,
-                5,
-                5,
-                5
-            )
-            val termsVersion = LocalDate.of(
-                2020,
-                10,
-                20,
-            )
-            val phoneCountry = "GB||JE||IM||GG"
-            val kyc = Person.PersonKYC.PASSED
-            val hasEmail = true
-            val numberOfFlags = 6
-            val fraudster = false
             val id:Long = 5
-            val resultPerson = Person.of(
-                id,
-                seqUser,
-                failedSignInAttempts,
-                birthYear,
-                code,
-                createdDate,
-                termsVersion,
-                phoneCountry,
-                kyc,
-                state,
-                hasEmail,
-                numberOfFlags,
-                fraudster,
-            ).get()
-
             personDatabaseRepository.publishUpdatePerson(id)
-            Thread.sleep(1000)
             val result = rabbitAdmin.getQueueInfo("updatepersonqueue").messageCount
             println(result)
             assert(result == 1)
@@ -2578,18 +2497,27 @@ internal class PersonDatabaseRepositoryTest(
                 )
             val savedPerson = personDatabaseRepository.savePerson(resultPerson).get()
             savedPerson.personId?.let { personDatabaseRepository.publishDeletePerson(it) }
-            Thread.sleep(1000)
             val result = rabbitAdmin.getQueueInfo("deletepersonqueue").messageCount
             println(result)
             assert(result == 1)
         }
     }
+
     @Test
     fun `publishFlagPerson `() {
         runBlocking {
             personDatabaseRepository.publishFlagPerson(5)
-            Thread.sleep(1000)
             val result = rabbitAdmin.getQueueInfo("flagpersonqueue").messageCount
+            println(result)
+            assert(result == 1)
+        }
+    }
+
+    @Test
+    fun `publishFraudPerson `() {
+        runBlocking {
+            personDatabaseRepository.publishFraudPerson(5)
+            val result = rabbitAdmin.getQueueInfo("fraudpersonqueue").messageCount
             println(result)
             assert(result == 1)
         }

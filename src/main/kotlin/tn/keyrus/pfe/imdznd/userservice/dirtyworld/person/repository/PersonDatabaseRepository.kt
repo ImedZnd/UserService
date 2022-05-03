@@ -10,6 +10,7 @@ import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
@@ -22,7 +23,6 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
 import java.util.*
-
 class PersonDatabaseRepository(
     private val personReactiveRepository: PersonReactiveRepository,
     @Autowired private val rabbitTemplate: RabbitTemplate,
@@ -167,12 +167,10 @@ class PersonDatabaseRepository(
     }
 
     override suspend fun flagPerson(id: Long): Either<PersonRepository.PersonRepositoryError, Person> {
-        val personToFlag = findPersonByID(id)
-            .awaitSingleOrNull()
-        if (personToFlag != null) {
-            if (personToFlag.isEmpty)
+        val personToUnFlag = checkIdOfFraudster(id)
+            if (personToUnFlag.isLeft)
                 return Either.left(PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError)
-            val person = personToFlag.get()
+            val person = personToUnFlag.get()
             val personToUpdate = Person.of(
                 person.personId,
                 person.seqUser,
@@ -192,39 +190,125 @@ class PersonDatabaseRepository(
                 personToUpdate
             )
             return Either.right(personToUpdate)
+    }
+
+    override suspend fun fraudPerson(id: Long): Either<PersonRepository.PersonRepositoryError, Person> {
+        val personToUnFraud = checkIdOfFraudster(id)
+        if (personToUnFraud.isLeft){
+            println(personToUnFraud.isLeft)
+            return Either.left(personToUnFraud.left)
+        }
+        if (personToUnFraud.get().fraudster){
+            println(personToUnFraud.get().fraudster)
+            return Either.left(PersonRepository.PersonRepositoryError.PersonAlreadyFraudsterRepositoryError)
+        }
+        val person = personToUnFraud.get()
+        val personToUpdate = Person.of(
+            person.personId,
+            person.seqUser,
+            person.failedSignInAttempts,
+            person.birthYear,
+            person.countryCode,
+            person.createdDate,
+            person.termsVersion,
+            person.phoneCountry,
+            person.kyc,
+            person.state,
+            person.hasEmail,
+            person.numberOfFlags,
+            true,
+        ).get()
+        updatePerson(
+            personToUpdate
+        )
+        return Either.right(personToUpdate)
+    }
+
+    override suspend fun unFraudPerson(id: Long): Either<PersonRepository.PersonRepositoryError, Person> {
+        val personToUnFraud = checkIdOfFraudster(id)
+            if (personToUnFraud.isLeft)
+                return Either.left(personToUnFraud.left)
+            if (!personToUnFraud.get().fraudster)
+                return Either.left(PersonRepository.PersonRepositoryError.PersonAlreadyFraudsterRepositoryError)
+            val person = personToUnFraud.get()
+            val personToUpdate = Person.of(
+                person.personId,
+                person.seqUser,
+                person.failedSignInAttempts,
+                person.birthYear,
+                person.countryCode,
+                person.createdDate,
+                person.termsVersion,
+                person.phoneCountry,
+                person.kyc,
+                person.state,
+                person.hasEmail,
+                person.numberOfFlags,
+                false,
+            ).get()
+            updatePerson(
+                personToUpdate
+            )
+            return Either.right(personToUpdate)
+    }
+
+    private suspend fun checkIdOfFraudster(id: Long):Either<PersonRepository.PersonRepositoryError, Person> {
+        val person = findPersonByID(id)
+            .awaitSingleOrNull()
+        if (person != null) {
+            if (person.isEmpty)
+                return Either.left(PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError)
+            return Either.right(person.get())
         }
         return Either.left(PersonRepository.PersonRepositoryError.PersonRepositoryIOError)
     }
 
     override fun publishSavePerson(id: Long) {
+        println(personQueueSetting.toString())
         publishEvent(
             id.toString(),
-            "savepersonexchange",
-            "savepersonroutingkey"
+            personQueueSetting.save?.exchange?:"",
+            personQueueSetting.save?.routingkey?:""
         )
     }
 
     override fun publishUpdatePerson(id: Long) {
         publishEvent(
             id.toString(),
-            "updatepersonexchange",
-            "updatepersonroutingkey"
+            personQueueSetting.update?.exchange?:"",
+            personQueueSetting.update?.routingkey?:""
         )
     }
 
     override fun publishDeletePerson(id: Long) {
         publishEvent(
             id.toString(),
-            "deletepersonexchange",
-            "deletepersonroutingkey"
+            personQueueSetting.delete?.exchange?:"",
+            personQueueSetting.delete?.routingkey?:""
         )
     }
 
     override fun publishFlagPerson(id: Long) {
         publishEvent(
             id.toString(),
-            "flagpersonexchange",
-            "flagpersonroutingkey"
+            personQueueSetting.flag?.exchange?:"",
+            personQueueSetting.flag?.routingkey?:""
+        )
+    }
+
+    override fun publishFraudPerson(id: Long) {
+        publishEvent(
+            id.toString(),
+            personQueueSetting.fraud?.exchange?:"",
+            personQueueSetting.fraud?.routingkey?:""
+        )
+    }
+
+    override fun publishUnFraudPerson(id: Long) {
+        publishEvent(
+            id.toString(),
+            personQueueSetting.unfraud?.exchange?:"",
+            personQueueSetting.unfraud?.routingkey?:""
         )
     }
 
@@ -252,8 +336,6 @@ class PersonDatabaseRepository(
             .map { it.toPerson() }
             .filter { it.isRight }
             .map { it.get() }
-            .also(::print)
-
     }
 
     private suspend fun countPersonByCriteria(predicate: (Person) -> Boolean): Long {

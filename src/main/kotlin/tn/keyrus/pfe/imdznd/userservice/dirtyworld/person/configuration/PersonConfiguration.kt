@@ -43,6 +43,6 @@ class PersonConfiguration {
     fun personQueueHandler(
         personService: PersonService,
     ): PersonQueueHandler =
-        PersonQueueHandler(personService,)
+        PersonQueueHandler(personService)
 
 }

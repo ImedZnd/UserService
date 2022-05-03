@@ -7,7 +7,6 @@ import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
 import org.springframework.amqp.rabbit.core.RabbitAdmin
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
@@ -142,7 +141,7 @@ internal class PersonQueueListenerTest(
                     personService.getAllPersons().count()
                     rabbitTemplate.convertAndSend(
                         "flagpersontransactionexchange",
-                        "flagpersonransactionroutingkey",
+                        "flagpersontransactionroutingkey",
                         savedPerson.personId.toString()
                     )
 
