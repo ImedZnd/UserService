@@ -24,13 +24,6 @@ class CountryDatabaseRepository(
     override suspend fun findCountryByCode(code: String): Optional<Country> =
             mapCountryOnEitherReturnCountryOrIOError{ it.findByCode(code) }
 
-    override fun findAllCountryByNumberOfPersons() =
-        countryReactiveRepository
-            .findAllCountryByNumberOfPersons()
-
-    override fun findAllIsFraudstersByCountry(fraud: Boolean) =
-        countryReactiveRepository.findAllIsFraudstersByCountry(fraud)
-
     override suspend fun saveCountry(country: Country): Optional<Country> =
         mapCountryOnEitherReturnCountryOrIOError{ it.save(country.toDAO()) }
 
@@ -39,7 +32,6 @@ class CountryDatabaseRepository(
            action(countryReactiveRepository)
                .map { it.toCountry() }
                .filter { it.isRight }
-               .doOnEach { print(it) }
                .map { it.get() }
                .map { Optional.of(it) }
                .awaitSingleOrNull()

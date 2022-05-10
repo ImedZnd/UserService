@@ -8,7 +8,7 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.YearDTO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.YearDTO.Builder.toYearDTO
 import java.time.LocalDateTime
 
-class PersonDTO (
+data class PersonDTO (
     val personId: Long? = null,
     val seqUser: Int,
     val failedSignInAttempts: Int,
@@ -24,7 +24,7 @@ class PersonDTO (
     val fraudster: Boolean,
     ){
 
-    companion object Builder {
+    companion object {
         fun Person.toPersonDTO() =
             PersonDTO(
                 this.personId,

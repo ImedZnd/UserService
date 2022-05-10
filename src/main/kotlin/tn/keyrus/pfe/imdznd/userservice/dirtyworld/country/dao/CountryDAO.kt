@@ -11,7 +11,7 @@ data class CountryDAO(
     @Id
     val code: String = "A",
     val name: String = "A",
-    val code3: String = "A",
+    val code3ISO: String = "A",
     val numCode: Int = 1,
     val phoneCode: Int = 1,
 ): Persistable<String> {
@@ -20,7 +20,7 @@ data class CountryDAO(
         Country.of(
             this.code,
             this.name,
-            this.code3,
+            this.code3ISO,
             this.numCode,
             this.phoneCode
         )
@@ -30,7 +30,7 @@ data class CountryDAO(
             CountryDAO(
                 code = code,
                 name = name,
-                code3 = code3,
+                code3ISO = codeISO,
                 numCode = numCode,
                 phoneCode = phoneCode,
             )

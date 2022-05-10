@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS country (
                                        code VARCHAR PRIMARY KEY,
                                        name VARCHAR NOT NULL ,
-                                       code3 VARCHAR NOT NULL ,
+                                       code3_iso VARCHAR NOT NULL ,
                                        num_code INTEGER NOT NULL ,
                                        phone_code INTEGER NOT NULL
 );

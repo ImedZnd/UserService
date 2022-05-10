@@ -1,18 +1,14 @@
 package tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository
 
 import io.vavr.control.Either
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.repository.PersonRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonDAO
@@ -23,20 +19,22 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
 import java.util.*
+
 class PersonDatabaseRepository(
     private val personReactiveRepository: PersonReactiveRepository,
     @Autowired private val rabbitTemplate: RabbitTemplate,
     private val personQueueSetting: PersonQueueSetting
 ) : PersonRepository {
 
-    override fun findPersonByID(id: Long): Mono<Optional<Person>> {
-        return personReactiveRepository.findById(id)
+    override suspend fun findPersonByID(id: Long) =
+        personReactiveRepository
+            .findById(id)
             .map { it.toPerson() }
             .filter { it.isRight }
             .map { it.get() }
             .map { Optional.of(it) }
-            .switchIfEmpty(Mono.just(Optional.empty()))
-    }
+            .awaitSingleOrNull()
+            ?: Optional.empty()
 
     override fun findAllPerson() =
         findAllByCriteria { it.findAll() }
@@ -115,12 +113,10 @@ class PersonDatabaseRepository(
     override fun findAllPersonByFraudsterAndCountryCode(isFraudster: Boolean, country: String) =
         findAllByCriteria { it.findAllByFraudsterAndCountryCode(isFraudster, country) }
 
-    override suspend fun countByBirthYear(birthYear: Year): Long {
-        return findAllPerson()
+    override suspend fun countByBirthYear(birthYear: Year) =
+        findAllPerson()
             .filter { it.birthYear == birthYear }
             .count()
-            .toLong()
-    }
 
     override suspend fun countAllPersonByState(state: Person.PersonState) =
         countPersonByCriteria { it.state == state }
@@ -145,7 +141,7 @@ class PersonDatabaseRepository(
         }
 
     override suspend fun updatePerson(person: Person): Either<PersonRepository.PersonRepositoryError, Person> =
-        if ((person.personId == null) or (person.personId?.let { findPersonByID(it).awaitSingle().isEmpty } == true))
+        if ((person.personId == null) or (person.personId?.let { findPersonByID(it).isEmpty } == true))
             Either.left(PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError)
         else {
             savePerson(person)
@@ -155,160 +151,158 @@ class PersonDatabaseRepository(
     override suspend fun deletePerson(id: Long): Either<PersonRepository.PersonRepositoryError, Person> {
         return try {
             val doesPersonExist = findPersonByID(id)
-                .filter { it.isPresent }
-                .map { Either.right<PersonRepository.PersonRepositoryError, Person>(it.get()) }
-                .awaitSingleOrNull()
-                ?: Either.left(PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError)
-            personReactiveRepository.deleteById(id).subscribe()
-            Either.right(doesPersonExist.get())
-        } catch (exception: java.lang.Exception) {
+            when {
+                doesPersonExist.isPresent -> {
+                    personReactiveRepository.deleteById(id).subscribe()
+                    return Either.right(doesPersonExist.get())
+                }
+                else -> return Either.left(PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError)
+            }
+        } catch (exception: Exception) {
             Either.left(PersonRepository.PersonRepositoryError.PersonRepositoryIOError)
         }
     }
 
     override suspend fun flagPerson(id: Long): Either<PersonRepository.PersonRepositoryError, Person> {
-        val personToUnFlag = checkIdOfFraudster(id)
-            if (personToUnFlag.isLeft)
-                return Either.left(PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError)
-            val person = personToUnFlag.get()
-            val personToUpdate = Person.of(
-                person.personId,
-                person.seqUser,
-                person.failedSignInAttempts,
-                person.birthYear,
-                person.countryCode,
-                person.createdDate,
-                person.termsVersion,
-                person.phoneCountry,
-                person.kyc,
-                person.state,
-                person.hasEmail,
-                person.numberOfFlags + 1,
-                person.fraudster,
-            ).get()
+        val personToFlag = checkPersonByIdExist(id)
+        if (personToFlag.isLeft)
+            return Either.left(personToFlag.left)
+        val person = personToFlag.get()
+        return Either.right(
             updatePerson(
-                personToUpdate
-            )
-            return Either.right(personToUpdate)
-    }
+                Person.of(
+                    person.personId,
+                    person.seqUser,
+                    person.failedSignInAttempts,
+                    person.birthYear,
+                    person.countryCode,
+                    person.createdDate,
+                    person.termsVersion,
+                    person.phoneCountry,
+                    person.kyc,
+                    person.state,
+                    person.hasEmail,
+                    person.numberOfFlags +1,
+                    person.fraudster,
+                ).get()
+            ).get()
+        )    }
 
     override suspend fun fraudPerson(id: Long): Either<PersonRepository.PersonRepositoryError, Person> {
-        val personToUnFraud = checkIdOfFraudster(id)
-        if (personToUnFraud.isLeft){
-            println(personToUnFraud.isLeft)
-            return Either.left(personToUnFraud.left)
-        }
-        if (personToUnFraud.get().fraudster){
-            println(personToUnFraud.get().fraudster)
-            return Either.left(PersonRepository.PersonRepositoryError.PersonAlreadyFraudsterRepositoryError)
-        }
-        val person = personToUnFraud.get()
-        val personToUpdate = Person.of(
-            person.personId,
-            person.seqUser,
-            person.failedSignInAttempts,
-            person.birthYear,
-            person.countryCode,
-            person.createdDate,
-            person.termsVersion,
-            person.phoneCountry,
-            person.kyc,
-            person.state,
-            person.hasEmail,
-            person.numberOfFlags,
-            true,
-        ).get()
-        updatePerson(
-            personToUpdate
+        val isFraudster = false
+        val personToFraud = checkPersonFraudster(id,isFraudster)
+        if (personToFraud.isLeft)
+            return Either.left(personToFraud.left)
+        val person = personToFraud.get()
+        return Either.right(
+            updatePerson(
+                Person.of(
+                    person.personId,
+                    person.seqUser,
+                    person.failedSignInAttempts,
+                    person.birthYear,
+                    person.countryCode,
+                    person.createdDate,
+                    person.termsVersion,
+                    person.phoneCountry,
+                    person.kyc,
+                    person.state,
+                    person.hasEmail,
+                    person.numberOfFlags,
+                    true,
+                ).get()
+            ).get()
         )
-        return Either.right(personToUpdate)
     }
 
     override suspend fun unFraudPerson(id: Long): Either<PersonRepository.PersonRepositoryError, Person> {
-        val personToUnFraud = checkIdOfFraudster(id)
-            if (personToUnFraud.isLeft)
-                return Either.left(personToUnFraud.left)
-            if (!personToUnFraud.get().fraudster)
-                return Either.left(PersonRepository.PersonRepositoryError.PersonAlreadyFraudsterRepositoryError)
-            val person = personToUnFraud.get()
-            val personToUpdate = Person.of(
-                person.personId,
-                person.seqUser,
-                person.failedSignInAttempts,
-                person.birthYear,
-                person.countryCode,
-                person.createdDate,
-                person.termsVersion,
-                person.phoneCountry,
-                person.kyc,
-                person.state,
-                person.hasEmail,
-                person.numberOfFlags,
-                false,
-            ).get()
+        val isFraudster = true
+        val personToUnFraud = checkPersonFraudster(id,isFraudster)
+        if (personToUnFraud.isLeft)
+            return Either.left(personToUnFraud.left)
+        val person = personToUnFraud.get()
+        return Either.right(
             updatePerson(
-                personToUpdate
-            )
-            return Either.right(personToUpdate)
+                Person.of(
+                    person.personId,
+                    person.seqUser,
+                    person.failedSignInAttempts,
+                    person.birthYear,
+                    person.countryCode,
+                    person.createdDate,
+                    person.termsVersion,
+                    person.phoneCountry,
+                    person.kyc,
+                    person.state,
+                    person.hasEmail,
+                    person.numberOfFlags,
+                    false,
+                ).get()
+            ).get()
+        )
     }
 
-    private suspend fun checkIdOfFraudster(id: Long):Either<PersonRepository.PersonRepositoryError, Person> {
+    private suspend fun checkPersonFraudster(id: Long,check:Boolean): Either<PersonRepository.PersonRepositoryError, Person> {
+        val person = checkPersonByIdExist(id)
+        if (person.isLeft)
+            return Either.left(person.left)
+        if (person.get().fraudster xor check)
+            return Either.left(PersonRepository.PersonRepositoryError.PersonFraudsterRepositoryError)
+        return Either.right(person.get())
+    }
+
+    private suspend fun checkPersonByIdExist(id: Long): Either<PersonRepository.PersonRepositoryError, Person> {
         val person = findPersonByID(id)
-            .awaitSingleOrNull()
-        if (person != null) {
-            if (person.isEmpty)
-                return Either.left(PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError)
-            return Either.right(person.get())
-        }
-        return Either.left(PersonRepository.PersonRepositoryError.PersonRepositoryIOError)
+        if (person.isEmpty)
+            return Either.left(PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError)
+        return Either.right(person.get())
     }
 
     override fun publishSavePerson(id: Long) {
-        println(personQueueSetting.toString())
         publishEvent(
             id.toString(),
-            personQueueSetting.save?.exchange?:"",
-            personQueueSetting.save?.routingkey?:""
+            personQueueSetting.save?.exchange ?: "",
+            personQueueSetting.save?.routingkey ?: ""
         )
     }
 
     override fun publishUpdatePerson(id: Long) {
         publishEvent(
             id.toString(),
-            personQueueSetting.update?.exchange?:"",
-            personQueueSetting.update?.routingkey?:""
+            personQueueSetting.update?.exchange ?: "",
+            personQueueSetting.update?.routingkey ?: ""
         )
     }
 
     override fun publishDeletePerson(id: Long) {
         publishEvent(
             id.toString(),
-            personQueueSetting.delete?.exchange?:"",
-            personQueueSetting.delete?.routingkey?:""
+            personQueueSetting.delete?.exchange ?: "",
+            personQueueSetting.delete?.routingkey ?: ""
         )
     }
 
     override fun publishFlagPerson(id: Long) {
         publishEvent(
             id.toString(),
-            personQueueSetting.flag?.exchange?:"",
-            personQueueSetting.flag?.routingkey?:""
+            personQueueSetting.flag?.exchange ?: "",
+            personQueueSetting.flag?.routingkey ?: ""
         )
     }
 
     override fun publishFraudPerson(id: Long) {
         publishEvent(
             id.toString(),
-            personQueueSetting.fraud?.exchange?:"",
-            personQueueSetting.fraud?.routingkey?:""
+            personQueueSetting.fraud?.exchange ?: "",
+            personQueueSetting.fraud?.routingkey ?: ""
         )
     }
 
     override fun publishUnFraudPerson(id: Long) {
         publishEvent(
             id.toString(),
-            personQueueSetting.unfraud?.exchange?:"",
-            personQueueSetting.unfraud?.routingkey?:""
+            personQueueSetting.unfraud?.exchange ?: "",
+            personQueueSetting.unfraud?.routingkey ?: ""
         )
     }
 
@@ -330,18 +324,15 @@ class PersonDatabaseRepository(
     override suspend fun countAllPersonByCountry(countryCode: String) =
         countPersonByCriteria { it.countryCode == countryCode }
 
-    private fun findAllByCriteria(criteria: (PersonReactiveRepository) -> Flux<PersonDAO>): Flow<Person> {
-        return criteria(personReactiveRepository)
+    private fun findAllByCriteria(criteria: (PersonReactiveRepository) -> Flux<PersonDAO>) =
+        criteria(personReactiveRepository)
             .asFlow()
             .map { it.toPerson() }
             .filter { it.isRight }
             .map { it.get() }
-    }
 
-    private suspend fun countPersonByCriteria(predicate: (Person) -> Boolean): Long {
-        return findAllPerson()
+    private suspend fun countPersonByCriteria(predicate: (Person) -> Boolean) =
+        findAllPerson()
             .filter { predicate(it) }
             .count()
-            .toLong()
-    }
 }

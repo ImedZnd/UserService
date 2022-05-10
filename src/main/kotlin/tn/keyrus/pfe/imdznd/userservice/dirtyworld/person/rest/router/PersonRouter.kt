@@ -3,47 +3,49 @@ package tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.router
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.server.coRouter
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.annotation.PersonRouterInfo
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHandler
 
 @Configuration
 class PersonRouter {
 
     @Bean
+    @PersonRouterInfo
     fun personRoutes(personHandler: PersonHandler) = coRouter {
         "/person".nest {
             GET("/all") { personHandler.getAllPersons() }
-            POST("/birthYear") { personHandler.getAllPersonsByBirthYear(it) }
-            POST("/birthYearBefore") { personHandler.getAllPersonsByBirthYearBefore(it) }
-            POST("/birthYearAfter") { personHandler.getAllPersonsByBirthYearAfter(it) }
-            POST("/birthYearBetween") { personHandler.getAllPersonsByBirthYearBetween(it) }
-            GET("/state/{state}") { personHandler.getAllPersonsByState(it) }
-            GET("/country/{country}") { personHandler.getAllPersonByCountry(it) }
-            POST("/createdDateRange") { personHandler.getAllPersonByCreatedDateInRange(it) }
-            POST("/termVersionInRange") { personHandler.getAllPersonByTermsVersionBetween(it) }
-            POST("/termVersionBefore") { personHandler.getAllPersonByTermVersionBefore(it) }
-            POST("/termVersionAfter") { personHandler.getAllPersonByTermVersionAfter(it) }
-            GET("/phoneCountry/{phoneCountry}") { personHandler.getAllPersonByPhoneCountry(it) }
-            GET("/KYC/{KYC}") { personHandler.getAllPersonByKYC(it) }
-            GET("/hasEmail/{hasEmail}") { personHandler.getAllPersonByHasEmail(it) }
-            GET("/isFraud/{isFraud}") { personHandler.getAllPersonByIsFraud(it) }
-            GET("/numberOfFlags/{numberOfFlags}") { personHandler.getAllPersonsNumberOfFlags(it) }
-            GET("/numberOfFlagsLessThan/{numberOfFlags}") { personHandler.getAllPersonsNumberOfFlagsLessThan(it) }
-            GET("/numberOfFlagsGreaterThan/{numberOfFlags}") { personHandler.getAllPersonsNumberOfFlagsGreaterThan(it) }
-            POST("/createdDateBefore") { personHandler.getAllPersonByCreatedDateBefore(it) }
-            POST("/createdDateAfter") { personHandler.getAllPersonByCreatedDateAfter(it) }
-            POST("/fraudAndCountryCode") { personHandler.getAllPersonByFraudsterAndCountryCode(it) }
+            POST("/birthYear",personHandler::getAllPersonsByBirthYear )
+            POST("/birthYearBefore",personHandler::getAllPersonsByBirthYearBefore)
+            POST("/birthYearAfter", personHandler::getAllPersonsByBirthYearAfter)
+            POST("/birthYearBetween", personHandler::getAllPersonsByBirthYearBetween)
+            GET("/state/{state}", personHandler::getAllPersonsByState)
+            GET("/country/{country}", personHandler::getAllPersonByCountry)
+            POST("/createdDateRange", personHandler::getAllPersonByCreatedDateInRange)
+            POST("/termVersionInRange", personHandler::getAllPersonByTermsVersionBetween)
+            POST("/termVersionBefore", personHandler::getAllPersonByTermVersionBefore)
+            POST("/termVersionAfter", personHandler::getAllPersonByTermVersionAfter)
+            GET("/phoneCountry/{phoneCountry}", personHandler::getAllPersonByPhoneCountry)
+            GET("/KYC/{KYC}", personHandler::getAllPersonByKYC)
+            GET("/hasEmail/{hasEmail}", personHandler::getAllPersonByHasEmail)
+            GET("/isFraud/{isFraud}", personHandler::getAllPersonByIsFraud)
+            GET("/numberOfFlags/{numberOfFlags}", personHandler::getAllPersonsNumberOfFlags)
+            GET("/numberOfFlagsLessThan/{numberOfFlags}", personHandler::getAllPersonsNumberOfFlagsLessThan)
+            GET("/numberOfFlagsGreaterThan/{numberOfFlags}", personHandler::getAllPersonsNumberOfFlagsGreaterThan)
+            POST("/createdDateBefore", personHandler::getAllPersonByCreatedDateBefore)
+            POST("/createdDateAfter", personHandler::getAllPersonByCreatedDateAfter)
+            POST("/fraudAndCountryCode", personHandler::getAllPersonByFraudsterAndCountryCode)
             GET("/countAllPerson") { personHandler.countAllUsers() }
-            GET("/countAllPersonByState/{state}") { personHandler.countAllUsersByState(it) }
-            POST("/countAllUsersByTermsVersion") { personHandler.countAllUsersByTermsVersion(it) }
-            GET("/countAllUsersByIsFraud/{isFraud}") { personHandler.countAllUsersByIsFraud(it) }
-            GET("/countAllUsersByCountry/{country}") { personHandler.countAllUsersByCountry(it) }
-            POST("/save") { personHandler.savePerson(it) }
-            POST("/update") { personHandler.updatePerson(it) }
-            POST("/delete") { personHandler.deletePerson(it) }
-            POST("/flag") { personHandler.flagPerson(it) }
-            POST("/id") { personHandler.getPersonById(it) }
-            POST("/fraud") { personHandler.fraudPerson(it) }
-            POST("/unfraud") { personHandler.unFraudPerson(it) }
+            GET("/countAllPersonByState/{state}", personHandler::countAllUsersByState)
+            POST("/countAllUsersByTermsVersion", personHandler::countAllUsersByTermsVersion)
+            GET("/countAllUsersByIsFraud/{isFraud}", personHandler::countAllUsersByIsFraud)
+            GET("/countAllUsersByCountry/{country}", personHandler::countAllUsersByCountry)
+            POST("/save", personHandler::savePerson)
+            POST("/update", personHandler::updatePerson)
+            POST("/delete", personHandler::deletePerson)
+            POST("/flag", personHandler::flagPerson)
+            POST("/id", personHandler::getPersonById)
+            POST("/fraud", personHandler::fraudPerson)
+            POST("/unfraud", personHandler::unFraudPerson)
         }
     }
 }

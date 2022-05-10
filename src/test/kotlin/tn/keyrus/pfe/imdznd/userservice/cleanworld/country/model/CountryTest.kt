@@ -23,7 +23,7 @@ internal class CountryTest {
         assertAll(
             { assert(result.code == code) },
             { assert(result.name == name) },
-            { assert(result.code3 == code3) },
+            { assert(result.codeISO == code3) },
             { assert(result.numCode == numCode) },
             { assert(result.phoneCode == phoneCode) },
         )

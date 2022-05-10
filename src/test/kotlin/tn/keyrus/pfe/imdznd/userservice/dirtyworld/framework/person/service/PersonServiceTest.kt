@@ -142,7 +142,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson)
             val result =
                 personService.getAllPersons()
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -206,14 +205,11 @@ internal class PersonServiceTest(
                     countrySave
                 )
             val personSaved = personService.savePerson(resultPerson).get()
-            println(personSaved.personId)
             val result =
                 personService.getAllPersonsByBirthYear(birthYear)
             val resultQueue = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
 
             val y = result.count()
-            println(y)
-            println(resultQueue)
             assert(y == 1)
             assert(resultQueue == 1)
         }
@@ -280,7 +276,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson)
             val result =
                 personService.getAllPersonByCountry(code)
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -349,7 +344,6 @@ internal class PersonServiceTest(
                     LocalDate.of(2010, 10, 10),
                     LocalDate.of(2021, 10, 10),
                 )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -415,7 +409,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson)
             val result =
                 personService.getAllPersonByTermsVersion(termsVersion)
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -487,7 +480,6 @@ internal class PersonServiceTest(
                     )
             val resultf = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
             Thread.sleep(1000)
-            result.onEach { print(it) }
             val y = result.count()
             assert(resultf == 1)
             assert(y == 1)
@@ -557,7 +549,6 @@ internal class PersonServiceTest(
                     .getAllPersonByPhoneCountry(
                         phoneCountry
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -626,7 +617,6 @@ internal class PersonServiceTest(
                     .getAllPersonByKYC(
                         kyc
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -695,7 +685,6 @@ internal class PersonServiceTest(
                     .getAllPersonByHasEmail(
                         hasEmail
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -764,7 +753,6 @@ internal class PersonServiceTest(
                     .getAllPersonByHasEmail(
                         !hasEmail
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 0)
         }
@@ -833,7 +821,6 @@ internal class PersonServiceTest(
                     .getAllPersonByNumberOfFlags(
                         numberOfFlags
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -902,7 +889,6 @@ internal class PersonServiceTest(
                     .getAllPersonByNumberOfFlagsGreaterThan(
                         2
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -971,7 +957,6 @@ internal class PersonServiceTest(
                     .getAllPersonByNumberOfFlagsLessThan(
                         2
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 0)
         }
@@ -1040,7 +1025,6 @@ internal class PersonServiceTest(
                     .getAllPersonByFraudsterAndCountryCode(
                         true, code
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 0)
         }
@@ -1110,7 +1094,6 @@ internal class PersonServiceTest(
                         false,
                         code
                     )
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 1)
         }
@@ -1176,7 +1159,7 @@ internal class PersonServiceTest(
                     birthYear
                 )
             val resNumber = 1
-            assert(result == resNumber.toLong())
+            assert(result == resNumber)
         }
     }
 
@@ -1240,7 +1223,7 @@ internal class PersonServiceTest(
                     state
                 )
             val resNumber = 1
-            assert(result == resNumber.toLong())
+            assert(result == resNumber)
         }
     }
 
@@ -1304,7 +1287,7 @@ internal class PersonServiceTest(
                     termsVersion
                 )
             val resNumber = 1
-            assert(result == resNumber.toLong())
+            assert(result == resNumber)
         }
     }
 
@@ -1368,7 +1351,7 @@ internal class PersonServiceTest(
                     fraudster
                 )
             val resNumber = 1
-            assert(result == resNumber.toLong())
+            assert(result == resNumber)
         }
     }
 
@@ -1432,7 +1415,7 @@ internal class PersonServiceTest(
                     code
                 )
             val resNumber = 1
-            assert(result == resNumber.toLong())
+            assert(result == resNumber)
         }
     }
 
@@ -1494,7 +1477,7 @@ internal class PersonServiceTest(
             val result = personService
                 .countAllPerson()
             val resNumber = 1
-            assert(result == resNumber.toLong())
+            assert(result == resNumber)
         }
     }
 
@@ -1574,7 +1557,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson2)
             val result =
                 personService.getAllPersonByIsFraudster(fraudster)
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -1656,7 +1638,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson2)
             val result =
                 personService.getAllPersonByBirthYearAndHasEmail(birthYear, hasEmail)
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -1738,7 +1719,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson2)
             val result =
                 personService.getAllPersonByBirthYearBefore(birthYear.plusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -1820,7 +1800,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson2)
             val result =
                 personService.getAllPersonByBirthYearAfter(birthYear.minusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -1902,7 +1881,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson2)
             val result =
                 personService.getAllPersonByBirthYearBetween(birthYear.minusYears(1), birthYear.plusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -1984,7 +1962,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson2)
             val result =
                 personService.getAllPersonByCreatedDateAfter(createdDate.minusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -2066,7 +2043,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson2)
             val result =
                 personService.getAllPersonByCreatedDateBefore(createdDate.plusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -2148,7 +2124,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson2)
             val result =
                 personService.getAllPersonByTermsVersionBefore(termsVersion.plusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -2230,7 +2205,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson2)
             val result =
                 personService.getAllPersonByTermsVersionAfter(termsVersion.minusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -2312,7 +2286,6 @@ internal class PersonServiceTest(
             personService.savePerson(resultPerson2)
             val result =
                 personService.getAllPersonByBirthYearAndCountryCode(birthYear, code)
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -2444,7 +2417,7 @@ internal class PersonServiceTest(
                 personService.savePerson(resultPerson)
                     .left
             assertAll(
-                { assert(result is PersonService.PersonServiceIOError) },
+                { assert(result is PersonService.PersonServiceError) },
             )
         }
     }
@@ -2528,9 +2501,6 @@ internal class PersonServiceTest(
             val y = result.count()
             val resultf = rabbitAdmin.getQueueInfo("updatepersonqueue").messageCount
             val resultl = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
-            println("ddddddddddddd"+y)
-            result.onEach { print(it) }
-            println("ddddddddddddd"+y)
             assert(resultf == 1)
             assert(resultl == 1)
             assert(y == 1)
@@ -2601,7 +2571,6 @@ internal class PersonServiceTest(
                 personService.getAllPersons()
             val y = result.count()
             val resultf = rabbitAdmin.getQueueInfo("deletepersonqueue").messageCount
-            println(y)
             assert(resultf == 1)
             assert(y == 0)
         }
@@ -2671,9 +2640,6 @@ internal class PersonServiceTest(
             val y = result.count()
             val numberOfFlags = result.first().numberOfFlags
             val resultf = rabbitAdmin.getQueueInfo("flagpersonqueue").messageCount
-            println(y)
-            println("number of flags before "+numberOfFlagsBefore)
-            println("number of flags after "+numberOfFlags)
             assert(y == 1)
             assert(numberOfFlags == 7)
             assert(resultf == 1)

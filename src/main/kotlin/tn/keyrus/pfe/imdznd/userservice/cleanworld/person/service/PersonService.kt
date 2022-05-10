@@ -11,7 +11,7 @@ class PersonService(
     private val personDatabaseRepository: PersonRepository
 ) {
 
-    fun getPersonByID(id: Long) =
+    suspend fun getPersonByID(id: Long) =
         personDatabaseRepository.findPersonByID(id)
 
     fun getAllPersons() =
@@ -104,41 +104,52 @@ class PersonService(
     suspend fun countAllPersonByCountry(countryCode: String) =
         personDatabaseRepository.countAllPersonByCountry(countryCode)
 
-    suspend fun savePerson(person: Person): Either<PersonServiceIOError, Person> {
+    suspend fun savePerson(person: Person): Either<PersonServiceError, Person> {
         val personSaved = personDatabaseRepository.savePerson(person)
         return if (personSaved.isLeft)
-            Either.left(PersonServiceIOError)
+            Either.left(changeRepositoryErrorToServiceError(personSaved.left))
         else {
             personSaved.get().personId?.let { it1 -> personDatabaseRepository.publishSavePerson(it1) }
             Either.right(personSaved.get())
         }
     }
 
-    suspend fun updatePerson(person: Person): Either<PersonServiceIOError, Person> =
+    suspend fun updatePerson(person: Person): Either<PersonServiceError, Person> =
         personDatabaseRepository.updatePerson(person)
             .also { person.personId?.let { it1 -> personDatabaseRepository.publishUpdatePerson(it1) } }
-            .mapLeft { PersonServiceIOError }
+            .mapLeft { changeRepositoryErrorToServiceError(it) }
 
-    suspend fun deletePerson(id: Long): Either<PersonServiceIOError, Person> =
+    suspend fun deletePerson(id: Long): Either<PersonServiceError, Person> =
         personDatabaseRepository.deletePerson(id)
             .also { personDatabaseRepository.publishDeletePerson(id) }
-            .mapLeft { PersonServiceIOError }
+            .mapLeft { changeRepositoryErrorToServiceError(it) }
 
-    suspend fun flagPerson(id: Long): Either<PersonServiceIOError, Person> =
+    suspend fun flagPerson(id: Long): Either<PersonServiceError, Person> =
         personDatabaseRepository.flagPerson(id)
             .also { personDatabaseRepository.publishFlagPerson(id) }
-            .mapLeft { PersonServiceIOError }
+            .mapLeft { changeRepositoryErrorToServiceError(it) }
 
-    suspend fun fraudPerson(id: Long): Either<PersonServiceIOError, Person> =
+    suspend fun fraudPerson(id: Long): Either<PersonServiceError, Person> =
         personDatabaseRepository.fraudPerson(id)
             .also { personDatabaseRepository.publishFraudPerson(id) }
-            .mapLeft { PersonServiceIOError }
+            .mapLeft { changeRepositoryErrorToServiceError(it) }
 
-    suspend fun unFraudPerson(id: Long): Either<PersonServiceIOError, Person> =
+    suspend fun unFraudPerson(id: Long): Either<PersonServiceError, Person> =
         personDatabaseRepository.unFraudPerson(id)
             .also { personDatabaseRepository.publishUnFraudPerson(id) }
-            .mapLeft { PersonServiceIOError }
+            .mapLeft { changeRepositoryErrorToServiceError(it) }
 
-    object PersonServiceIOError
+    private fun changeRepositoryErrorToServiceError(personRepositoryError: PersonRepository.PersonRepositoryError): PersonServiceError =
+        when (personRepositoryError) {
+            is PersonRepository.PersonRepositoryError.PersonRepositoryIOError -> PersonServiceError.PersonServiceIOError
+            is PersonRepository.PersonRepositoryError.PersonNotExistPersonRepositoryError -> PersonServiceError.PersonServicePersonNotExistError
+            is PersonRepository.PersonRepositoryError.PersonFraudsterRepositoryError -> PersonServiceError.PersonFraudsterServiceError
+        }
+
+    sealed interface PersonServiceError {
+        object PersonServiceIOError : PersonServiceError
+        object PersonServicePersonNotExistError : PersonServiceError
+        object PersonFraudsterServiceError : PersonServiceError
+    }
 
 }

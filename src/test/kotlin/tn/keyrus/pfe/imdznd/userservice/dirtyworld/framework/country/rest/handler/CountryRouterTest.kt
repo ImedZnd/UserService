@@ -17,6 +17,7 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.repository.CountryRea
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.rest.handler.CountryHandler
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.initializer.Initializer
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonDAO.Companion.toDAO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonInCountry
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonsByCountry
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReactiveRepository
 import java.time.LocalDate
@@ -184,7 +185,6 @@ internal class CountryRouterTest(
                     phoneCode
                 ).get()
             val x = countryRepository.saveCountry(countrySave)
-            println(x.isPresent)
             personReactiveRepository.save(resultPerson.toDAO()).blockOptional().get()
             webTestClient
                 .get()
@@ -251,7 +251,6 @@ internal class CountryRouterTest(
                     phoneCode
                 ).get()
             val x = countryRepository.saveCountry(countrySave)
-            println(x.isPresent)
             val flag = true
             personReactiveRepository.save(resultPerson.toDAO()).blockOptional().get()
             webTestClient
@@ -266,7 +265,7 @@ internal class CountryRouterTest(
     }
 
     @Test
-    fun `error  if bad request  on FrudsterPerCountry`() {
+    fun `number of fraudster per country on FraudsterPerCountry`() {
         runBlocking {
             val code = "PY"
             val name = "Paraguay"
@@ -294,7 +293,7 @@ internal class CountryRouterTest(
             val kyc = Person.PersonKYC.PASSED
             val hasEmail = true
             val numberOfFlags = 6
-            val fraudster = true
+            val fraudster = false
             val resultPerson = Person.of(
                 null,
                 seqUser,
@@ -318,22 +317,47 @@ internal class CountryRouterTest(
                     numCode,
                     phoneCode
                 ).get()
-            val x = countryRepository.saveCountry(countrySave)
-            println(x.isPresent)
-            val flag = "truedd"
+            countryRepository.saveCountry(countrySave)
+            val countrySave2 =
+                Country.of(
+                    "pp",
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            countryRepository.saveCountry(countrySave2)
+            val resultPerson2 = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+
+            val fraud = "truedd"
             personReactiveRepository.save(resultPerson.toDAO()).blockOptional().get()
+            personReactiveRepository.save(resultPerson2.toDAO()).blockOptional().get()
             webTestClient
                 .get()
-                .uri("/country/fraudPerCountry/$flag")
+                .uri("/country/fraudPerCountry/$fraud")
                 .exchange()
                 .expectStatus()
                 .isOk
-                .expectBodyList<PersonsByCountry>()
-                .hasSize(0)
+                .expectBodyList<PersonInCountry>()
+                .hasSize(2)
         }
     }
     @Test
-    fun `ok  if valid true  on FrudsterPerCountry`() {
+    fun `ok  if valid true  on FraudsterPerCountry`() {
         runBlocking {
             val code = "PY"
             val name = "Paraguay"
@@ -386,7 +410,6 @@ internal class CountryRouterTest(
                     phoneCode
                 ).get()
             val x = countryRepository.saveCountry(countrySave)
-            println(x.isPresent)
             val flag = "true"
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             webTestClient

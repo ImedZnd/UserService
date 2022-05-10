@@ -3,10 +3,9 @@ package tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler
 import io.vavr.control.Either
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.context.MessageSource
+import org.springframework.context.NoSuchMessageException
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.*
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.service.CountryService
@@ -14,7 +13,7 @@ import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.service.PersonService
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.*
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dto.PersonDTO
-import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dto.PersonDTO.Builder.toPersonDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dto.PersonDTO.Companion.toPersonDTO
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.Year
@@ -32,9 +31,10 @@ class PersonHandler(
 
     suspend fun getPersonById(serverRequest: ServerRequest): ServerResponse {
         serverRequest.awaitBody<PersonIdDTO>().id.let { id ->
-            val foundPerson = personService.getPersonByID(id).awaitSingleOrNull()
-                ?: return notFoundServerResponse("PersonNotExist")
-            return okServerResponse(flowOf(foundPerson.get()))
+            val foundPerson = personService.getPersonByID(id)
+            if(foundPerson.isEmpty)
+                return notFoundServerResponse()
+            return okServerResponseOneElement(foundPerson.get())
         }
     }
 
@@ -62,7 +62,10 @@ class PersonHandler(
             .let { yearRange ->
                 val yearRangeCheck = yearRange.checkStartYearAndEndYear()
                 if (yearRangeCheck.isPresent)
-                    badRequestServerResponse("YearRangeError")
+                    if (yearRangeCheck.get() is YearRangeDTO.YearRageError.EndYearBeforeStartYearError)
+                        yearRangeCheck.get().badRequestError("EndDateBeforeStartDateError")
+                    else
+                        yearRangeCheck.get().badRequestError("YearIsNotValidError")
                 else okServerResponse(
                     personService.getAllPersonByBirthYearBetween(
                         yearRange.startYear.toYear().get(),
@@ -70,6 +73,14 @@ class PersonHandler(
                     )
                 )
             }
+
+    private suspend fun YearRangeDTO.YearRageError.badRequestError(error: String) =
+        badRequest()
+            .header(
+                "error",
+                headerErrorInBadRequestError(error)
+            )
+            .buildAndAwait()
 
     suspend fun getAllPersonsByBirthYearBefore(serverRequest: ServerRequest) =
         yearOrErrorOfEitherBirthYearBefore(extractYearFromServerRequest(serverRequest))
@@ -84,7 +95,7 @@ class PersonHandler(
             personService.getAllPersonByBirthYearBefore(either.get())
         )
 
-    private suspend fun yearOrErrorOfEitherBirthYearAfter(either: Either<YearDTO.YearConversionError, Year>): ServerResponse =
+    private suspend fun yearOrErrorOfEitherBirthYearAfter(either: Either<YearDTO.YearConversionError, Year>) =
         if (either.isLeft)
             badRequestServerResponse("YearConversionError")
         else okServerResponse(
@@ -94,7 +105,6 @@ class PersonHandler(
     private suspend fun extractYearFromServerRequest(serverRequest: ServerRequest) =
         serverRequest
             .awaitBody<YearDTO>()
-            .also(::println)
             .toYear()
 
     suspend fun getAllPersonsByBirthYear(serverRequest: ServerRequest) =
@@ -204,9 +214,12 @@ class PersonHandler(
         serverRequest.awaitBody<DateRangeDTO>()
             .let { dateRange ->
                 val dateRangeCheck = dateRange.checkStartDateAndEndDate()
-                if (dateRangeCheck.isPresent)
-                    badRequestServerResponse("DateRangeError")
-                else
+                if (dateRangeCheck.isPresent) {
+                    if (dateRangeCheck.get() is DateRangeDTO.DateRangeError.DateIsNotValidError)
+                        dateRangeCheck.get().badRequestError("DateIsNotValidError")
+                    else
+                        dateRangeCheck.get().badRequestError("EndDateBeforeStartDateError")
+                } else
                     okServerResponse(
                         personService
                             .getAllPersonByTermsVersionBetween(
@@ -220,7 +233,6 @@ class PersonHandler(
         serverRequest.awaitBody<DateRangeDTO>()
             .let { dateRange ->
                 val dateRangeCheck = dateRange.checkStartDateAndEndDate()
-                print(dateRangeCheck.isPresent)
                 if (dateRangeCheck.isPresent)
                     badRequestServerResponse("DateRangeError")
                 else
@@ -237,7 +249,6 @@ class PersonHandler(
         serverRequest.awaitBody<DateDTO>()
             .let { date ->
                 val dateTime = date.toLocalDate()
-                println(date)
                 if (dateTime.isLeft)
                     badRequestServerResponse("DateError")
                 else
@@ -251,7 +262,6 @@ class PersonHandler(
         serverRequest.awaitBody<DateDTO>()
             .let { date ->
                 val dateTime = date.toLocalDate()
-                println(date)
                 if (dateTime.isLeft)
                     badRequestServerResponse("DateError")
                 else
@@ -308,7 +318,7 @@ class PersonHandler(
                 if (personToSave.isRight) {
                     val personSaved = personService.savePerson(personToSave.get())
                     return if (personSaved.isRight)
-                        okServerResponse(flowOf(personSaved.get()))
+                        okServerResponseOneElement(personSaved.get())
                     else
                         badRequestServerResponse("PersonExist")
                 }
@@ -323,11 +333,9 @@ class PersonHandler(
                 if (personToUpdate.isRight) {
                     val personUpdated = personService.updatePerson(personToUpdate.get())
                     return if (personUpdated.isRight) {
-                        println(personUpdated.get())
-                        okServerResponse(flowOf(personUpdated.get()))
+                        okServerResponseOneElement(personUpdated.get())
                     } else {
-                        println(personUpdated.left)
-                        notFoundServerResponse("PersonNotExist")
+                        personNotFoundError()
                     }
                 }
                 return badRequestServerResponse("BadPersonInRequest")
@@ -339,8 +347,8 @@ class PersonHandler(
             val id = serverRequest.awaitBody<PersonIdDTO>().id
             val deletedPerson = personService.deletePerson(id)
             if (deletedPerson.isRight) {
-                okServerResponse(flowOf(deletedPerson.get()))
-            } else notFoundServerResponse("PersonNotExist")
+                okServerResponseOneElement(deletedPerson.get())
+            } else personNotFoundError()
         } catch (exception: Exception) {
             badRequestServerResponse("BadPersonIdInRequest")
         }
@@ -376,10 +384,16 @@ class PersonHandler(
         }
     }
 
-    private suspend fun personToFlagOrFraudOrUnFraud(person: Either<PersonService.PersonServiceIOError,Person>): ServerResponse =
-             if (person.isRight)
-                okServerResponse(flowOf(person.get()))
-             else notFoundServerResponse("PersonNotExist")
+    private suspend fun personToFlagOrFraudOrUnFraud(person: Either<PersonService.PersonServiceError, Person>): ServerResponse =
+        if (person.isLeft) {
+            if (person.left is PersonService.PersonServiceError.PersonFraudsterServiceError) {
+                badRequestServerResponse("PersonFraudsterServiceError")
+            }
+            if (person.left is PersonService.PersonServiceError.PersonServicePersonNotExistError)
+                personNotFoundError()
+            else badRequestServerResponse("PersonFraudsterServiceError")
+        } else
+            okServerResponseOneElement(person.get())
 
     suspend fun countAllUsers() =
         okServerResponseCount(personService.countAllPerson())
@@ -436,17 +450,34 @@ class PersonHandler(
             )
         else badRequestServerResponse("CountryCodeError")
 
+    private suspend fun DateRangeDTO.DateRangeError.badRequestError(error: String): ServerResponse {
+        return badRequest()
+            .header(
+                "error",
+                headerErrorInBadRequestError(error)
+            )
+            .buildAndAwait()
+    }
 
-    private suspend fun okServerResponseCount(number: Long) =
+    private suspend fun personNotFoundError() =
+        notFoundServerResponse()
+
+    private suspend fun okServerResponseCount(number: Int) =
         ok()
-            .bodyAndAwait(
-                flowOf(number)
+            .bodyValueAndAwait(
+                number
             )
 
     private suspend fun okServerResponse(persons: Flow<Person>) =
         ok()
             .bodyAndAwait(
                 persons.map { it.toPersonDTO() }
+            )
+
+    private suspend fun okServerResponseOneElement(persons: Person) =
+        ok()
+            .bodyValueAndAwait(
+                persons.toPersonDTO()
             )
 
     private suspend fun badRequestServerResponse(error: String) =
@@ -457,15 +488,18 @@ class PersonHandler(
             )
             .buildAndAwait()
 
-    private suspend fun notFoundServerResponse(error: String) =
+    private suspend fun notFoundServerResponse() =
         notFound()
             .header(
                 "notFound",
-                headerErrorInBadRequestError(error)
+                headerErrorInBadRequestError("PersonNotExist")
             )
             .buildAndAwait()
 
     private fun headerErrorInBadRequestError(string: String) =
-        messageSource.getMessage(string, null, Locale.US)
-
+        try {
+            messageSource.getMessage(string, null, Locale.US)
+        } catch (exception: NoSuchMessageException) {
+            "No Such Message Exception Raised"
+        }
 }

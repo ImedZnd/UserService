@@ -35,7 +35,7 @@ class PersonConfiguration {
     fun personHandler(
         personService: PersonService,
         countryService: CountryService,
-        @Autowired messageSource: MessageSource
+        messageSource: MessageSource
     ): PersonHandler =
         PersonHandler(personService,countryService,messageSource)
 

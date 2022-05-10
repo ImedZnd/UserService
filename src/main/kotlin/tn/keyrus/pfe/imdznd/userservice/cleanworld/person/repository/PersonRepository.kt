@@ -2,7 +2,6 @@ package tn.keyrus.pfe.imdznd.userservice.cleanworld.person.repository
 
 import io.vavr.control.Either
 import kotlinx.coroutines.flow.Flow
-import reactor.core.publisher.Mono
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -11,7 +10,7 @@ import java.util.*
 
 interface PersonRepository {
 
-    fun findPersonByID(id: Long): Mono<Optional<Person>>
+    suspend fun findPersonByID(id: Long): Optional<Person>
     fun findAllPerson(): Flow<Person>
     fun findAllPersonByBirthYear(year: Year): Flow<Person>
     fun findAllPersonByState(state: Person.PersonState): Flow<Person>
@@ -36,12 +35,12 @@ interface PersonRepository {
     fun findAllPersonByTermsVersionBefore(termsVersion: LocalDate): Flow<Person>
     fun findAllPersonByTermsVersionAfter(termsVersion: LocalDate): Flow<Person>
     fun findAllPersonByFraudsterAndCountryCode(isFraudster: Boolean, country: String): Flow<Person>
-    suspend fun countByBirthYear(birthYear: Year): Long
-    suspend fun countAllPersonByState(state: Person.PersonState): Long
-    suspend fun countAllPersonByTermsVersion(termsVersion: LocalDate): Long
-    suspend fun countAllPersonByFraudster(isFraudster: Boolean): Long
-    suspend fun countAllPerson(): Long
-    suspend fun countAllPersonByCountry(countryCode: String): Long
+    suspend fun countByBirthYear(birthYear: Year): Int
+    suspend fun countAllPersonByState(state: Person.PersonState): Int
+    suspend fun countAllPersonByTermsVersion(termsVersion: LocalDate): Int
+    suspend fun countAllPersonByFraudster(isFraudster: Boolean): Int
+    suspend fun countAllPerson(): Int
+    suspend fun countAllPersonByCountry(countryCode: String): Int
     suspend fun savePerson(person: Person): Either<PersonRepositoryError, Person>
     suspend fun updatePerson(person: Person): Either<PersonRepositoryError, Person>
     suspend fun deletePerson(id: Long): Either<PersonRepositoryError, Person>
@@ -57,7 +56,7 @@ interface PersonRepository {
     sealed interface PersonRepositoryError {
         object PersonRepositoryIOError: PersonRepositoryError
         object PersonNotExistPersonRepositoryError: PersonRepositoryError
-        object PersonAlreadyFraudsterRepositoryError:PersonRepositoryError
+        object PersonFraudsterRepositoryError:PersonRepositoryError
     }
 
 }

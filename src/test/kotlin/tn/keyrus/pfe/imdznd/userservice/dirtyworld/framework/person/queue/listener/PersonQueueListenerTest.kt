@@ -149,8 +149,6 @@ internal class PersonQueueListenerTest(
                 val detailRes = personService.getAllPersons()
                 val per = detailRes.first()
                     assert(resultPersons == 1)
-                    println(per.numberOfFlags)
-                    println(resultPerson.numberOfFlags)
                     assert(per.numberOfFlags == resultPerson.numberOfFlags+1)
             }
         }

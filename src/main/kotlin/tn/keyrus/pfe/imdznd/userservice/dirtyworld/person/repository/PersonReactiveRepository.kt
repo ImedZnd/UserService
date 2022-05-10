@@ -1,14 +1,12 @@
 package tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
-import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonDAO
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-@Repository
 interface PersonReactiveRepository : ReactiveCrudRepository<PersonDAO, Long> {
     fun findAllByBirthYear(birthYear: Int): Flux<PersonDAO>
     fun findAllByBirthYearAndCountryCode(birthYear: Int, countryCode: String): Flux<PersonDAO>

@@ -1,9 +1,11 @@
 package tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.configuration
 
+import org.springframework.context.MessageSource
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.repository.CountryRepository
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.service.CountryService
+import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.service.PersonService
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.repository.CountryDatabaseRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.repository.CountryReactiveRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.rest.handler.CountryHandler
@@ -19,14 +21,16 @@ class CountryConfiguration {
 
     @Bean
     fun countryService(
-        countryDatabaseRepository: CountryRepository
+        countryDatabaseRepository: CountryRepository,
+        personService: PersonService
     ): CountryService =
-        CountryService(countryDatabaseRepository)
+        CountryService(countryDatabaseRepository,personService)
 
     @Bean
     fun countryHandler(
-        countryService: CountryService
+        countryService: CountryService,
+         messageSource: MessageSource
     ): CountryHandler =
-        CountryHandler(countryService)
+        CountryHandler(countryService,messageSource)
 
 }

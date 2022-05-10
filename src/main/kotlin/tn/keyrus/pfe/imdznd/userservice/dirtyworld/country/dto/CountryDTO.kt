@@ -5,17 +5,17 @@ import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
 data class CountryDTO(
     val code: String,
     val name: String,
-    val code3: String,
+    val codeISO: String,
     val numCode: Int,
     val phoneCode: Int,
 ) {
 
-    companion object Builder {
+    companion object {
         fun Country.toCountryDTO() =
             CountryDTO(
                 this.code,
                 this.name,
-                this.code3,
+                this.codeISO,
                 this.numCode,
                 this.phoneCode,
             )

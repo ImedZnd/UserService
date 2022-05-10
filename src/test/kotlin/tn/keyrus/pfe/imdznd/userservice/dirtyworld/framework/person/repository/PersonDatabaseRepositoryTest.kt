@@ -666,7 +666,6 @@ internal class PersonDatabaseRepositoryTest(
                     countrySave
                 )
             val x = personDatabaseRepository.savePerson(resultPerson)
-            println(x.isRight)
             val result =
                 personDatabaseRepository
                     .findAllPersonByHasEmail(
@@ -1146,7 +1145,7 @@ internal class PersonDatabaseRepositoryTest(
                     birthYear
                 )
             val resNumber = 1
-            assert(result == resNumber.toLong())
+            assert(result == resNumber)
         }
     }
 
@@ -1210,7 +1209,7 @@ internal class PersonDatabaseRepositoryTest(
                     state
                 )
             val resNumber = 1
-            assert(result == resNumber.toLong())
+            assert(result == resNumber)
         }
     }
 
@@ -1274,7 +1273,7 @@ internal class PersonDatabaseRepositoryTest(
                     termsVersion
                 )
             val resNumber = 1
-            assert(result == resNumber.toLong())
+            assert(result == resNumber)
         }
     }
 
@@ -1339,7 +1338,7 @@ internal class PersonDatabaseRepositoryTest(
                     fraudster
                 )
             val resNumber = 1
-            assert(result == resNumber.toLong())
+            assert(result == resNumber)
         }
     }
 
@@ -1403,7 +1402,7 @@ internal class PersonDatabaseRepositoryTest(
                     code
                 )
             val resNumber = 1
-            assert(result == resNumber.toLong())
+            assert(result == resNumber)
         }
     }
 
@@ -1465,7 +1464,7 @@ internal class PersonDatabaseRepositoryTest(
             val result = personDatabaseRepository
                 .countAllPerson()
             val resNumber = 1
-            assert(result == resNumber.toLong())
+            assert(result == resNumber)
         }
     }
 
@@ -2035,7 +2034,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson2)
             val result =
                 personDatabaseRepository.findAllPersonByCreatedDateBefore(createdDate.plusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -2117,7 +2115,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson2)
             val result =
                 personDatabaseRepository.findAllPersonByTermsVersionBefore(termsVersion.plusYears(1))
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -2280,7 +2277,6 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson2)
             val result =
                 personDatabaseRepository.findAllPersonByBirthYearAndCountryCode(birthYear, code)
-            result.onEach { print(it) }
             val y = result.count()
             assert(y == 2)
         }
@@ -2363,7 +2359,6 @@ internal class PersonDatabaseRepositoryTest(
             val result =
                 personDatabaseRepository.findAllPersonByState(state)
             val y = result.count()
-            println(y)
             assert(y == 2)
         }
     }
@@ -2419,11 +2414,270 @@ internal class PersonDatabaseRepositoryTest(
     }
 
     @Test
+    fun `flag person return valid if person exist`() {
+        runBlocking {
+            val code = "PY"
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = Year.of(1975)
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2020,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            countryRepository
+                .saveCountry(
+                    countrySave
+                )
+            val result =
+                personDatabaseRepository.savePerson(resultPerson)
+                    .get()
+            val res2 = personDatabaseRepository.flagPerson(result.personId!!)
+            assert(res2.get().numberOfFlags == numberOfFlags+1)
+
+        }
+    }
+
+    @Test
+    fun `fraud person return valid if person unfraud`() {
+        runBlocking {
+            val code = "PY"
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = Year.of(1975)
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2020,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            countryRepository
+                .saveCountry(
+                    countrySave
+                )
+            val result =
+                personDatabaseRepository.savePerson(resultPerson)
+                    .get()
+            val res2 = personDatabaseRepository.fraudPerson(result.personId!!)
+            assert(res2.get().fraudster)
+        }
+    }
+    @Test
+    fun `error on fraud person  if person fraud`() {
+        runBlocking {
+            val code = "PY"
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = Year.of(1975)
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2020,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = true
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            countryRepository
+                .saveCountry(
+                    countrySave
+                )
+            val result =
+                personDatabaseRepository.savePerson(resultPerson)
+                    .get()
+            val res2 = personDatabaseRepository.fraudPerson(result.personId!!)
+            assert(res2.left is PersonRepository.PersonRepositoryError.PersonFraudsterRepositoryError)
+        }
+    }
+
+    @Test
+    fun `unFraud person return valid if person fraud`() {
+        runBlocking {
+            val code = "PY"
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = Year.of(1975)
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2020,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = true
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            countryRepository
+                .saveCountry(
+                    countrySave
+                )
+            val result =
+                personDatabaseRepository.savePerson(resultPerson)
+                    .get()
+            val res2 = personDatabaseRepository.unFraudPerson(result.personId!!)
+            assert(!res2.get().fraudster)
+        }
+    }
+
+    @Test
     fun `publishSavePerson `() {
         runBlocking {
             personDatabaseRepository.publishSavePerson(5)
             val result = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
-            println(result)
             assert(result == 1)
         }
     }
@@ -2431,13 +2685,13 @@ internal class PersonDatabaseRepositoryTest(
     @Test
     fun `publishUpdatePerson `() {
         runBlocking {
-            val id:Long = 5
+            val id: Long = 5
             personDatabaseRepository.publishUpdatePerson(id)
             val result = rabbitAdmin.getQueueInfo("updatepersonqueue").messageCount
-            println(result)
             assert(result == 1)
         }
     }
+
     @Test
     fun `publishDeletePerson `() {
         runBlocking {
@@ -2498,7 +2752,6 @@ internal class PersonDatabaseRepositoryTest(
             val savedPerson = personDatabaseRepository.savePerson(resultPerson).get()
             savedPerson.personId?.let { personDatabaseRepository.publishDeletePerson(it) }
             val result = rabbitAdmin.getQueueInfo("deletepersonqueue").messageCount
-            println(result)
             assert(result == 1)
         }
     }
@@ -2508,7 +2761,6 @@ internal class PersonDatabaseRepositoryTest(
         runBlocking {
             personDatabaseRepository.publishFlagPerson(5)
             val result = rabbitAdmin.getQueueInfo("flagpersonqueue").messageCount
-            println(result)
             assert(result == 1)
         }
     }
@@ -2518,7 +2770,6 @@ internal class PersonDatabaseRepositoryTest(
         runBlocking {
             personDatabaseRepository.publishFraudPerson(5)
             val result = rabbitAdmin.getQueueInfo("fraudpersonqueue").messageCount
-            println(result)
             assert(result == 1)
         }
     }
