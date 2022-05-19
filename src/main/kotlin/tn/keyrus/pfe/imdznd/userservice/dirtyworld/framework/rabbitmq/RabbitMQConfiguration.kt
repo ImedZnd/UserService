@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration
 class RabbitMQConfiguration {
 
     @Bean
-    fun rabbitAdmin( rabbitTemplate: RabbitTemplate) =
+    fun rabbitAdmin(rabbitTemplate: RabbitTemplate) =
         RabbitAdmin(rabbitTemplate)
 
 }

@@ -3,141 +3,203 @@ package tn.keyrus.pfe.imdznd.userservice.cleanworld.person.service
 import io.vavr.control.Either
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.repository.PersonRepository
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.queue.publisher.PersonQueuePublisher
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
 
 class PersonService(
-    private val personDatabaseRepository: PersonRepository
+    private val personRepository: PersonRepository,
+    private val personQueuePublisher: PersonQueuePublisher,
 ) {
 
     suspend fun getPersonByID(id: Long) =
-        personDatabaseRepository.findPersonByID(id)
+        personRepository.findPersonByID(id)
 
     fun getAllPersons() =
-        personDatabaseRepository.findAllPerson()
+        personRepository.findAllPerson()
 
-    fun getAllPersonsByBirthYear(birthYear: Year) =
-        personDatabaseRepository.findAllPersonByBirthYear(birthYear)
+    fun getAllPersonsByBirthYear(birthYear: Int) =
+        personRepository.findAllPersonByBirthYear(birthYear)
 
     fun getAllPersonsByState(state: Person.PersonState) =
-        personDatabaseRepository.findAllPersonByState(state)
+        personRepository.findAllPersonByState(state)
 
     fun getAllPersonByCountry(countryCode: String) =
-        personDatabaseRepository.findAllPersonByCountry(countryCode)
+        personRepository.findAllPersonByCountry(countryCode)
 
     fun getAllPersonByCreatedDateInRange(startDate: LocalDate, endDate: LocalDate = startDate.plusDays(1)) =
-        personDatabaseRepository.findAllPersonByCreatedDateInRange(startDate, endDate)
+        personRepository.findAllPersonByCreatedDateInRange(startDate, endDate)
 
     fun getAllPersonByTermsVersionBetween(startDate: LocalDate, endDate: LocalDate = startDate.plusDays(1)) =
-        personDatabaseRepository.findAllPersonByTermsVersionBetween(startDate, endDate)
+        personRepository.findAllPersonByTermsVersionBetween(startDate, endDate)
 
     fun getAllPersonByPhoneCountry(phoneCountry: String) =
-        personDatabaseRepository.findAllPersonByPhoneCountry(phoneCountry)
+        personRepository.findAllPersonByPhoneCountry(phoneCountry)
 
     fun getAllPersonByKYC(kyc: Person.PersonKYC) =
-        personDatabaseRepository.findAllPersonByKYC(kyc)
+        personRepository.findAllPersonByKYC(kyc)
 
     fun getAllPersonByHasEmail(hasEmail: Boolean) =
-        personDatabaseRepository.findAllPersonByHasEmail(hasEmail)
+        personRepository.findAllPersonByHasEmail(hasEmail)
 
     fun getAllPersonByNumberOfFlags(numberOfFlags: Int) =
-        personDatabaseRepository.findAllPersonByNumberOfFlags(numberOfFlags)
+        personRepository.findAllPersonByNumberOfFlags(numberOfFlags)
 
     fun getAllPersonByNumberOfFlagsGreaterThan(numberOfFlags: Int) =
-        personDatabaseRepository.findAllPersonByNumberOfFlagsGreaterThan(numberOfFlags)
+        personRepository.findAllPersonByNumberOfFlagsGreaterThan(numberOfFlags)
 
     fun getAllPersonByNumberOfFlagsLessThan(numberOfFlags: Int) =
-        personDatabaseRepository.findAllPersonByNumberOfFlagsLessThan(numberOfFlags)
+        personRepository.findAllPersonByNumberOfFlagsLessThan(numberOfFlags)
 
     fun getAllPersonByIsFraudster(isFraudster: Boolean) =
-        personDatabaseRepository.findAllPersonByIsFraudster(isFraudster)
+        personRepository.findAllPersonByIsFraudster(isFraudster)
 
-    fun getAllPersonByBirthYearAndCountryCode(year: Year, countryCode: String) =
-        personDatabaseRepository.findAllPersonByBirthYearAndCountryCode(year, countryCode)
+    fun getAllPersonByBirthYearAndCountryCode(year: Int, countryCode: String) =
+        personRepository.findAllPersonByBirthYearAndCountryCode(year, countryCode)
 
-    fun getAllPersonByBirthYearAndHasEmail(birthYear: Year, hasEmail: Boolean) =
-        personDatabaseRepository.findAllPersonByBirthYearAndHasEmail(birthYear, hasEmail)
+    fun getAllPersonByBirthYearAndHasEmail(birthYear: Int, hasEmail: Boolean) =
+        personRepository.findAllPersonByBirthYearAndHasEmail(birthYear, hasEmail)
 
-    fun getAllPersonByBirthYearBefore(birthYear: Year) =
-        personDatabaseRepository.findAllPersonByBirthYearBefore(birthYear)
+    fun getAllPersonByBirthYearBefore(birthYear: Int) =
+        personRepository.findAllPersonByBirthYearBefore(birthYear)
 
-    fun getAllPersonByBirthYearAfter(birthYear: Year) =
-        personDatabaseRepository.findAllPersonByBirthYearAfter(birthYear)
+    fun getAllPersonByBirthYearAfter(birthYear: Int) =
+        personRepository.findAllPersonByBirthYearAfter(birthYear)
 
-    fun getAllPersonByBirthYearBetween(startYear: Year, endYear: Year) =
-        personDatabaseRepository.findAllPersonByBirthYearBetween(startYear, endYear)
+    fun getAllPersonByBirthYearBetween(startYear: Int, endYear: Int) =
+        personRepository.findAllPersonByBirthYearBetween(startYear, endYear)
 
     fun getAllPersonByCreatedDateAfter(creationDate: LocalDateTime) =
-        personDatabaseRepository.findAllPersonByCreatedDateAfter(creationDate)
+        personRepository.findAllPersonByCreatedDateAfter(creationDate)
 
     fun getAllPersonByCreatedDateBefore(creationDate: LocalDateTime) =
-        personDatabaseRepository.findAllPersonByCreatedDateBefore(creationDate)
+        personRepository.findAllPersonByCreatedDateBefore(creationDate)
 
     fun getAllPersonByTermsVersion(termsVersion: LocalDate) =
-        personDatabaseRepository.findAllPersonByTermsVersion(termsVersion)
+        personRepository.findAllPersonByTermsVersion(termsVersion)
 
     fun getAllPersonByTermsVersionBefore(termsVersion: LocalDate) =
-        personDatabaseRepository.findAllPersonByTermsVersionBefore(termsVersion)
+        personRepository.findAllPersonByTermsVersionBefore(termsVersion)
 
     fun getAllPersonByTermsVersionAfter(termsVersion: LocalDate) =
-        personDatabaseRepository.findAllPersonByTermsVersionAfter(termsVersion)
+        personRepository.findAllPersonByTermsVersionAfter(termsVersion)
 
     fun getAllPersonByFraudsterAndCountryCode(isFraudster: Boolean, country: String) =
-        personDatabaseRepository.findAllPersonByFraudsterAndCountryCode(isFraudster, country)
+        personRepository.findAllPersonByFraudsterAndCountryCode(isFraudster, country)
 
-    suspend fun countByBirthYear(birthYear: Year) =
-        personDatabaseRepository.countByBirthYear(birthYear)
+    suspend fun countByBirthYear(birthYear: Int) =
+        personRepository.countByBirthYear(birthYear)
 
     suspend fun countAllPersonByState(state: Person.PersonState) =
-        personDatabaseRepository.countAllPersonByState(state)
+        personRepository.countAllPersonByState(state)
 
     suspend fun countAllPersonByTermsVersion(termsVersion: LocalDate) =
-        personDatabaseRepository.countAllPersonByTermsVersion(termsVersion)
+        personRepository.countAllPersonByTermsVersion(termsVersion)
 
     suspend fun countAllPersonByFraudster(isFraudster: Boolean) =
-        personDatabaseRepository.countAllPersonByFraudster(isFraudster)
+        personRepository.countAllPersonByFraudster(isFraudster)
 
     suspend fun countAllPerson() =
-        personDatabaseRepository.countAllPerson()
+        personRepository.countAllPerson()
 
     suspend fun countAllPersonByCountry(countryCode: String) =
-        personDatabaseRepository.countAllPersonByCountry(countryCode)
+        personRepository.countAllPersonByCountry(countryCode)
 
-    suspend fun savePerson(person: Person): Either<PersonServiceError, Person> {
-        val personSaved = personDatabaseRepository.savePerson(person)
-        return if (personSaved.isLeft)
-            Either.left(changeRepositoryErrorToServiceError(personSaved.left))
-        else {
-            personSaved.get().personId?.let { it1 -> personDatabaseRepository.publishSavePerson(it1) }
-            Either.right(personSaved.get())
+    suspend fun savePerson(person: Person): Either<PersonServiceError, Person> =
+        personRepository.savePerson(person)
+            .let {
+                if (it.isLeft)
+                    Either.left(changeRepositoryErrorToServiceError(it.left))
+                else
+                    publishSavedPersonAndReturnPerson(it.get())
+            }
+
+    private fun publishSavedPersonAndReturnPerson(person: Person): Either<PersonServiceError, Person> {
+        person.getPersonId().ifPresent {
+            personQueuePublisher.publishSavePerson(it)
         }
+        return Either.right(person)
     }
 
     suspend fun updatePerson(person: Person): Either<PersonServiceError, Person> =
-        personDatabaseRepository.updatePerson(person)
-            .also { person.personId?.let { it1 -> personDatabaseRepository.publishUpdatePerson(it1) } }
-            .mapLeft { changeRepositoryErrorToServiceError(it) }
+        personRepository.updatePerson(person)
+            .let {
+                if (it.isLeft)
+                    Either.left(changeRepositoryErrorToServiceError(it.left))
+                else
+                    publishUpdatePersonAndReturnPerson(it.get())
+            }
+
+    private fun publishUpdatePersonAndReturnPerson(person: Person): Either<PersonServiceError, Person> {
+        person.getPersonId().ifPresent {
+            personQueuePublisher.publishUpdatePerson(it)
+        }
+        return Either.right(person)
+    }
 
     suspend fun deletePerson(id: Long): Either<PersonServiceError, Person> =
-        personDatabaseRepository.deletePerson(id)
-            .also { personDatabaseRepository.publishDeletePerson(id) }
-            .mapLeft { changeRepositoryErrorToServiceError(it) }
+        personRepository.deletePerson(id)
+            .let {
+                if (it.isLeft)
+                    Either.left(changeRepositoryErrorToServiceError(it.left))
+                else
+                    publishDeletePersonAndReturnPerson(it.get())
+            }
+
+    private fun publishDeletePersonAndReturnPerson(person: Person): Either<PersonServiceError, Person> {
+        person.getPersonId().ifPresent {
+            personQueuePublisher.publishDeletePerson(it)
+        }
+        return Either.right(person)
+    }
 
     suspend fun flagPerson(id: Long): Either<PersonServiceError, Person> =
-        personDatabaseRepository.flagPerson(id)
-            .also { personDatabaseRepository.publishFlagPerson(id) }
-            .mapLeft { changeRepositoryErrorToServiceError(it) }
+        personRepository.flagPerson(id)
+            .let {
+                if (it.isLeft)
+                    Either.left(changeRepositoryErrorToServiceError(it.left))
+                else
+                    publishFlagPersonAndReturnPerson(it.get())
+            }
+
+    private fun publishFlagPersonAndReturnPerson(person: Person): Either<PersonServiceError, Person> {
+        person.getPersonId().ifPresent {
+            personQueuePublisher.publishFlagPerson(it)
+        }
+        return Either.right(person)
+    }
 
     suspend fun fraudPerson(id: Long): Either<PersonServiceError, Person> =
-        personDatabaseRepository.fraudPerson(id)
-            .also { personDatabaseRepository.publishFraudPerson(id) }
-            .mapLeft { changeRepositoryErrorToServiceError(it) }
+        personRepository.fraudPerson(id)
+            .let {
+                if (it.isLeft)
+                    Either.left(changeRepositoryErrorToServiceError(it.left))
+                else
+                    publishFraudPersonAndReturnPerson(it.get())
+            }
+
+    private fun publishFraudPersonAndReturnPerson(person: Person): Either<PersonServiceError, Person> {
+        person.getPersonId().ifPresent {
+            personQueuePublisher.publishFraudPerson(it)
+        }
+        return Either.right(person)
+    }
 
     suspend fun unFraudPerson(id: Long): Either<PersonServiceError, Person> =
-        personDatabaseRepository.unFraudPerson(id)
-            .also { personDatabaseRepository.publishUnFraudPerson(id) }
-            .mapLeft { changeRepositoryErrorToServiceError(it) }
+        personRepository.unFraudPerson(id)
+            .let {
+                if (it.isLeft)
+                    Either.left(changeRepositoryErrorToServiceError(it.left))
+                else
+                    publishUnFraudPersonAndReturnPerson(it.get())
+            }
+
+    private fun publishUnFraudPersonAndReturnPerson(person: Person): Either<PersonServiceError, Person> {
+        person.getPersonId().ifPresent {
+            personQueuePublisher.publishUnFraudPerson(it)
+        }
+        return Either.right(person)
+    }
 
     private fun changeRepositoryErrorToServiceError(personRepositoryError: PersonRepository.PersonRepositoryError): PersonServiceError =
         when (personRepositoryError) {

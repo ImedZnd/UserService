@@ -5,14 +5,13 @@ import kotlinx.coroutines.flow.Flow
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
 import java.util.*
 
 interface PersonRepository {
 
     suspend fun findPersonByID(id: Long): Optional<Person>
     fun findAllPerson(): Flow<Person>
-    fun findAllPersonByBirthYear(year: Year): Flow<Person>
+    fun findAllPersonByBirthYear(year: Int): Flow<Person>
     fun findAllPersonByState(state: Person.PersonState): Flow<Person>
     fun findAllPersonByCountry(countryCode: String): Flow<Person>
     fun findAllPersonByCreatedDateInRange(startDate: LocalDate, endDate: LocalDate = startDate): Flow<Person>
@@ -24,18 +23,18 @@ interface PersonRepository {
     fun findAllPersonByNumberOfFlagsGreaterThan(numberOfFlags: Int): Flow<Person>
     fun findAllPersonByNumberOfFlagsLessThan(numberOfFlags: Int): Flow<Person>
     fun findAllPersonByIsFraudster(isFraudster: Boolean): Flow<Person>
-    fun findAllPersonByBirthYearAndCountryCode(year: Year, countryCode: String): Flow<Person>
-    fun findAllPersonByBirthYearAndHasEmail(birthYear: Year, hasEmail: Boolean): Flow<Person>
-    fun findAllPersonByBirthYearBefore(birthYear: Year): Flow<Person>
-    fun findAllPersonByBirthYearAfter(birthYear: Year): Flow<Person>
-    fun findAllPersonByBirthYearBetween(startYear: Year, endYear: Year): Flow<Person>
+    fun findAllPersonByBirthYearAndCountryCode(year: Int, countryCode: String): Flow<Person>
+    fun findAllPersonByBirthYearAndHasEmail(birthYear: Int, hasEmail: Boolean): Flow<Person>
+    fun findAllPersonByBirthYearBefore(birthYear: Int): Flow<Person>
+    fun findAllPersonByBirthYearAfter(birthYear: Int): Flow<Person>
+    fun findAllPersonByBirthYearBetween(startYear: Int, endYear: Int): Flow<Person>
     fun findAllPersonByCreatedDateAfter(creationDate: LocalDateTime): Flow<Person>
     fun findAllPersonByCreatedDateBefore(creationDate: LocalDateTime): Flow<Person>
     fun findAllPersonByTermsVersion(termsVersion: LocalDate): Flow<Person>
     fun findAllPersonByTermsVersionBefore(termsVersion: LocalDate): Flow<Person>
     fun findAllPersonByTermsVersionAfter(termsVersion: LocalDate): Flow<Person>
     fun findAllPersonByFraudsterAndCountryCode(isFraudster: Boolean, country: String): Flow<Person>
-    suspend fun countByBirthYear(birthYear: Year): Int
+    suspend fun countByBirthYear(birthYear: Int): Int
     suspend fun countAllPersonByState(state: Person.PersonState): Int
     suspend fun countAllPersonByTermsVersion(termsVersion: LocalDate): Int
     suspend fun countAllPersonByFraudster(isFraudster: Boolean): Int
@@ -47,16 +46,11 @@ interface PersonRepository {
     suspend fun flagPerson(id: Long): Either<PersonRepositoryError, Person>
     suspend fun fraudPerson(id: Long): Either<PersonRepositoryError, Person>
     suspend fun unFraudPerson(id: Long): Either<PersonRepositoryError, Person>
-    fun publishSavePerson(id: Long)
-    fun publishUpdatePerson(id: Long)
-    fun publishDeletePerson(id: Long)
-    fun publishFlagPerson(id: Long)
-    fun publishFraudPerson(id: Long)
-    fun publishUnFraudPerson(id: Long)
+
     sealed interface PersonRepositoryError {
-        object PersonRepositoryIOError: PersonRepositoryError
-        object PersonNotExistPersonRepositoryError: PersonRepositoryError
-        object PersonFraudsterRepositoryError:PersonRepositoryError
+        object PersonRepositoryIOError : PersonRepositoryError
+        object PersonNotExistPersonRepositoryError : PersonRepositoryError
+        object PersonFraudsterRepositoryError : PersonRepositoryError
     }
 
 }

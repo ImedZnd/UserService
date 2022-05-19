@@ -9,7 +9,7 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.queue.setting.PersonQu
 
 @Component
 data class PersonQueueInitializer(
-    val rabbitAdmin: RabbitAdmin,
+    private val rabbitAdmin: RabbitAdmin,
     private val personQueueSetting: PersonQueueSetting
 ) {
 
@@ -17,39 +17,39 @@ data class PersonQueueInitializer(
     fun onStart() {
         createCommunicationPipe(
             rabbitAdmin,
-            personQueueSetting.save?.queue?:"",
-            personQueueSetting.save?.exchange?:"",
-            personQueueSetting.save?.routingkey?:""
+            personQueueSetting.save?.queue ?: "",
+            personQueueSetting.save?.exchange ?: "",
+            personQueueSetting.save?.routingkey ?: ""
         )
         createCommunicationPipe(
             rabbitAdmin,
-            personQueueSetting.update?.queue?:"",
-            personQueueSetting.update?.exchange?:"",
-            personQueueSetting.update?.routingkey?:""
+            personQueueSetting.update?.queue ?: "",
+            personQueueSetting.update?.exchange ?: "",
+            personQueueSetting.update?.routingkey ?: ""
         )
         createCommunicationPipe(
             rabbitAdmin,
-            personQueueSetting.delete?.queue?:"",
-            personQueueSetting.delete?.exchange?:"",
-            personQueueSetting.delete?.routingkey?:""
+            personQueueSetting.delete?.queue ?: "",
+            personQueueSetting.delete?.exchange ?: "",
+            personQueueSetting.delete?.routingkey ?: ""
         )
         createCommunicationPipe(
             rabbitAdmin,
-            personQueueSetting.flag?.queue?:"",
-            personQueueSetting.flag?.exchange?:"",
-            personQueueSetting.flag?.routingkey?:""
+            personQueueSetting.flag?.queue ?: "",
+            personQueueSetting.flag?.exchange ?: "",
+            personQueueSetting.flag?.routingkey ?: ""
         )
         createCommunicationPipe(
             rabbitAdmin,
-            personQueueSetting.fraud?.queue?:"",
-            personQueueSetting.fraud?.exchange?:"",
-            personQueueSetting.fraud?.routingkey?:""
+            personQueueSetting.fraud?.queue ?: "",
+            personQueueSetting.fraud?.exchange ?: "",
+            personQueueSetting.fraud?.routingkey ?: ""
         )
         createCommunicationPipe(
             rabbitAdmin,
-            personQueueSetting.unfraud?.queue?:"",
-            personQueueSetting.unfraud?.exchange?:"",
-            personQueueSetting.unfraud?.routingkey?:""
+            personQueueSetting.unfraud?.queue ?: "",
+            personQueueSetting.unfraud?.exchange ?: "",
+            personQueueSetting.unfraud?.routingkey ?: ""
         )
     }
 

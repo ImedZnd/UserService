@@ -8,27 +8,29 @@ spring:
       mode: always
   cloud:
     function:
-      definition: flagPersonTransactionQueueListener;
+      definition: flagTransactionQueueListener;
     stream:
       bindings:
-        flagPersonTransactionQueueListener-in-0:
-          destination: flagpersontransactionexchange
-          group: flagpersontransactionqueue
+        flagTransactionQueueListener-in-0:
+          destination: flagtransactionexchange
+          group: flagtransactionqueue
       rabbit:
         bindings:
-          flagPersonTransactionQueueListener-in-0:
+          flagTransactionQueueListener-in-0:
             consumer:
               queueNameGroupOnly: true
               binding-routing-key-delimiter: ","
-              bindingRoutingKey: "flagpersontransactionroutingkey"
+              bindingRoutingKey: "flagtransactionroutingkey"
               exchangeType: direct
               autoBindDlq: false
+              durableSubscription: true
+              dlqTtl: 900000
+
 logging:
   level:
     org:
       springframework:
         r2dbc: DEBUG
-
 person:
   event:
     save:

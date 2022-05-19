@@ -6,14 +6,13 @@ import org.springframework.data.relational.core.mapping.Table
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
 
 @Table("person")
 data class PersonDAO(
 
     @Id
     @Column("id")
-    val personId: Long ?= null ,
+    val personId: Long? = null,
     val seqUser: Int = 0,
     val failedSignInAttempts: Int = 0,
     val birthYear: Int = 1990,
@@ -32,7 +31,7 @@ data class PersonDAO(
             personId,
             seqUser,
             failedSignInAttempts,
-            Year.of(birthYear),
+            birthYear,
             countryCode,
             createdDate,
             termsVersion,
@@ -50,7 +49,7 @@ data class PersonDAO(
                 personId = personId,
                 seqUser = seqUser,
                 failedSignInAttempts = failedSignInAttempts,
-                birthYear = birthYear.value,
+                birthYear = birthYear,
                 countryCode = countryCode,
                 createdDate = createdDate,
                 termsVersion = termsVersion,

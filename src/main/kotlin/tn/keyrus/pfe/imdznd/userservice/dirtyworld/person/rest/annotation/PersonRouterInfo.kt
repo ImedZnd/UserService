@@ -12,7 +12,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.springdoc.core.annotations.RouterOperation
 import org.springdoc.core.annotations.RouterOperations
 import org.springframework.web.bind.annotation.RequestMethod
-import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.*
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.date.DateDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.daterange.DateRangeDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.fraudsterandcountrycode.FraudsterAndCountryCodeDTO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dto.PersonDTO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHandler
 
@@ -37,13 +39,20 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHan
         )
     ),
     RouterOperation(
-        path = "/person/birthYear",
-        method = [RequestMethod.POST],
+        path = "/person/birthYear/{year}",
+        method = [RequestMethod.GET],
         beanClass = PersonHandler::class,
         beanMethod = "getAllPersonsByBirthYear",
         operation = Operation(
             operationId = "getAllPersonsByBirthYear",
-            method = "POST",
+            method = "GET",
+            parameters = [Parameter(
+                name = "year",
+                `in` = ParameterIn.PATH,
+                style = ParameterStyle.SIMPLE,
+                explode = Explode.FALSE,
+                required = true
+            )],
             responses = [
                 ApiResponse(
                     responseCode = "200",
@@ -52,27 +61,27 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHan
                 ),
                 ApiResponse(
                     responseCode = "400",
-                    description = "Bad Year in Params.",
+                    description = "Year Conversion Error.",
                     content = [Content(schema = Schema(implementation = String::class))]
                 ),
             ],
-            requestBody = RequestBody(
-                content = [Content(
-                    schema = Schema(
-                        implementation = YearDTO::class
-                    )
-                )]
-            )
         )
     ),
     RouterOperation(
-        path = "/person/birthYearBefore",
-        method = [RequestMethod.POST],
+        path = "/person/birthYearBefore/{year}",
+        method = [RequestMethod.GET],
         beanClass = PersonHandler::class,
         beanMethod = "getAllPersonsByBirthYearBefore",
         operation = Operation(
             operationId = "getAllPersonsByBirthYearBefore",
-            method = "POST",
+            method = "GET",
+            parameters = [Parameter(
+                name = "year",
+                `in` = ParameterIn.PATH,
+                style = ParameterStyle.SIMPLE,
+                explode = Explode.FALSE,
+                required = true
+            )],
             responses = [
                 ApiResponse(
                     responseCode = "200",
@@ -81,27 +90,27 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHan
                 ),
                 ApiResponse(
                     responseCode = "400",
-                    description = "Bad Year in Params.",
+                    description = "Year Conversion Error.",
                     content = [Content(schema = Schema(implementation = String::class))]
                 ),
             ],
-            requestBody = RequestBody(
-                content = [Content(
-                    schema = Schema(
-                        implementation = YearDTO::class
-                    )
-                )]
-            )
         )
     ),
     RouterOperation(
-        path = "/person/birthYearAfter",
-        method = [RequestMethod.POST],
+        path = "/person/birthYearAfter/{year}",
+        method = [RequestMethod.GET],
         beanClass = PersonHandler::class,
         beanMethod = "getAllPersonsByBirthYearAfter",
         operation = Operation(
             operationId = "getAllPersonsByBirthYearAfter",
-            method = "POST",
+            method = "GET",
+            parameters = [Parameter(
+                name = "year",
+                `in` = ParameterIn.PATH,
+                style = ParameterStyle.SIMPLE,
+                explode = Explode.FALSE,
+                required = true
+            )],
             responses = [
                 ApiResponse(
                     responseCode = "200",
@@ -110,17 +119,10 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHan
                 ),
                 ApiResponse(
                     responseCode = "400",
-                    description = "Bad Year in Params.",
+                    description = "Year Conversion Error.",
                     content = [Content(schema = Schema(implementation = String::class))]
                 ),
             ],
-            requestBody = RequestBody(
-                content = [Content(
-                    schema = Schema(
-                        implementation = YearDTO::class
-                    )
-                )]
-            )
         )
     ),
     RouterOperation(
@@ -721,13 +723,20 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHan
         )
     ),
     RouterOperation(
-        path = "/person/delete",
-        method = [RequestMethod.POST],
+        path = "/person/delete/{personId}",
+        method = [RequestMethod.GET],
         beanClass = PersonHandler::class,
         beanMethod = "deletePerson",
         operation = Operation(
             operationId = "deletePerson",
-            method = "POST",
+            method = "GET",
+            parameters = [Parameter(
+                name = "personId",
+                `in` = ParameterIn.PATH,
+                style = ParameterStyle.SIMPLE,
+                explode = Explode.FALSE,
+                required = true
+            )],
             responses = [
                 ApiResponse(
                     responseCode = "200",
@@ -736,32 +745,32 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHan
                 ),
                 ApiResponse(
                     responseCode = "404",
-                    description = "Person not Exist.",
+                    description = "Person Not Exist.",
                     content = [Content(schema = Schema(implementation = String::class))]
                 ),
                 ApiResponse(
                     responseCode = "400",
-                    description = "Bad Person In Request.",
+                    description = "Bad Person Id In Path.",
                     content = [Content(schema = Schema(implementation = String::class))]
                 ),
             ],
-            requestBody = RequestBody(
-                content = [Content(
-                    schema = Schema(
-                        implementation = PersonIdDTO::class
-                    )
-                )]
-            )
         )
     ),
     RouterOperation(
-        path = "/person/flag",
-        method = [RequestMethod.POST],
+        path = "/person/flag/{personId}",
+        method = [RequestMethod.GET],
         beanClass = PersonHandler::class,
         beanMethod = "flagPerson",
         operation = Operation(
             operationId = "flagPerson",
-            method = "POST",
+            method = "GET",
+            parameters = [Parameter(
+                name = "personId",
+                `in` = ParameterIn.PATH,
+                style = ParameterStyle.SIMPLE,
+                explode = Explode.FALSE,
+                required = true
+            )],
             responses = [
                 ApiResponse(
                     responseCode = "200",
@@ -775,7 +784,7 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHan
                 ),
                 ApiResponse(
                     responseCode = "400",
-                    description = "Bad Person In Request.",
+                    description = "Bad Person Id In Path.",
                     content = [Content(schema = Schema(implementation = String::class))]
                 ),
                 ApiResponse(
@@ -784,23 +793,23 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHan
                     content = [Content(schema = Schema(implementation = String::class))]
                 ),
             ],
-            requestBody = RequestBody(
-                content = [Content(
-                    schema = Schema(
-                        implementation = PersonIdDTO::class
-                    )
-                )]
-            )
         )
     ),
     RouterOperation(
-        path = "/person/id",
-        method = [RequestMethod.POST],
+        path = "/person/id/{personId}",
+        method = [RequestMethod.GET],
         beanClass = PersonHandler::class,
         beanMethod = "getPersonById",
         operation = Operation(
             operationId = "getPersonById",
-            method = "POST",
+            method = "GET",
+            parameters = [Parameter(
+                name = "personId",
+                `in` = ParameterIn.PATH,
+                style = ParameterStyle.SIMPLE,
+                explode = Explode.FALSE,
+                required = true
+            )],
             responses = [
                 ApiResponse(
                     responseCode = "200",
@@ -813,27 +822,27 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHan
                     content = [Content(schema = Schema(implementation = String::class))]
                 )
             ],
-            requestBody = RequestBody(
-                content = [Content(
-                    schema = Schema(
-                        implementation = PersonIdDTO::class
-                    )
-                )]
-            )
         )
     ),
     RouterOperation(
-        path = "/person/fraud",
-        method = [RequestMethod.POST],
+        path = "/person/fraud/{personId}",
+        method = [RequestMethod.GET],
         beanClass = PersonHandler::class,
         beanMethod = "fraudPerson",
         operation = Operation(
             operationId = "fraudPerson",
-            method = "POST",
+            method = "GET",
+            parameters = [Parameter(
+                name = "personId",
+                `in` = ParameterIn.PATH,
+                style = ParameterStyle.SIMPLE,
+                explode = Explode.FALSE,
+                required = true
+            )],
             responses = [
                 ApiResponse(
                     responseCode = "200",
-                    description = "delete Person successfully.",
+                    description = "fraud Person successfully.",
                     content = [Content(schema = Schema(implementation = Int::class))]
                 ),
                 ApiResponse(
@@ -847,27 +856,27 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHan
                     content = [Content(schema = Schema(implementation = String::class))]
                 ),
             ],
-            requestBody = RequestBody(
-                content = [Content(
-                    schema = Schema(
-                        implementation = PersonIdDTO::class
-                    )
-                )]
-            )
         )
     ),
     RouterOperation(
-        path = "/person/unfraud",
-        method = [RequestMethod.POST],
+        path = "/person/unfraud/{personId}",
+        method = [RequestMethod.GET],
         beanClass = PersonHandler::class,
         beanMethod = "unFraudPerson",
         operation = Operation(
             operationId = "unFraudPerson",
-            method = "POST",
+            method = "GET",
+            parameters = [Parameter(
+                name = "personId",
+                `in` = ParameterIn.PATH,
+                style = ParameterStyle.SIMPLE,
+                explode = Explode.FALSE,
+                required = true
+            )],
             responses = [
                 ApiResponse(
                     responseCode = "200",
-                    description = "delete Person successfully.",
+                    description = "unFraud Person successfully.",
                     content = [Content(schema = Schema(implementation = Int::class))]
                 ),
                 ApiResponse(
@@ -881,13 +890,6 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.rest.handler.PersonHan
                     content = [Content(schema = Schema(implementation = String::class))]
                 ),
             ],
-            requestBody = RequestBody(
-                content = [Content(
-                    schema = Schema(
-                        implementation = PersonIdDTO::class
-                    )
-                )]
-            )
         )
     ),
 )

@@ -1,7 +1,6 @@
 package tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.country.service
 
 import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +17,6 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonDatab
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReactiveRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
@@ -112,7 +110,7 @@ internal class CountryServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -178,7 +176,7 @@ internal class CountryServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -266,7 +264,7 @@ internal class CountryServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -338,9 +336,8 @@ internal class CountryServiceTest(
             personDatabaseRepository.savePerson(person2)
             val result =
                 countryService
-                    .getAllIsFraudstersByCountry(true)
+                    .getAllIsFraudstersByCountryByBoolean(true)
             val y = result.count()
-            result.onEach { println(it.persons) }
             assert(y == 2)
         }
     }
@@ -355,7 +352,7 @@ internal class CountryServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -432,4 +429,93 @@ internal class CountryServiceTest(
             assert(result.count() == 2)
         }
     }
+
+    @Test
+    fun `get all fraudster in all country return two element if repository have two country`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = 1975
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2020,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = true
+            val resultPerson =
+                Person.of(
+                    null,
+                    seqUser,
+                    failedSignInAttempts,
+                    birthYear,
+                    code,
+                    createdDate,
+                    termsVersion,
+                    phoneCountry,
+                    kyc,
+                    state,
+                    hasEmail,
+                    numberOfFlags,
+                    fraudster,
+                ).get()
+            val person2 =
+                Person.of(
+                    null,
+                    seqUser,
+                    failedSignInAttempts,
+                    birthYear,
+                    "TN",
+                    createdDate,
+                    termsVersion,
+                    phoneCountry,
+                    kyc,
+                    state,
+                    hasEmail,
+                    numberOfFlags,
+                    fraudster,
+                ).get()
+            val countrySave = Country.of(
+                code,
+                name,
+                code3,
+                numCode,
+                phoneCode
+            ).get()
+            countryRepository.saveCountry(countrySave)
+            val country2 = Country.of(
+                "TN",
+                name,
+                code3,
+                numCode,
+                phoneCode
+            ).get()
+            countryRepository.saveCountry(country2)
+            personDatabaseRepository.savePerson(resultPerson)
+            personDatabaseRepository.savePerson(person2)
+            val result =
+                countryService
+                    .getAllPersonsInAllCountry()
+            Thread.sleep(1000)
+            assert(result.count() == 2)
+        }
+    }
+
 }

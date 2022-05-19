@@ -1,13 +1,13 @@
 package tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.person.repository
 
 import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertAll
 import org.springframework.amqp.rabbit.core.RabbitAdmin
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.r2dbc.core.R2dbcEntityOperations
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
@@ -16,11 +16,11 @@ import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.repository.PersonRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.repository.CountryReactiveRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.initializer.Initializer
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.queue.publisher.PersonQueuePublisher
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonDatabaseRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReactiveRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
@@ -32,6 +32,8 @@ internal class PersonDatabaseRepositoryTest(
     @Autowired private val personReactiveRepository: PersonReactiveRepository,
     @Autowired private val personDatabaseRepository: PersonDatabaseRepository,
     @Autowired private val rabbitAdmin: RabbitAdmin,
+    @Autowired private val personQueuePublisher: PersonQueuePublisher,
+
 ) {
     @BeforeAll
     fun beforeAll() {
@@ -73,7 +75,6 @@ internal class PersonDatabaseRepositoryTest(
         rabbitAdmin.purgeQueue("deletepersonqueue")
     }
 
-
     @Test
     fun `get all person return one element if repository have one valid person with one country`() {
         runBlocking {
@@ -84,7 +85,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1957
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -131,6 +132,7 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
+//            r2dbcEntityOperations.insert(countrySave).awaitSingleOrNull()
             personDatabaseRepository.savePerson(resultPerson)
             val result =
                 personDatabaseRepository.findAllPerson()
@@ -149,7 +151,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1957
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -214,7 +216,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -279,7 +281,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -347,7 +349,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -412,7 +414,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -481,7 +483,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -549,7 +551,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -618,7 +620,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -665,7 +667,7 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-            val x = personDatabaseRepository.savePerson(resultPerson)
+            personDatabaseRepository.savePerson(resultPerson)
             val result =
                 personDatabaseRepository
                     .findAllPersonByHasEmail(
@@ -686,7 +688,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -754,7 +756,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -822,7 +824,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -890,7 +892,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -958,7 +960,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1026,7 +1028,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1095,7 +1097,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1159,7 +1161,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1223,7 +1225,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1288,7 +1290,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1352,7 +1354,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1416,7 +1418,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1491,7 +1493,7 @@ internal class PersonDatabaseRepositoryTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1572,7 +1574,7 @@ internal class PersonDatabaseRepositoryTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1653,7 +1655,7 @@ internal class PersonDatabaseRepositoryTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1706,7 +1708,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByBirthYearBefore(birthYear.plusYears(1))
+                personDatabaseRepository.findAllPersonByBirthYearBefore(birthYear + 1)
             val y = result.count()
             assert(y == 2)
         }
@@ -1734,7 +1736,7 @@ internal class PersonDatabaseRepositoryTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1787,7 +1789,7 @@ internal class PersonDatabaseRepositoryTest(
             ).get()
             personDatabaseRepository.savePerson(resultPerson2)
             val result =
-                personDatabaseRepository.findAllPersonByBirthYearAfter(birthYear.minusYears(1))
+                personDatabaseRepository.findAllPersonByBirthYearAfter(birthYear - 1)
             val y = result.count()
             assert(y == 2)
         }
@@ -1815,7 +1817,7 @@ internal class PersonDatabaseRepositoryTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1869,8 +1871,8 @@ internal class PersonDatabaseRepositoryTest(
             personDatabaseRepository.savePerson(resultPerson2)
             val result =
                 personDatabaseRepository.findAllPersonByBirthYearBetween(
-                    birthYear.minusYears(1),
-                    birthYear.plusYears(1)
+                    birthYear - 1,
+                    birthYear + 1
                 )
             val y = result.count()
             assert(y == 2)
@@ -1899,7 +1901,7 @@ internal class PersonDatabaseRepositoryTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1980,7 +1982,7 @@ internal class PersonDatabaseRepositoryTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2061,7 +2063,7 @@ internal class PersonDatabaseRepositoryTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2142,7 +2144,7 @@ internal class PersonDatabaseRepositoryTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2223,7 +2225,7 @@ internal class PersonDatabaseRepositoryTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 2
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2304,7 +2306,7 @@ internal class PersonDatabaseRepositoryTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2369,7 +2371,7 @@ internal class PersonDatabaseRepositoryTest(
             val code = "PY"
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2419,7 +2421,7 @@ internal class PersonDatabaseRepositoryTest(
             val code = "PY"
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2474,7 +2476,7 @@ internal class PersonDatabaseRepositoryTest(
                 personDatabaseRepository.savePerson(resultPerson)
                     .get()
             val res2 = personDatabaseRepository.flagPerson(result.personId!!)
-            assert(res2.get().numberOfFlags == numberOfFlags+1)
+            assert(res2.get().numberOfFlags == numberOfFlags + 1)
 
         }
     }
@@ -2485,7 +2487,7 @@ internal class PersonDatabaseRepositoryTest(
             val code = "PY"
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2543,13 +2545,14 @@ internal class PersonDatabaseRepositoryTest(
             assert(res2.get().fraudster)
         }
     }
+
     @Test
     fun `error on fraud person  if person fraud`() {
         runBlocking {
             val code = "PY"
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2614,7 +2617,7 @@ internal class PersonDatabaseRepositoryTest(
             val code = "PY"
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2676,8 +2679,9 @@ internal class PersonDatabaseRepositoryTest(
     @Test
     fun `publishSavePerson `() {
         runBlocking {
-            personDatabaseRepository.publishSavePerson(5)
+            personQueuePublisher.publishSavePerson(5)
             val result = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
+            Thread.sleep(1000)
             assert(result == 1)
         }
     }
@@ -2686,8 +2690,9 @@ internal class PersonDatabaseRepositoryTest(
     fun `publishUpdatePerson `() {
         runBlocking {
             val id: Long = 5
-            personDatabaseRepository.publishUpdatePerson(id)
+            personQueuePublisher.publishUpdatePerson(id)
             val result = rabbitAdmin.getQueueInfo("updatepersonqueue").messageCount
+            Thread.sleep(1000)
             assert(result == 1)
         }
     }
@@ -2702,7 +2707,7 @@ internal class PersonDatabaseRepositoryTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2750,7 +2755,8 @@ internal class PersonDatabaseRepositoryTest(
                     countrySave
                 )
             val savedPerson = personDatabaseRepository.savePerson(resultPerson).get()
-            savedPerson.personId?.let { personDatabaseRepository.publishDeletePerson(it) }
+            savedPerson.personId?.let { personQueuePublisher.publishDeletePerson(it) }
+            Thread.sleep(1000)
             val result = rabbitAdmin.getQueueInfo("deletepersonqueue").messageCount
             assert(result == 1)
         }
@@ -2759,7 +2765,8 @@ internal class PersonDatabaseRepositoryTest(
     @Test
     fun `publishFlagPerson `() {
         runBlocking {
-            personDatabaseRepository.publishFlagPerson(5)
+            personQueuePublisher.publishFlagPerson(5)
+            Thread.sleep(1000)
             val result = rabbitAdmin.getQueueInfo("flagpersonqueue").messageCount
             assert(result == 1)
         }
@@ -2768,7 +2775,8 @@ internal class PersonDatabaseRepositoryTest(
     @Test
     fun `publishFraudPerson `() {
         runBlocking {
-            personDatabaseRepository.publishFraudPerson(5)
+            personQueuePublisher.publishFraudPerson(5)
+            Thread.sleep(1000)
             val result = rabbitAdmin.getQueueInfo("fraudpersonqueue").messageCount
             assert(result == 1)
         }

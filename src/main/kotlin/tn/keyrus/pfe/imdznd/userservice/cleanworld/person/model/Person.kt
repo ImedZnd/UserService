@@ -4,13 +4,13 @@ import io.vavr.control.Either
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Year
-import java.util.Optional
+import java.util.*
 
 class Person private constructor(
-    val personId : Long ? = null,
+    val personId: Long? = null,
     val seqUser: Int,
     val failedSignInAttempts: Int,
-    val birthYear: Year,
+    val birthYear: Int,
     val countryCode: String,
     val createdDate: LocalDateTime,
     val termsVersion: LocalDate,
@@ -24,10 +24,10 @@ class Person private constructor(
 
     companion object Builder {
         fun of(
-            id:Long ?= null,
+            id: Long? = null,
             seqUser: Int,
             failedSignInAttempts: Int,
-            birthYear: Year,
+            birthYear: Int,
             countryCode: String,
             createdDate: LocalDateTime,
             termsVersion: LocalDate,
@@ -69,10 +69,10 @@ class Person private constructor(
 
         private fun checkPersonErrors(
             personErrors: Sequence<PersonError>,
-            id:Long ?= null,
+            id: Long? = null,
             seqUser: Int,
             failedSignInAttempts: Int,
-            birthYear: Year,
+            birthYear: Int,
             state: PersonState,
             countryCode: String,
             createdDate: LocalDateTime,
@@ -107,13 +107,13 @@ class Person private constructor(
         private fun checkPerson(
             seqUser: Int,
             failedSignInAttempts: Int,
-            birthYear: Year,
+            birthYear: Int,
             countryCode: String,
             createdDate: LocalDateTime,
             termsVersion: LocalDate,
             phoneCountry: String,
             numberOfFlags: Int,
-        ): Sequence<PersonError> =
+        ) =
             sequenceOf(
                 checkSeqUser(seqUser),
                 checkFailedSignInAttempts(failedSignInAttempts),
@@ -128,7 +128,10 @@ class Person private constructor(
                 .map { it.get() }
 
         private fun checkNumberOfFlags(numberOfFlags: Int) =
-            checkIntegerFields(numberOfFlags, PersonError.PersonNumberOfFlagsError)
+            checkIntegerFields(
+                numberOfFlags,
+                PersonError.PersonNumberOfFlagsError
+            )
 
         private fun checkPhoneCountry(phoneCountry: String) =
             checkField(
@@ -156,17 +159,23 @@ class Person private constructor(
                 String::isNotEmpty
             )
 
-        private fun checkBirthYear(birthYear: Year) =
+        private fun checkBirthYear(birthYear: Int) =
             checkField(
                 birthYear,
                 PersonError.PersonBirthYearError,
-            ) { birthYear.isAfter(Year.now()).not() }
+            ) { Year.of(birthYear).isAfter(Year.now()).not() }
 
         private fun checkSeqUser(seqUser: Int) =
-            checkIntegerFields(seqUser, PersonError.PersonSeqUserError)
+            checkIntegerFields(
+                seqUser,
+                PersonError.PersonSeqUserError
+            )
 
         private fun checkFailedSignInAttempts(failedSignInAttempts: Int) =
-            checkIntegerFields(failedSignInAttempts, PersonError.PersonFailedSignInAttemptsError)
+            checkIntegerFields(
+                failedSignInAttempts,
+                PersonError.PersonFailedSignInAttemptsError
+            )
 
         private fun checkIntegerFields(int: Int, personError: PersonError) =
             checkField(
@@ -185,6 +194,12 @@ class Person private constructor(
                 Optional.of(error)
 
     }
+
+    fun getPersonId() =
+        if (Objects.nonNull(personId))
+            Optional.of(personId!!)
+        else
+            Optional.empty()
 
     enum class PersonState {
         ACTIVE,

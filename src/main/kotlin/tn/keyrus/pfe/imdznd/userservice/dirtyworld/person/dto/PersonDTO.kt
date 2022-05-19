@@ -1,20 +1,18 @@
 package tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dto
 
-import io.vavr.control.Either
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
-import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.DateDTO
-import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.DateDTO.Builder.toDateDTO
-import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.YearDTO
-import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.YearDTO.Builder.toYearDTO
-import java.time.LocalDateTime
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.date.DateDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.date.DateDTO.Companion.toDateDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.localdate.LocalDateDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.localdate.LocalDateDTO.Companion.toLocalDateDTO
 
-data class PersonDTO (
+data class PersonDTO(
     val personId: Long? = null,
     val seqUser: Int,
     val failedSignInAttempts: Int,
-    val birthYear: YearDTO,
+    val birthYear: Int,
     val countryCode: String,
-    val createdDate: LocalDateTime,
+    val createdDate: LocalDateDTO,
     val termsVersion: DateDTO,
     val phoneCountry: String,
     val kyc: Person.PersonKYC,
@@ -22,7 +20,7 @@ data class PersonDTO (
     val hasEmail: Boolean,
     val numberOfFlags: Int,
     val fraudster: Boolean,
-    ){
+) {
 
     companion object {
         fun Person.toPersonDTO() =
@@ -30,9 +28,9 @@ data class PersonDTO (
                 this.personId,
                 this.seqUser,
                 this.failedSignInAttempts,
-                this.birthYear.toYearDTO(),
+                this.birthYear,
                 this.countryCode,
-                this.createdDate,
+                this.createdDate.toLocalDateDTO(),
                 this.termsVersion.toDateDTO(),
                 this.phoneCountry,
                 this.kyc,
@@ -43,14 +41,14 @@ data class PersonDTO (
             )
     }
 
-    fun toPerson(): Either<Sequence<Person.PersonError>, Person> {
-        return Person.of(
+    fun toPerson() =
+        Person.of(
             this.personId,
             this.seqUser,
             this.failedSignInAttempts,
-            this.birthYear.toYear().get(),
+            this.birthYear,
             this.countryCode,
-            this.createdDate,
+            this.createdDate.toLocalDateTime().get(),
             this.termsVersion.toLocalDate().get(),
             this.phoneCountry,
             this.kyc,
@@ -58,7 +56,6 @@ data class PersonDTO (
             this.hasEmail,
             this.numberOfFlags,
             this.fraudster
-
         )
-    }
+
 }

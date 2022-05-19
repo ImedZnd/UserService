@@ -2,7 +2,6 @@ package tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.person.service
 
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
@@ -21,7 +20,6 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.initializer.Initial
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReactiveRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
@@ -33,7 +31,7 @@ internal class PersonServiceTest(
     @Autowired private val personReactiveRepository: PersonReactiveRepository,
     @Autowired private val personService: PersonService,
     @Autowired private val rabbitAdmin: RabbitAdmin,
-    ) {
+) {
     @BeforeAll
     fun beforeAll() {
         runBlocking {
@@ -92,7 +90,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -157,7 +155,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -204,7 +202,7 @@ internal class PersonServiceTest(
                 .saveCountry(
                     countrySave
                 )
-            val personSaved = personService.savePerson(resultPerson).get()
+            personService.savePerson(resultPerson).get()
             val result =
                 personService.getAllPersonsByBirthYear(birthYear)
             val resultQueue = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
@@ -226,7 +224,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -291,7 +289,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -359,7 +357,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -424,7 +422,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -496,7 +494,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -564,7 +562,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -632,7 +630,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -700,7 +698,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -768,7 +766,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -836,7 +834,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -904,7 +902,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -972,7 +970,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1040,7 +1038,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1109,7 +1107,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1173,7 +1171,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1237,7 +1235,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1301,7 +1299,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1365,7 +1363,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1429,7 +1427,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1503,7 +1501,7 @@ internal class PersonServiceTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1584,7 +1582,7 @@ internal class PersonServiceTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1644,7 +1642,7 @@ internal class PersonServiceTest(
     }
 
     @Test
-    fun `two element on get person by birth yearbefore if repository have two valid fraudster with one country`() {
+    fun `two element on get person by birth year before if repository have two valid fraudster with one country`() {
         runBlocking {
             val code = "PY"
             val name = "Paraguay"
@@ -1665,7 +1663,7 @@ internal class PersonServiceTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1718,7 +1716,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson2)
             val result =
-                personService.getAllPersonByBirthYearBefore(birthYear.plusYears(1))
+                personService.getAllPersonByBirthYearBefore(birthYear + 1)
             val y = result.count()
             assert(y == 2)
         }
@@ -1746,7 +1744,7 @@ internal class PersonServiceTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1799,7 +1797,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson2)
             val result =
-                personService.getAllPersonByBirthYearAfter(birthYear.minusYears(1))
+                personService.getAllPersonByBirthYearAfter(birthYear - 1)
             val y = result.count()
             assert(y == 2)
         }
@@ -1827,7 +1825,7 @@ internal class PersonServiceTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1880,7 +1878,7 @@ internal class PersonServiceTest(
             ).get()
             personService.savePerson(resultPerson2)
             val result =
-                personService.getAllPersonByBirthYearBetween(birthYear.minusYears(1), birthYear.plusYears(1))
+                personService.getAllPersonByBirthYearBetween(birthYear - 1, birthYear + 1)
             val y = result.count()
             assert(y == 2)
         }
@@ -1908,7 +1906,7 @@ internal class PersonServiceTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1989,7 +1987,7 @@ internal class PersonServiceTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2070,7 +2068,7 @@ internal class PersonServiceTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2151,7 +2149,7 @@ internal class PersonServiceTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2232,7 +2230,7 @@ internal class PersonServiceTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 2
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2313,7 +2311,7 @@ internal class PersonServiceTest(
                 )
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2378,7 +2376,7 @@ internal class PersonServiceTest(
             val code = "PY"
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2432,7 +2430,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2518,7 +2516,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2571,6 +2569,7 @@ internal class PersonServiceTest(
                 personService.getAllPersons()
             val y = result.count()
             val resultf = rabbitAdmin.getQueueInfo("deletepersonqueue").messageCount
+            Thread.sleep(1000)
             assert(resultf == 1)
             assert(y == 0)
         }
@@ -2586,7 +2585,7 @@ internal class PersonServiceTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2642,6 +2641,170 @@ internal class PersonServiceTest(
             val resultf = rabbitAdmin.getQueueInfo("flagpersonqueue").messageCount
             assert(y == 1)
             assert(numberOfFlags == 7)
+            assert(resultf == 1)
+        }
+    }
+
+    @Test
+    fun `error on flag person`() {
+        runBlocking {
+            val result = personService.flagPerson(11)
+            assert(result.left is PersonService.PersonServiceError.PersonServicePersonNotExistError)
+        }
+    }
+
+
+    @Test
+    fun `error on fraud person`() {
+        runBlocking {
+            val result = personService.flagPerson(11)
+            assert(result.left is PersonService.PersonServiceError.PersonServicePersonNotExistError)
+        }
+    }
+    @Test
+    fun `error on unFraud person`() {
+        runBlocking {
+            val result = personService.unFraudPerson(11)
+            assert(result.left is PersonService.PersonServiceError.PersonServicePersonNotExistError)
+        }
+    }
+
+    @Test
+    fun `fraud person`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = 1975
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2020,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlagsBefore = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlagsBefore,
+                fraudster,
+            ).get()
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            countryRepository
+                .saveCountry(
+                    countrySave
+                )
+            val savedPerson = personService.savePerson(resultPerson).get()
+            savedPerson.personId?.let { personService.fraudPerson(it) }
+            val result =
+                personService.getAllPersons()
+            val y = result.count()
+            val fraud = result.first().fraudster
+            val resultf = rabbitAdmin.getQueueInfo("fraudpersonqueue").messageCount
+            assert(y == 1)
+            assert(fraud)
+            assert(resultf == 1)
+        }
+    }
+
+    @Test
+    fun `unFraud person`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = 1975
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2020,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlagsBefore = 6
+            val fraudster = true
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlagsBefore,
+                fraudster,
+            ).get()
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            countryRepository
+                .saveCountry(
+                    countrySave
+                )
+            val savedPerson = personService.savePerson(resultPerson).get()
+            Thread.sleep(1000)
+            personService.unFraudPerson(savedPerson.personId!!)
+            val result =
+                personService.getAllPersons()
+            val y = result.count()
+            Thread.sleep(1000)
+            val resultf = rabbitAdmin.getQueueInfo("unfraudpersonqueue").messageCount
+            assert(y == 1)
             assert(resultf == 1)
         }
     }

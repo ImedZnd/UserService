@@ -1,8 +1,6 @@
 package tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.country.repository
 
 import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,14 +9,9 @@ import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.repository.CountryRepository
-import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.repository.CountryReactiveRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.initializer.Initializer
-import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonDatabaseRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReactiveRepository
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.Year
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
@@ -28,7 +21,6 @@ internal class CountryDatabaseRepositoryTest(
     @Autowired private val countryReactiveRepository: CountryReactiveRepository,
     @Autowired private val countryRepository: CountryRepository,
     @Autowired private val personReactiveRepository: PersonReactiveRepository,
-    @Autowired private val personDatabaseRepository: PersonDatabaseRepository
 ) {
     @BeforeAll
     fun beforeAll() {

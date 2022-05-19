@@ -9,12 +9,12 @@ import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
 @Table("country")
 data class CountryDAO(
     @Id
-    val code: String = "A",
-    val name: String = "A",
-    val code3ISO: String = "A",
+    val code: String = "",
+    val name: String = "",
+    val code3ISO: String = "",
     val numCode: Int = 1,
     val phoneCode: Int = 1,
-): Persistable<String> {
+) : Persistable<String> {
 
     fun toCountry() =
         Country.of(
@@ -25,7 +25,7 @@ data class CountryDAO(
             this.phoneCode
         )
 
-    companion object Builder{
+    companion object {
         fun Country.toDAO() =
             CountryDAO(
                 code = code,
@@ -39,4 +39,5 @@ data class CountryDAO(
     override fun getId(): String = code
 
     override fun isNew(): Boolean = Strings.isNotEmpty(code)
+
 }

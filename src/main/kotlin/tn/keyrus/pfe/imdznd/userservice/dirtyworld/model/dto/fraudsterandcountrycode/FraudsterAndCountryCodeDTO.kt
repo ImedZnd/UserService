@@ -1,4 +1,4 @@
-package tn.keyrus.pfe.imdznd.userservice.dirtyworld.model
+package tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.fraudsterandcountrycode
 
 data class FraudsterAndCountryCodeDTO(
     val isFraud: Boolean,

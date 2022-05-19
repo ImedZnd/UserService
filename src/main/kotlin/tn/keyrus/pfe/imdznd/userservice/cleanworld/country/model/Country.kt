@@ -26,16 +26,17 @@ class Country private constructor(
                 codeISO,
                 numCode,
                 phoneCode,
-            ).let {
-                checkCountryErrors(
-                    it,
-                    code,
-                    name,
-                    codeISO,
-                    numCode,
-                    phoneCode,
-                )
-            }
+            )
+                .let {
+                    checkCountryErrors(
+                        it,
+                        code,
+                        name,
+                        codeISO,
+                        numCode,
+                        phoneCode,
+                    )
+                }
 
         private fun checkCountryErrors(
             countryErrors: Sequence<CountryError> = emptySequence(),
@@ -65,7 +66,7 @@ class Country private constructor(
             codeISO: String,
             numCode: Int,
             phoneCode: Int
-        ): Sequence<CountryError> =
+        ) =
             sequenceOf(
                 checkCode(code),
                 checkName(name),

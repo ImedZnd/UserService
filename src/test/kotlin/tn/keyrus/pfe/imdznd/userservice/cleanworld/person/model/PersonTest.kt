@@ -2,11 +2,8 @@ package tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
-import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
-import java.util.*
 
 internal class PersonTest {
 
@@ -15,7 +12,7 @@ internal class PersonTest {
         val code = "PY"
         val seqUser = 2993
         val failedSignInAttempts = 0
-        val birthYear = Year.of(1975)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,
@@ -72,7 +69,7 @@ internal class PersonTest {
         val code = "PY"
         val seqUser = -2
         val failedSignInAttempts = 0
-        val birthYear = Year.of(1975)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,
@@ -118,7 +115,7 @@ internal class PersonTest {
         val code = "PY"
         val seqUser = 34
         val failedSignInAttempts = -4
-        val birthYear = Year.of(1975)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,
@@ -164,7 +161,7 @@ internal class PersonTest {
         val code = "PY"
         val seqUser = 45
         val failedSignInAttempts = 0
-        val birthYear = Year.of(2050)
+        val birthYear = 2500
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,
@@ -210,7 +207,7 @@ internal class PersonTest {
         val code = "PY"
         val seqUser = 45
         val failedSignInAttempts = 0
-        val birthYear = Year.of(2020)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2050,
@@ -256,7 +253,7 @@ internal class PersonTest {
         val code = "PY"
         val seqUser = 45
         val failedSignInAttempts = 0
-        val birthYear = Year.of(2020)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,
@@ -302,7 +299,7 @@ internal class PersonTest {
         val code = "PY"
         val seqUser = 45
         val failedSignInAttempts = 0
-        val birthYear = Year.of(2020)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,
@@ -348,7 +345,7 @@ internal class PersonTest {
         val code = "PY"
         val seqUser = 45
         val failedSignInAttempts = 0
-        val birthYear = Year.of(2020)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,

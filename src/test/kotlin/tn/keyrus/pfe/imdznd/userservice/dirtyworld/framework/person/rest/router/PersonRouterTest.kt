@@ -18,14 +18,17 @@ import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.service.PersonService
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.repository.CountryReactiveRepository
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.initializer.Initializer
-import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.*
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.date.DateDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.date.DateDTO.Companion.toDateDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.daterange.DateRangeDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.fraudsterandcountrycode.FraudsterAndCountryCodeDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.yearrange.YearRangeDTO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonDAO.Companion.toDAO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dto.PersonDTO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dto.PersonDTO.Companion.toPersonDTO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReactiveRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -39,7 +42,7 @@ internal class PersonRouterTest(
     @Autowired private val countryRepository: CountryRepository,
     @Autowired private val messageSource: MessageSource,
     @Autowired private val personService: PersonService,
-    ) {
+) {
 
     @BeforeAll
     fun beforeAll() {
@@ -97,7 +100,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -140,14 +143,12 @@ internal class PersonRouterTest(
                     numCode,
                     phoneCode
                 ).get()
-           countryRepository.saveCountry(countrySave)
+            countryRepository.saveCountry(countrySave)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
-            val f = YearDTO(1975)
+            val year = 1975
             webTestClient
-                .post()
-                .uri("/person/birthYear")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(f))
+                .get()
+                .uri("/person/birthYear/$year")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -166,7 +167,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -227,12 +228,10 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val f = YearDTO(1975)
+            val year = 1975
             webTestClient
-                .post()
-                .uri("/person/birthYear")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(f))
+                .get()
+                .uri("/person/birthYear/$year")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -251,7 +250,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -312,12 +311,10 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val f = YearDTO(-25)
+            val year = -25
             webTestClient
-                .post()
-                .uri("/person/birthYear")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(f))
+                .get()
+                .uri("/person/birthYear/$year")
                 .exchange()
                 .expectStatus()
                 .isBadRequest
@@ -336,7 +333,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 2016
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -397,12 +394,10 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val f = YearDTO(2015)
+            val year = 2015
             webTestClient
-                .post()
-                .uri("/person/birthYearAfter")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(f))
+                .get()
+                .uri("/person/birthYearAfter/$year")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -421,7 +416,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -482,17 +477,15 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val f = YearDTO(-20)
+            val year = -20
             webTestClient
-                .post()
-                .uri("/person/birthYearAfter")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(f))
+                .get()
+                .uri("/person/birthYearAfter/$year")
                 .exchange()
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error", messageSource.getMessage("YearConversionError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("YearIsNotValidError", null, Locale.US))
         }
     }
 
@@ -506,7 +499,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -567,12 +560,10 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val f = YearDTO(-20)
+            val year = -20
             webTestClient
-                .post()
-                .uri("/person/birthYearBefore")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(f))
+                .get()
+                .uri("/person/birthYearBefore/$year")
                 .exchange()
                 .expectStatus()
                 .isBadRequest
@@ -591,7 +582,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -652,12 +643,10 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val f = YearDTO(2021)
+            val year = 2021
             webTestClient
-                .post()
-                .uri("/person/birthYearBefore")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(f))
+                .get()
+                .uri("/person/birthYearBefore/$year")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -676,7 +665,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 2015
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -737,7 +726,7 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val f = YearRangeDTO(YearDTO(2010), YearDTO(2021))
+            val f = YearRangeDTO(2010, 2021)
             webTestClient
                 .post()
                 .uri("/person/birthYearBetween")
@@ -761,7 +750,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -822,7 +811,7 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val f = YearRangeDTO(YearDTO(2022), YearDTO(2015))
+            val f = YearRangeDTO(2022, 2015)
             webTestClient
                 .post()
                 .uri("/person/birthYearBetween")
@@ -846,7 +835,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -907,7 +896,7 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
-            val f = YearRangeDTO(YearDTO(-2022), YearDTO(2015))
+            val f = YearRangeDTO(-2015, 2020)
             webTestClient
                 .post()
                 .uri("/person/birthYearBetween")
@@ -931,7 +920,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1013,7 +1002,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1096,7 +1085,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1178,7 +1167,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1261,7 +1250,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1346,7 +1335,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1417,7 +1406,7 @@ internal class PersonRouterTest(
                 .expectStatus()
                 .isBadRequest
                 .expectHeader()
-                .valueMatches("error", messageSource.getMessage("DateRangeError", null, Locale.US))
+                .valueMatches("error", messageSource.getMessage("EndDateBeforeStartDateError", null, Locale.US))
         }
     }
 
@@ -1431,7 +1420,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1516,7 +1505,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1590,6 +1579,7 @@ internal class PersonRouterTest(
                 .valueMatches("error", messageSource.getMessage("EndDateBeforeStartDateError", null, Locale.US))
         }
     }
+
     @Test
     fun `Date not valid error of term version if the term version the provided is not valid`() {
         runBlocking {
@@ -1600,7 +1590,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1685,7 +1675,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1770,7 +1760,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1855,7 +1845,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -1938,7 +1928,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2021,7 +2011,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2103,7 +2093,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2185,7 +2175,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2267,7 +2257,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2349,7 +2339,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2431,7 +2421,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2513,7 +2503,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2595,7 +2585,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2677,7 +2667,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2759,7 +2749,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2841,7 +2831,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -2923,7 +2913,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -3005,7 +2995,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -3087,7 +3077,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -3169,7 +3159,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -3251,7 +3241,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -3336,7 +3326,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -3421,7 +3411,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -3506,7 +3496,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -3591,7 +3581,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -3676,7 +3666,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -3761,7 +3751,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -3846,7 +3836,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -3931,7 +3921,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4016,7 +4006,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4098,7 +4088,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4180,7 +4170,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4262,7 +4252,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4347,7 +4337,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4432,7 +4422,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4514,7 +4504,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4596,7 +4586,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4679,7 +4669,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4735,6 +4725,7 @@ internal class PersonRouterTest(
                 .hasSize(1)
         }
     }
+
     @Test
     fun `one person on update valid person`() {
         runBlocking {
@@ -4745,7 +4736,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4829,7 +4820,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4875,12 +4866,9 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             val per = personService.savePerson(resultPerson)
             val savedId = per.get().personId
-            val personId = PersonIdDTO(savedId!!)
             webTestClient
-                .post()
-                .uri("/person/delete")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(personId))
+                .get()
+                .uri("/person/delete/$savedId")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -4888,15 +4876,14 @@ internal class PersonRouterTest(
                 .hasSize(1)
         }
     }
+
     @Test
     fun `error person not exist on delete person`() {
         runBlocking {
-            val personId = PersonIdDTO(55)
+            val personId = 55
             webTestClient
-                .post()
-                .uri("/person/delete")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(personId))
+                .get()
+                .uri("/person/delete/$personId")
                 .exchange()
                 .expectStatus()
                 .isNotFound
@@ -4904,6 +4891,52 @@ internal class PersonRouterTest(
                 .valueMatches("notFound", messageSource.getMessage("PersonNotExist", null, Locale.US))
         }
     }
+
+    @Test
+    fun `bad person in path error person not exist on delete person`() {
+        runBlocking {
+            val personId = "xx"
+            webTestClient
+                .get()
+                .uri("/person/delete/$personId")
+                .exchange()
+                .expectStatus()
+                .isBadRequest
+                .expectHeader()
+                .valueMatches("error", messageSource.getMessage("BadPersonIdInPath", null, Locale.US))
+        }
+    }
+
+    @Test
+    fun `error person not exist on fraud person`() {
+        runBlocking {
+            val personId = 55
+            webTestClient
+                .get()
+                .uri("/person/fraud/$personId")
+                .exchange()
+                .expectStatus()
+                .isNotFound
+                .expectHeader()
+                .valueMatches("notFound", messageSource.getMessage("PersonNotExist", null, Locale.US))
+        }
+    }
+
+    @Test
+    fun `error person not exist on unFraud person`() {
+        runBlocking {
+            val personId = 55
+            webTestClient
+                .get()
+                .uri("/person/unfraud/$personId")
+                .exchange()
+                .expectStatus()
+                .isNotFound
+                .expectHeader()
+                .valueMatches("notFound", messageSource.getMessage("PersonNotExist", null, Locale.US))
+        }
+    }
+
     @Test
     fun `one person on flag a valid person`() {
         runBlocking {
@@ -4914,7 +4947,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -4960,12 +4993,9 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             val per = personService.savePerson(resultPerson)
             val savedId = per.get().personId
-            val personId = PersonIdDTO(savedId!!)
             webTestClient
-                .post()
-                .uri("/person/flag")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(personId))
+                .get()
+                .uri("/person/flag/$savedId")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -4974,6 +5004,74 @@ internal class PersonRouterTest(
 
         }
     }
+
+    @Test
+    fun `one person on count by birth year a valid person`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = 1975
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2010,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            countryRepository.saveCountry(countrySave)
+            personService.savePerson(resultPerson)
+            webTestClient
+                .get()
+                .uri("/person/countAllPersonByBirthYear/$birthYear")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBodyList<Int>()
+                .hasSize(1)
+
+        }
+    }
+
     @Test
     fun `one person on fraud a valid person`() {
         runBlocking {
@@ -4984,7 +5082,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -5030,12 +5128,9 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             val per = personService.savePerson(resultPerson)
             val savedId = per.get().personId
-            val personId = PersonIdDTO(savedId!!)
             webTestClient
-                .post()
-                .uri("/person/fraud")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(personId))
+                .get()
+                .uri("/person/fraud/$savedId")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -5043,7 +5138,9 @@ internal class PersonRouterTest(
                 .hasSize(1)
 
         }
-    }    @Test
+    }
+
+    @Test
     fun `error on fraud a valid person already fraud`() {
         runBlocking {
             val code = "PY"
@@ -5053,7 +5150,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -5099,12 +5196,9 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             val per = personService.savePerson(resultPerson)
             val savedId = per.get().personId
-            val personId = PersonIdDTO(savedId!!)
             webTestClient
-                .post()
-                .uri("/person/fraud")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(personId))
+                .get()
+                .uri("/person/fraud/$savedId")
                 .exchange()
                 .expectStatus()
                 .isBadRequest
@@ -5112,6 +5206,7 @@ internal class PersonRouterTest(
                 .valueMatches("error", messageSource.getMessage("PersonFraudsterServiceError", null, Locale.US))
         }
     }
+
     @Test
     fun `one person on unfraud a valid person`() {
         runBlocking {
@@ -5122,7 +5217,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -5168,12 +5263,9 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             val per = personService.savePerson(resultPerson)
             val savedId = per.get().personId
-            val personId = PersonIdDTO(savedId!!)
             webTestClient
-                .post()
-                .uri("/person/unfraud")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(personId))
+                .get()
+                .uri("/person/unfraud/$savedId")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -5186,13 +5278,10 @@ internal class PersonRouterTest(
     @Test
     fun `error person not found on flag person not exist`() {
         runBlocking {
-            val id :Long = 10
-            val personId = PersonIdDTO(id)
+            val id: Long = 10
             webTestClient
-                .post()
-                .uri("/person/flag")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(personId))
+                .get()
+                .uri("/person/flag/$id")
                 .exchange()
                 .expectHeader()
                 .valueMatches("notFound", messageSource.getMessage("PersonNotExist", null, Locale.US))
@@ -5205,7 +5294,7 @@ internal class PersonRouterTest(
             val code = "PY"
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -5251,7 +5340,6 @@ internal class PersonRouterTest(
         }
     }
 
-
     @Test
     fun `get one valid peron on get person by id`() {
         runBlocking {
@@ -5262,7 +5350,7 @@ internal class PersonRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(2020)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -5308,12 +5396,9 @@ internal class PersonRouterTest(
             countryRepository.saveCountry(countrySave)
             val per = personService.savePerson(resultPerson)
             val savedId = per.get().personId
-            val personId = PersonIdDTO(savedId!!)
             webTestClient
-                .post()
-                .uri("/person/id")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(personId))
+                .get()
+                .uri("/person/id/$savedId")
                 .exchange()
                 .expectStatus()
                 .isOk
@@ -5322,4 +5407,174 @@ internal class PersonRouterTest(
         }
     }
 
+    @Test
+    fun `tow element if exist person with term version provided`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = 1975
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2010,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val resultPerson2 = Person.of(
+                null,
+                521,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            countryRepository.saveCountry(countrySave)
+            personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
+            personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
+            val terms = termsVersion.toDateDTO()
+            webTestClient
+                .post()
+                .uri("/person/termsVersion")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(terms))
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBodyList<PersonDTO>()
+                .hasSize(2)
+        }
+    }
+
+    @Test
+    fun `error if exist person with term version provided invalid`() {
+        runBlocking {
+            val code = "PY"
+            val name = "Paraguay"
+            val code3 = "pRY"
+            val numCode = 600
+            val phoneCode = 595
+            val seqUser = 2993
+            val failedSignInAttempts = 0
+            val birthYear = 1975
+            val state = Person.PersonState.ACTIVE
+            val createdDate = LocalDateTime.of(
+                2020,
+                10,
+                20,
+                5,
+                5,
+                5
+            )
+            val termsVersion = LocalDate.of(
+                2010,
+                10,
+                20,
+            )
+            val phoneCountry = "GB||JE||IM||GG"
+            val kyc = Person.PersonKYC.PASSED
+            val hasEmail = true
+            val numberOfFlags = 6
+            val fraudster = false
+            val resultPerson = Person.of(
+                null,
+                seqUser,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val resultPerson2 = Person.of(
+                null,
+                521,
+                failedSignInAttempts,
+                birthYear,
+                code,
+                createdDate,
+                termsVersion,
+                phoneCountry,
+                kyc,
+                state,
+                hasEmail,
+                numberOfFlags,
+                fraudster,
+            ).get()
+            val countrySave =
+                Country.of(
+                    code,
+                    name,
+                    code3,
+                    numCode,
+                    phoneCode
+                ).get()
+            countryRepository.saveCountry(countrySave)
+            personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
+            personReactiveRepository.save(resultPerson2.toDAO()).awaitSingleOrNull()
+            val terms = DateDTO(2005, 20, 20)
+            webTestClient
+                .post()
+                .uri("/person/termsVersion")
+                .accept(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(terms))
+                .exchange()
+                .expectStatus()
+                .isBadRequest
+                .expectHeader()
+                .valueMatches("error", messageSource.getMessage("DateIsNotValidError", null, Locale.US))
+
+        }
+    }
 }

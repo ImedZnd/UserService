@@ -14,9 +14,9 @@ class PersonRouter {
     fun personRoutes(personHandler: PersonHandler) = coRouter {
         "/person".nest {
             GET("/all") { personHandler.getAllPersons() }
-            POST("/birthYear",personHandler::getAllPersonsByBirthYear )
-            POST("/birthYearBefore",personHandler::getAllPersonsByBirthYearBefore)
-            POST("/birthYearAfter", personHandler::getAllPersonsByBirthYearAfter)
+            GET("/birthYear/{year}", personHandler::getAllPersonsByBirthYear)
+            GET("/birthYearBefore/{year}", personHandler::getAllPersonsByBirthYearBefore)
+            GET("/birthYearAfter/{year}", personHandler::getAllPersonsByBirthYearAfter)
             POST("/birthYearBetween", personHandler::getAllPersonsByBirthYearBetween)
             GET("/state/{state}", personHandler::getAllPersonsByState)
             GET("/country/{country}", personHandler::getAllPersonByCountry)
@@ -36,16 +36,18 @@ class PersonRouter {
             POST("/fraudAndCountryCode", personHandler::getAllPersonByFraudsterAndCountryCode)
             GET("/countAllPerson") { personHandler.countAllUsers() }
             GET("/countAllPersonByState/{state}", personHandler::countAllUsersByState)
+            GET("/countAllPersonByBirthYear/{year}", personHandler::countAllPersonByBirthYear)
             POST("/countAllUsersByTermsVersion", personHandler::countAllUsersByTermsVersion)
             GET("/countAllUsersByIsFraud/{isFraud}", personHandler::countAllUsersByIsFraud)
             GET("/countAllUsersByCountry/{country}", personHandler::countAllUsersByCountry)
+            POST("/termsVersion", personHandler::getAllPersonByTermsVersion)
             POST("/save", personHandler::savePerson)
             POST("/update", personHandler::updatePerson)
-            POST("/delete", personHandler::deletePerson)
-            POST("/flag", personHandler::flagPerson)
-            POST("/id", personHandler::getPersonById)
-            POST("/fraud", personHandler::fraudPerson)
-            POST("/unfraud", personHandler::unFraudPerson)
+            GET("/delete/{personId}", personHandler::deletePerson)
+            GET("/flag/{personId}", personHandler::flagPerson)
+            GET("/id/{personId}", personHandler::getPersonById)
+            GET("/fraud/{personId}", personHandler::fraudPerson)
+            GET("/unfraud/{personId}", personHandler::unFraudPerson)
         }
     }
 }

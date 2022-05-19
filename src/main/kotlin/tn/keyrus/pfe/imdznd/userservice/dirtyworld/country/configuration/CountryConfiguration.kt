@@ -23,14 +23,20 @@ class CountryConfiguration {
     fun countryService(
         countryDatabaseRepository: CountryRepository,
         personService: PersonService
-    ): CountryService =
-        CountryService(countryDatabaseRepository,personService)
+    ) =
+        CountryService(
+            countryDatabaseRepository,
+            personService
+        )
 
     @Bean
     fun countryHandler(
         countryService: CountryService,
-         messageSource: MessageSource
-    ): CountryHandler =
-        CountryHandler(countryService,messageSource)
+        messageSource: MessageSource
+    ) =
+        CountryHandler(
+            countryService,
+            messageSource
+        )
 
 }

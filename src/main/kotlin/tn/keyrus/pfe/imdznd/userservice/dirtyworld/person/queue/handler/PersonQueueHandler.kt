@@ -7,9 +7,8 @@ class PersonQueueHandler(
 ) {
     suspend fun flagPersonHandler(personId: String) {
         try {
-            val id = personId.toLong()
-            personService.flagPerson(id)
-        }catch (exception:Exception){
+            personService.flagPerson(personId.toLong())
+        } catch (exception: Exception) {
             print(exception)
         }
     }

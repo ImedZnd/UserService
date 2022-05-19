@@ -15,8 +15,9 @@ class CountryRouter {
         "/country".nest {
             GET("/all") { countryHandler.getAllCountries() }
             GET("/personPerCountry") { countryHandler.getAllCountryByNumberOfPersons() }
-            GET("/code/{code}",countryHandler::getCountryByCode)
-            GET("/fraudPerCountry/{code}", countryHandler::getAllIsFraudstersByCountry)
+            GET("/code/{code}", countryHandler::getCountryByCode)
+            GET("/fraudPerCountry/{isFraud}", countryHandler::getAllIsFraudstersByCountry)
+            GET("/allPersonInAllCountry") { countryHandler.getAllPersonsInAllCountry() }
         }
     }
 }

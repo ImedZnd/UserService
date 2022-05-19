@@ -11,12 +11,14 @@ import org.springframework.web.reactive.function.server.ServerResponse.*
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.service.CountryService
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.service.PersonService
-import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.*
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.date.DateDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.daterange.DateRangeDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.fraudsterandcountrycode.FraudsterAndCountryCodeDTO
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.model.dto.yearrange.YearRangeDTO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dto.PersonDTO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dto.PersonDTO.Companion.toPersonDTO
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.Year
 import java.util.*
 
 class PersonHandler(
@@ -29,14 +31,16 @@ class PersonHandler(
             personService.getAllPersons()
         )
 
-    suspend fun getPersonById(serverRequest: ServerRequest): ServerResponse {
-        serverRequest.awaitBody<PersonIdDTO>().id.let { id ->
-            val foundPerson = personService.getPersonByID(id)
-            if(foundPerson.isEmpty)
-                return notFoundServerResponse()
-            return okServerResponseOneElement(foundPerson.get())
-        }
-    }
+    suspend fun getPersonById(serverRequest: ServerRequest): ServerResponse =
+        getPersonIdFromServerRequestReturnPeronOrErrorIfNotExist(serverRequest)
+            .let {
+                if (it.isLeft)
+                    it.left
+                else {
+                    val deletedPerson = personService.getPersonByID(it.get())
+                    okServerResponseOneElement(deletedPerson.get())
+                }
+            }
 
     suspend fun getAllPersonByCountry(serverRequest: ServerRequest) =
         if (countryService.getCountryByCode(
@@ -62,17 +66,20 @@ class PersonHandler(
             .let { yearRange ->
                 val yearRangeCheck = yearRange.checkStartYearAndEndYear()
                 if (yearRangeCheck.isPresent)
-                    if (yearRangeCheck.get() is YearRangeDTO.YearRageError.EndYearBeforeStartYearError)
-                        yearRangeCheck.get().badRequestError("EndDateBeforeStartDateError")
-                    else
-                        yearRangeCheck.get().badRequestError("YearIsNotValidError")
+                    returnYearRangeErrors(yearRangeCheck)
                 else okServerResponse(
                     personService.getAllPersonByBirthYearBetween(
-                        yearRange.startYear.toYear().get(),
-                        yearRange.endYear.toYear().get()
+                        yearRange.startYear,
+                        yearRange.endYear
                     )
                 )
             }
+
+    private suspend fun returnYearRangeErrors(dateRange: Optional<out YearRangeDTO.YearRageError>) =
+        if (dateRange.get() is YearRangeDTO.YearRageError.EndYearBeforeStartYearError)
+            dateRange.get().badRequestError("EndDateBeforeStartDateError")
+        else
+            dateRange.get().badRequestError("YearIsNotValidError")
 
     private suspend fun YearRangeDTO.YearRageError.badRequestError(error: String) =
         badRequest()
@@ -83,34 +90,42 @@ class PersonHandler(
             .buildAndAwait()
 
     suspend fun getAllPersonsByBirthYearBefore(serverRequest: ServerRequest) =
-        yearOrErrorOfEitherBirthYearBefore(extractYearFromServerRequest(serverRequest))
+        extractYearFromServerRequest(serverRequest)
+            .let { yearOrErrorOfEitherBirthYearBefore(it) }
 
     suspend fun getAllPersonsByBirthYearAfter(serverRequest: ServerRequest) =
-        yearOrErrorOfEitherBirthYearAfter(extractYearFromServerRequest(serverRequest))
+        extractYearFromServerRequest(serverRequest)
+            .let { yearOrErrorOfEitherBirthYearAfter(it) }
 
-    private suspend fun yearOrErrorOfEitherBirthYearBefore(either: Either<YearDTO.YearConversionError, Year>): ServerResponse =
+    private suspend fun yearOrErrorOfEitherBirthYearBefore(either: Either<String, Int>): ServerResponse =
         if (either.isLeft)
             badRequestServerResponse("YearConversionError")
         else okServerResponse(
             personService.getAllPersonByBirthYearBefore(either.get())
         )
 
-    private suspend fun yearOrErrorOfEitherBirthYearAfter(either: Either<YearDTO.YearConversionError, Year>) =
+    private suspend fun yearOrErrorOfEitherBirthYearAfter(either: Either<String, Int>) =
         if (either.isLeft)
-            badRequestServerResponse("YearConversionError")
+            badRequestServerResponse(either.left)
         else okServerResponse(
             personService.getAllPersonByBirthYearAfter(either.get())
         )
 
-    private suspend fun extractYearFromServerRequest(serverRequest: ServerRequest) =
-        serverRequest
-            .awaitBody<YearDTO>()
-            .toYear()
+    private fun extractYearFromServerRequest(serverRequest: ServerRequest): Either<String, Int> =
+        try {
+            val year = serverRequest.pathVariable("year").toInt()
+            if (year < 0) {
+                Either.left("YearIsNotValidError")
+            } else Either.right(year)
+        } catch (exception: Exception) {
+            Either.left("YearIsNotValidError")
+        }
 
     suspend fun getAllPersonsByBirthYear(serverRequest: ServerRequest) =
-        yearOrErrorOfEitherBirthYear(extractYearFromServerRequest(serverRequest))
+        extractYearFromServerRequest(serverRequest)
+            .let { yearOrErrorOfEitherBirthYear(it) }
 
-    private suspend fun yearOrErrorOfEitherBirthYear(either: Either<YearDTO.YearConversionError, Year>): ServerResponse =
+    private suspend fun yearOrErrorOfEitherBirthYear(either: Either<String, Int>): ServerResponse =
         if (either.isLeft)
             badRequestServerResponse("YearConversionError")
         else okServerResponse(
@@ -187,6 +202,29 @@ class PersonHandler(
             )
         )
 
+    suspend fun getAllPersonByTermsVersion(serverRequest: ServerRequest) =
+        serverRequest.awaitBody<DateDTO>()
+            .let { dateDTO ->
+                val date = dateDTO.toLocalDate()
+                if (date.isLeft)
+                    badRequestServerResponse("DateIsNotValidError")
+                else okServerResponse(
+                    personService.getAllPersonByTermsVersion(
+                        date.get()
+                    )
+                )
+            }
+
+    suspend fun countAllPersonByBirthYear(serverRequest: ServerRequest) =
+        try {
+            val year = serverRequest.pathVariable("year").toInt()
+            okServerResponseCount(
+                personService.countByBirthYear(year)
+            )
+        } catch (exception: Exception) {
+            badRequestServerResponse("YearIsNotValidError")
+        }
+
     suspend fun getAllPersonByIsFraud(serverRequest: ServerRequest) =
         okServerResponse(
             personService.getAllPersonByIsFraudster(
@@ -214,12 +252,9 @@ class PersonHandler(
         serverRequest.awaitBody<DateRangeDTO>()
             .let { dateRange ->
                 val dateRangeCheck = dateRange.checkStartDateAndEndDate()
-                if (dateRangeCheck.isPresent) {
-                    if (dateRangeCheck.get() is DateRangeDTO.DateRangeError.DateIsNotValidError)
-                        dateRangeCheck.get().badRequestError("DateIsNotValidError")
-                    else
-                        dateRangeCheck.get().badRequestError("EndDateBeforeStartDateError")
-                } else
+                if (dateRangeCheck.isPresent)
+                    returnDateErrors(dateRangeCheck)
+                else
                     okServerResponse(
                         personService
                             .getAllPersonByTermsVersionBetween(
@@ -234,7 +269,7 @@ class PersonHandler(
             .let { dateRange ->
                 val dateRangeCheck = dateRange.checkStartDateAndEndDate()
                 if (dateRangeCheck.isPresent)
-                    badRequestServerResponse("DateRangeError")
+                    returnDateErrors(dateRangeCheck)
                 else
                     okServerResponse(
                         personService
@@ -244,6 +279,12 @@ class PersonHandler(
                             )
                     )
             }
+
+    private suspend fun returnDateErrors(dateRange: Optional<out DateRangeDTO.DateRangeError>) =
+        if (dateRange.get() is DateRangeDTO.DateRangeError.DateIsNotValidError)
+            dateRange.get().badRequestError("DateIsNotValidError")
+        else
+            dateRange.get().badRequestError("EndDateBeforeStartDateError")
 
     suspend fun getAllPersonByCreatedDateAfter(serverRequest: ServerRequest) =
         serverRequest.awaitBody<DateDTO>()
@@ -311,87 +352,110 @@ class PersonHandler(
                 )
             }
 
-    suspend fun savePerson(serverRequest: ServerRequest): ServerResponse {
+    suspend fun savePerson(serverRequest: ServerRequest) =
         serverRequest.awaitBody<PersonDTO>()
             .let { person ->
                 val personToSave = person.toPerson()
-                if (personToSave.isRight) {
-                    val personSaved = personService.savePerson(personToSave.get())
-                    return if (personSaved.isRight)
-                        okServerResponseOneElement(personSaved.get())
-                    else
-                        badRequestServerResponse("PersonExist")
-                }
-                return badRequestServerResponse("BadPersonInRequest")
+                if (personToSave.isRight)
+                    savePeronIfNotExistOrBadRequest(personToSave.get())
+                else badRequestServerResponse("BadPersonInRequest")
             }
+
+    private suspend fun savePeronIfNotExistOrBadRequest(person: Person): ServerResponse {
+        val personSaved = personService.savePerson(person)
+        return if (personSaved.isRight)
+            okServerResponseOneElement(personSaved.get())
+        else
+            badRequestServerResponse("PersonExist")
     }
 
-    suspend fun updatePerson(serverRequest: ServerRequest): ServerResponse {
+    suspend fun updatePerson(serverRequest: ServerRequest) =
         serverRequest.awaitBody<PersonDTO>()
             .let { person ->
                 val personToUpdate = person.toPerson()
-                if (personToUpdate.isRight) {
-                    val personUpdated = personService.updatePerson(personToUpdate.get())
-                    return if (personUpdated.isRight) {
-                        okServerResponseOneElement(personUpdated.get())
-                    } else {
-                        personNotFoundError()
-                    }
-                }
-                return badRequestServerResponse("BadPersonInRequest")
+                if (personToUpdate.isRight)
+                    personService.updatePerson(personToUpdate.get())
+                        .let {
+                            updatePersonOrPersonNotFound(it)
+                        }
+                else badRequestServerResponse("BadPersonInRequest")
             }
-    }
 
-    suspend fun deletePerson(serverRequest: ServerRequest): ServerResponse {
-        return try {
-            val id = serverRequest.awaitBody<PersonIdDTO>().id
-            val deletedPerson = personService.deletePerson(id)
-            if (deletedPerson.isRight) {
-                okServerResponseOneElement(deletedPerson.get())
-            } else personNotFoundError()
-        } catch (exception: Exception) {
-            badRequestServerResponse("BadPersonIdInRequest")
-        }
-    }
 
-    suspend fun flagPerson(serverRequest: ServerRequest): ServerResponse {
-        return try {
-            val id = serverRequest.awaitBody<PersonIdDTO>().id
-            val flagedPerson = personService.flagPerson(id)
-            personToFlagOrFraudOrUnFraud(flagedPerson)
-        } catch (exception: Exception) {
-            badRequestServerResponse("BadPersonIdInRequest")
-        }
-    }
+    private suspend fun updatePersonOrPersonNotFound(either: Either<PersonService.PersonServiceError, Person>) =
+        if (either.isRight)
+            okServerResponseOneElement(either.get())
+        else
+            personNotFoundError()
 
-    suspend fun fraudPerson(serverRequest: ServerRequest): ServerResponse {
-        return try {
-            val id = serverRequest.awaitBody<PersonIdDTO>().id
-            val fraudedPerson = personService.fraudPerson(id)
-            personToFlagOrFraudOrUnFraud(fraudedPerson)
-        } catch (exception: Exception) {
-            badRequestServerResponse("BadPersonIdInRequest")
-        }
-    }
 
-    suspend fun unFraudPerson(serverRequest: ServerRequest): ServerResponse {
-        return try {
-            val id = serverRequest.awaitBody<PersonIdDTO>().id
-            val fraudedPerson = personService.unFraudPerson(id)
-            personToFlagOrFraudOrUnFraud(fraudedPerson)
+    suspend fun deletePerson(serverRequest: ServerRequest): ServerResponse =
+        getPersonIdFromServerRequestReturnPeronOrErrorIfNotExist(serverRequest)
+            .let {
+                if (it.isLeft)
+                    it.left
+                else {
+                    val deletedPerson = personService.deletePerson(it.get())
+                    if (deletedPerson.isLeft)
+                        notFoundServerResponse()
+                    else okServerResponseOneElement(deletedPerson.get())
+                }
+            }
+
+
+    suspend fun flagPerson(serverRequest: ServerRequest): ServerResponse =
+        getPersonIdFromServerRequestReturnPeronOrErrorIfNotExist(serverRequest)
+            .let {
+                if (it.isLeft)
+                    it.left
+                else {
+                    val flagedPerson = personService.flagPerson(it.get())
+                    personToFlagOrFraudOrUnFraud(flagedPerson)
+                }
+            }
+
+    suspend fun fraudPerson(serverRequest: ServerRequest): ServerResponse =
+        getPersonIdFromServerRequestReturnPeronOrErrorIfNotExist(serverRequest)
+            .let {
+                if (it.isLeft)
+                    it.left
+                else {
+                    val fraudedPerson = personService.fraudPerson(it.get())
+                    personToFlagOrFraudOrUnFraud(fraudedPerson)
+                }
+            }
+
+    suspend fun unFraudPerson(serverRequest: ServerRequest): ServerResponse =
+        getPersonIdFromServerRequestReturnPeronOrErrorIfNotExist(serverRequest)
+            .let {
+                if (it.isLeft)
+                    it.left
+                else {
+                    val fraudedPerson = personService.unFraudPerson(it.get())
+                    personToFlagOrFraudOrUnFraud(fraudedPerson)
+                }
+            }
+
+    private suspend fun getPersonIdFromServerRequestReturnPeronOrErrorIfNotExist(serverRequest: ServerRequest): Either<ServerResponse, Long> =
+        try {
+            val personId = serverRequest.pathVariable("personId").toLong()
+            val person = personService.getPersonByID(personId)
+            if (person.isEmpty)
+                Either.left(notFoundServerResponse())
+            else Either.right(personId)
         } catch (exception: Exception) {
-            badRequestServerResponse("BadPersonIdInRequest")
+            Either.left(badRequestServerResponse("BadPersonIdInPath"))
         }
-    }
 
     private suspend fun personToFlagOrFraudOrUnFraud(person: Either<PersonService.PersonServiceError, Person>): ServerResponse =
         if (person.isLeft) {
-            if (person.left is PersonService.PersonServiceError.PersonFraudsterServiceError) {
-                badRequestServerResponse("PersonFraudsterServiceError")
+            when (person.left) {
+                is PersonService.PersonServiceError.PersonFraudsterServiceError ->
+                    badRequestServerResponse("PersonFraudsterServiceError")
+                is PersonService.PersonServiceError.PersonServicePersonNotExistError ->
+                    personNotFoundError()
+                else -> badRequestServerResponse("PersonFraudsterServiceError")
             }
-            if (person.left is PersonService.PersonServiceError.PersonServicePersonNotExistError)
-                personNotFoundError()
-            else badRequestServerResponse("PersonFraudsterServiceError")
         } else
             okServerResponseOneElement(person.get())
 

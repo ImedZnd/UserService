@@ -6,6 +6,6 @@ import java.util.*
 
 interface CountryRepository {
     fun findAllCountry(): Flow<Country>
-    suspend fun findCountryByCode(code : String): Optional<Country>
+    suspend fun findCountryByCode(code: String): Optional<Country>
     suspend fun saveCountry(country: Country): Optional<Country>
 }

@@ -15,55 +15,51 @@ class CountryHandler(
     suspend fun getAllCountries() =
         ServerResponse.ok()
             .bodyAndAwait(
-                countryService
-                    .getAllCountries()
-                    .map {
-                        it.toCountryDTO()
-                    }
+                countryService.getAllCountries()
+                    .map { it.toCountryDTO() }
             )
 
-    suspend fun getCountryByCode(request: ServerRequest): ServerResponse {
-        val countryCode =
-            countryService
-                .getCountryByCode(
-                    request.pathVariable("code")
-                )
-        return if (countryCode.isPresent)
-            ServerResponse
-                .ok()
-                .bodyValueAndAwait(
-                    countryCode.get()
-                )
-        else ServerResponse
-            .badRequest()
-            .header("error", headerErrorInBadRequestError("CountryCodeError"))
-            .buildAndAwait()
-
-    }
+    suspend fun getCountryByCode(request: ServerRequest) =
+        countryService.getCountryByCode(request.pathVariable("code"))
+            .let {
+                if (it.isPresent)
+                    ServerResponse
+                        .ok()
+                        .bodyValueAndAwait(
+                            it.get().toCountryDTO()
+                        )
+                else ServerResponse
+                    .badRequest()
+                    .header("error", headerErrorInBadRequestError())
+                    .buildAndAwait()
+            }
 
     suspend fun getAllCountryByNumberOfPersons() =
         ServerResponse
             .ok()
             .bodyAndAwait(
-                countryService
-                    .getAllCountryByNumberOfPersons()
+                countryService.getAllCountryByNumberOfPersons()
             )
 
     suspend fun getAllIsFraudstersByCountry(request: ServerRequest) =
         ServerResponse.ok()
             .bodyAndAwait(
-                countryService
-                    .getAllIsFraudstersByCountry(
-                        request.pathVariable("code").toBoolean()
-                    )
+                countryService.getAllIsFraudstersByCountryByBoolean(
+                    request.pathVariable("isFraud").toBoolean()
+                )
             )
 
-    private fun headerErrorInBadRequestError(string: String) =
+    suspend fun getAllPersonsInAllCountry() =
+        ServerResponse.ok()
+            .bodyAndAwait(
+                countryService.getAllPersonsInAllCountry()
+            )
+
+    private fun headerErrorInBadRequestError() =
         try {
-            messageSource.getMessage(string, null, Locale.US)
+            messageSource.getMessage("CountryCodeError", null, Locale.US)
         } catch (exception: NoSuchMessageException) {
             "No Such Message Exception Raised"
         }
 
-    object CountryWithCodeNotFound
 }

@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.MessageSource
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -14,7 +15,6 @@ import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.repository.CountryRep
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.dto.CountryDTO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.repository.CountryReactiveRepository
-import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.rest.handler.CountryHandler
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.initializer.Initializer
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonDAO.Companion.toDAO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonInCountry
@@ -22,7 +22,7 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonsByCountry
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReactiveRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
+import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
@@ -33,6 +33,8 @@ internal class CountryRouterTest(
     @Autowired private val countryReactiveRepository: CountryReactiveRepository,
     @Autowired private val personReactiveRepository: PersonReactiveRepository,
     @Autowired private val countryRepository: CountryRepository,
+    @Autowired private val messageSource: MessageSource,
+
     ){
 
     @BeforeAll
@@ -105,6 +107,32 @@ internal class CountryRouterTest(
     }
 
     @Test
+    fun `list of one element if repository have one country and person`() {
+        runBlocking {
+            val country =
+                Country.of(
+                    "AF",
+                    "Afghanistan",
+                    "AFG",
+                    4,
+                    93
+                )
+            countryRepository
+                .saveCountry(
+                    country.get()
+                )
+            webTestClient
+                .get()
+                .uri("/country/allPersonInAllCountry")
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBodyList<PersonInCountry>()
+                .hasSize(1)
+        }
+    }
+
+    @Test
     fun `list of one element if repository have one on get by code`() {
         runBlocking {
             val code = "AF"
@@ -141,7 +169,7 @@ internal class CountryRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -184,7 +212,7 @@ internal class CountryRouterTest(
                     numCode,
                     phoneCode
                 ).get()
-            val x = countryRepository.saveCountry(countrySave)
+            countryRepository.saveCountry(countrySave)
             personReactiveRepository.save(resultPerson.toDAO()).blockOptional().get()
             webTestClient
                 .get()
@@ -207,7 +235,7 @@ internal class CountryRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -250,7 +278,7 @@ internal class CountryRouterTest(
                     numCode,
                     phoneCode
                 ).get()
-            val x = countryRepository.saveCountry(countrySave)
+            countryRepository.saveCountry(countrySave)
             val flag = true
             personReactiveRepository.save(resultPerson.toDAO()).blockOptional().get()
             webTestClient
@@ -274,7 +302,7 @@ internal class CountryRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -366,7 +394,7 @@ internal class CountryRouterTest(
             val phoneCode = 595
             val seqUser = 2993
             val failedSignInAttempts = 0
-            val birthYear = Year.of(1975)
+            val birthYear = 1975
             val state = Person.PersonState.ACTIVE
             val createdDate = LocalDateTime.of(
                 2020,
@@ -409,7 +437,7 @@ internal class CountryRouterTest(
                     numCode,
                     phoneCode
                 ).get()
-            val x = countryRepository.saveCountry(countrySave)
+            countryRepository.saveCountry(countrySave)
             val flag = "true"
             personReactiveRepository.save(resultPerson.toDAO()).awaitSingleOrNull()
             webTestClient
@@ -429,12 +457,12 @@ internal class CountryRouterTest(
             val code = "ff"
             webTestClient
                 .get()
-                .uri("/code/$code")
+                .uri("/country/code/$code")
                 .exchange()
                 .expectStatus()
-                .isNotFound
-                .expectBodyList<CountryHandler.CountryWithCodeNotFound>()
-                .hasSize(1)
+                .isBadRequest
+                .expectHeader()
+                .valueMatches("error", messageSource.getMessage("CountryCodeError", null, Locale.US))
         }
     }
 

@@ -31,5 +31,4 @@ interface PersonReactiveRepository : ReactiveCrudRepository<PersonDAO, Long> {
     fun findAllByFraudster(isFraudster: Boolean): Flux<PersonDAO>
     fun findAllByFraudsterAndCountryCode(isFraudster: Boolean, country: String): Flux<PersonDAO>
     fun findAllByPhoneCountryContaining(phoneCountry: String): Flux<PersonDAO>
-
 }

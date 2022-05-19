@@ -13,7 +13,7 @@ class PersonQueueListener(
 ) {
 
     @Bean
-    fun flagPersonTransactionQueueListener() =
+    fun flagTransactionQueueListener() =
         Consumer { message: Message<String> ->
             runBlocking {
                 personQueueHandler.flagPersonHandler(

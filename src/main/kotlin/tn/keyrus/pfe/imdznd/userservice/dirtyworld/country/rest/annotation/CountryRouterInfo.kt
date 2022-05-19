@@ -13,6 +13,7 @@ import org.springdoc.core.annotations.RouterOperations
 import org.springframework.web.bind.annotation.RequestMethod
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.dto.CountryDTO
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.country.rest.handler.CountryHandler
+import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonInCountry
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonsByCountry
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -31,6 +32,23 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao.PersonsByCountry
                     responseCode = "200",
                     description = "get all country successfully.",
                     content = [Content(schema = Schema(implementation = CountryDTO::class))]
+                )
+            ]
+        )
+    ),
+    RouterOperation(
+        path = "/country/allPersonInAllCountry",
+        method = [RequestMethod.GET],
+        beanClass = CountryHandler::class,
+        beanMethod = "getAllPersonsInAllCountry",
+        operation = Operation(
+            operationId = "getAllPersonsInAllCountry",
+            method = "GET",
+            responses = [
+                ApiResponse(
+                    responseCode = "200",
+                    description = "get all person in all country successfully.",
+                    content = [Content(schema = Schema(implementation = PersonInCountry::class))]
                 )
             ]
         )

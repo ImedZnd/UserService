@@ -21,7 +21,6 @@ import tn.keyrus.pfe.imdznd.userservice.dirtyworld.framework.initializer.Initial
 import tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.repository.PersonReactiveRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
@@ -89,7 +88,7 @@ internal class PersonQueueListenerTest(
                 val phoneCode = 595
                 val seqUser = 2993
                 val failedSignInAttempts = 0
-                val birthYear = Year.of(1975)
+                val birthYear = 1975
                 val state = Person.PersonState.ACTIVE
                 val createdDate = LocalDateTime.of(
                     2020,
@@ -140,8 +139,8 @@ internal class PersonQueueListenerTest(
                 val resultPersons =
                     personService.getAllPersons().count()
                     rabbitTemplate.convertAndSend(
-                        "flagpersontransactionexchange",
-                        "flagpersontransactionroutingkey",
+                        "flagtransactionexchange",
+                        "flagtransactionroutingkey",
                         savedPerson.personId.toString()
                     )
 
