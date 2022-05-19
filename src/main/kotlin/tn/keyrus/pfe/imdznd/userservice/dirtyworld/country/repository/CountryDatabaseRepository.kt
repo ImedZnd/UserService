@@ -22,7 +22,7 @@ class CountryDatabaseRepository(
             .map { it.get() }
 
     override suspend fun findCountryByCode(code: String) =
-        mapCountryOnEitherReturnCountryOrIOError { it.findById(code) }
+        mapCountryOnEitherReturnCountryOrIOError { it.findByCode(code) }
 
     override suspend fun saveCountry(country: Country) =
         mapCountryOnEitherReturnCountryOrIOError { it.save(country.toDAO()) }

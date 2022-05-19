@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Assertions.assertAll
 import org.springframework.amqp.rabbit.core.RabbitAdmin
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.r2dbc.core.R2dbcEntityOperations
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
@@ -34,7 +33,7 @@ internal class PersonDatabaseRepositoryTest(
     @Autowired private val rabbitAdmin: RabbitAdmin,
     @Autowired private val personQueuePublisher: PersonQueuePublisher,
 
-) {
+    ) {
     @BeforeAll
     fun beforeAll() {
         personReactiveRepository.deleteAll().subscribe()
@@ -132,7 +131,6 @@ internal class PersonDatabaseRepositoryTest(
                 .saveCountry(
                     countrySave
                 )
-//            r2dbcEntityOperations.insert(countrySave).awaitSingleOrNull()
             personDatabaseRepository.savePerson(resultPerson)
             val result =
                 personDatabaseRepository.findAllPerson()

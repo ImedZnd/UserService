@@ -13,6 +13,7 @@ data class LocalDateDTO(
     val second: Int,
     val nano: Int
 ) {
+
     companion object {
         fun LocalDateTime.toLocalDateDTO() =
             LocalDateDTO(
