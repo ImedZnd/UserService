@@ -206,7 +206,7 @@ internal class PersonServiceTest(
             val result =
                 personService.getAllPersonsByBirthYear(birthYear)
             val resultQueue = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
-
+            Thread.sleep(1000)
             val y = result.count()
             assert(y == 1)
             assert(resultQueue == 1)
@@ -2499,6 +2499,7 @@ internal class PersonServiceTest(
             val y = result.count()
             val resultf = rabbitAdmin.getQueueInfo("updatepersonqueue").messageCount
             val resultl = rabbitAdmin.getQueueInfo("savepersonqueue").messageCount
+            Thread.sleep(1000)
             assert(resultf == 1)
             assert(resultl == 1)
             assert(y == 1)
@@ -2639,6 +2640,7 @@ internal class PersonServiceTest(
             val y = result.count()
             val numberOfFlags = result.first().numberOfFlags
             val resultf = rabbitAdmin.getQueueInfo("flagpersonqueue").messageCount
+            Thread.sleep(1000)
             assert(y == 1)
             assert(numberOfFlags == 7)
             assert(resultf == 1)
@@ -2733,6 +2735,7 @@ internal class PersonServiceTest(
             val y = result.count()
             val fraud = result.first().fraudster
             val resultf = rabbitAdmin.getQueueInfo("fraudpersonqueue").messageCount
+            Thread.sleep(1000)
             assert(y == 1)
             assert(fraud)
             assert(resultf == 1)
