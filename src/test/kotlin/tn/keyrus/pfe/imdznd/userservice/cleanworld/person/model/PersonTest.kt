@@ -2,32 +2,18 @@ package tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
-import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
 
 internal class PersonTest {
 
     @Test
     fun `valid test Person non empty field`() {
         val code = "PY"
-        val name = "Paraguay"
-        val code3 = "pRY"
-        val numCode = 600
-        val phoneCode = 595
         val seqUser = 2993
         val failedSignInAttempts = 0
-        val birthYear = Year.of(1975)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
-        val country =
-            Country.of(
-                code,
-                name,
-                code3,
-                numCode,
-                phoneCode
-            ).get()
         val createdDate = LocalDateTime.of(
             2020,
             10,
@@ -47,10 +33,11 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
-            country,
+            code,
             createdDate,
             termsVersion,
             phoneCountry,
@@ -65,7 +52,7 @@ internal class PersonTest {
             { assert(result.seqUser == seqUser) },
             { assert(result.failedSignInAttempts == failedSignInAttempts) },
             { assert(result.birthYear == birthYear) },
-            { assert(result.country == country) },
+            { assert(result.countryCode == code) },
             { assert(result.createdDate == createdDate) },
             { assert(result.termsVersion == termsVersion) },
             { assert(result.phoneCountry == phoneCountry) },
@@ -80,21 +67,9 @@ internal class PersonTest {
     @Test
     fun `seqUser error test Person Code negative field`() {
         val code = "PY"
-        val name = "Paraguay"
-        val code3 = "pRY"
-        val numCode = 600
-        val phoneCode = 595
-        val country =
-            Country.of(
-                code,
-                name,
-                code3,
-                numCode,
-                phoneCode
-            ).get()
         val seqUser = -2
         val failedSignInAttempts = 0
-        val birthYear = Year.of(1975)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,
@@ -115,10 +90,11 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
-            country,
+            code,
             createdDate,
             termsVersion,
             phoneCountry,
@@ -137,21 +113,9 @@ internal class PersonTest {
     @Test
     fun `failedSignInAttempts error test Person Code negative field`() {
         val code = "PY"
-        val name = "Paraguay"
-        val code3 = "pRY"
-        val numCode = 600
-        val phoneCode = 595
-        val country =
-            Country.of(
-                code,
-                name,
-                code3,
-                numCode,
-                phoneCode
-            ).get()
         val seqUser = 34
         val failedSignInAttempts = -4
-        val birthYear = Year.of(1975)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,
@@ -172,10 +136,11 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
-            country,
+            code,
             createdDate,
             termsVersion,
             phoneCountry,
@@ -194,21 +159,9 @@ internal class PersonTest {
     @Test
     fun `birthYear error Person Year in in the future`() {
         val code = "PY"
-        val name = "Paraguay"
-        val code3 = "pRY"
-        val numCode = 600
-        val phoneCode = 595
-        val country =
-            Country.of(
-                code,
-                name,
-                code3,
-                numCode,
-                phoneCode
-            ).get()
         val seqUser = 45
         val failedSignInAttempts = 0
-        val birthYear = Year.of(2050)
+        val birthYear = 2500
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,
@@ -229,10 +182,11 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
-            country,
+            code,
             createdDate,
             termsVersion,
             phoneCountry,
@@ -251,21 +205,9 @@ internal class PersonTest {
     @Test
     fun `createdDate error Person createdDate in the future`() {
         val code = "PY"
-        val name = "Paraguay"
-        val code3 = "pRY"
-        val numCode = 600
-        val phoneCode = 595
-        val country =
-            Country.of(
-                code,
-                name,
-                code3,
-                numCode,
-                phoneCode
-            ).get()
         val seqUser = 45
         val failedSignInAttempts = 0
-        val birthYear = Year.of(2020)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2050,
@@ -286,10 +228,11 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
-            country,
+            code,
             createdDate,
             termsVersion,
             phoneCountry,
@@ -308,21 +251,9 @@ internal class PersonTest {
     @Test
     fun `termsVersion error Person termsVersion in the future`() {
         val code = "PY"
-        val name = "Paraguay"
-        val code3 = "pRY"
-        val numCode = 600
-        val phoneCode = 595
-        val country =
-            Country.of(
-                code,
-                name,
-                code3,
-                numCode,
-                phoneCode
-            ).get()
         val seqUser = 45
         val failedSignInAttempts = 0
-        val birthYear = Year.of(2020)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,
@@ -343,10 +274,11 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
-            country,
+            code,
             createdDate,
             termsVersion,
             phoneCountry,
@@ -365,21 +297,9 @@ internal class PersonTest {
     @Test
     fun `phoneCountry error Person phoneCountry is empty`() {
         val code = "PY"
-        val name = "Paraguay"
-        val code3 = "pRY"
-        val numCode = 600
-        val phoneCode = 595
-        val country =
-            Country.of(
-                code,
-                name,
-                code3,
-                numCode,
-                phoneCode
-            ).get()
         val seqUser = 45
         val failedSignInAttempts = 0
-        val birthYear = Year.of(2020)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,
@@ -400,10 +320,11 @@ internal class PersonTest {
         val numberOfFlags = 6
         val fraudster = false
         val result = Person.of(
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
-            country,
+            code,
             createdDate,
             termsVersion,
             phoneCountry,
@@ -422,21 +343,9 @@ internal class PersonTest {
     @Test
     fun `numberOfFlags error Person numberOfFlags is negative`() {
         val code = "PY"
-        val name = "Paraguay"
-        val code3 = "pRY"
-        val numCode = 600
-        val phoneCode = 595
-        val country =
-            Country.of(
-                code,
-                name,
-                code3,
-                numCode,
-                phoneCode
-            ).get()
         val seqUser = 45
         val failedSignInAttempts = 0
-        val birthYear = Year.of(2020)
+        val birthYear = 1975
         val state = Person.PersonState.ACTIVE
         val createdDate = LocalDateTime.of(
             2020,
@@ -457,10 +366,11 @@ internal class PersonTest {
         val numberOfFlags = -5
         val fraudster = false
         val result = Person.of(
+            5,
             seqUser,
             failedSignInAttempts,
             birthYear,
-            country,
+            code,
             createdDate,
             termsVersion,
             phoneCountry,

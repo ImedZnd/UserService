@@ -6,7 +6,7 @@ import java.util.*
 class Country private constructor(
     val code: String,
     val name: String,
-    val code3: String,
+    val codeISO: String,
     val numCode: Int,
     val phoneCode: Int,
 ) {
@@ -16,32 +16,33 @@ class Country private constructor(
         fun of(
             code: String,
             name: String,
-            code3: String,
+            codeISO: String,
             numCode: Int,
             phoneCode: Int,
         ) =
             checkCountry(
                 code,
                 name,
-                code3,
+                codeISO,
                 numCode,
                 phoneCode,
-            ).let {
-                checkCountryErrors(
-                    it,
-                    code,
-                    name,
-                    code3,
-                    numCode,
-                    phoneCode,
-                )
-            }
+            )
+                .let {
+                    checkCountryErrors(
+                        it,
+                        code,
+                        name,
+                        codeISO,
+                        numCode,
+                        phoneCode,
+                    )
+                }
 
         private fun checkCountryErrors(
             countryErrors: Sequence<CountryError> = emptySequence(),
             code: String,
             name: String,
-            code3: String,
+            codeISO: String,
             numCode: Int,
             phoneCode: Int
         ): Either<Sequence<CountryError>, Country> =
@@ -50,7 +51,7 @@ class Country private constructor(
                     Country(
                         code,
                         name,
-                        code3,
+                        codeISO,
                         numCode,
                         phoneCode,
                     )
@@ -62,14 +63,14 @@ class Country private constructor(
         private fun checkCountry(
             code: String,
             name: String,
-            code3: String,
+            codeISO: String,
             numCode: Int,
             phoneCode: Int
-        ): Sequence<CountryError> =
+        ) =
             sequenceOf(
                 checkCode(code),
                 checkName(name),
-                checkCode3(code3),
+                checkCodeISO(codeISO),
                 checkNumCode(numCode),
                 checkPhoneCode(phoneCode),
             )
@@ -88,11 +89,11 @@ class Country private constructor(
                 CountryError.CountryNumCodeError
             ) { numCode > 0 }
 
-        private fun checkCode3(code3: String) =
+        private fun checkCodeISO(codeISO: String) =
             checkField(
-                code3,
+                codeISO,
                 CountryError.CountryCode3Error,
-            ) { code3.length == 3 }
+            ) { codeISO.length == 3 }
 
         private fun checkName(name: String) =
             checkField(

@@ -10,8 +10,55 @@ spring:
     url: r2dbc:postgresql://localhost:5432/postgres
     username: postgres
     password: example
+  cloud:
+    function:
+      definition: flagTransactionQueueListener;
+    stream:
+      bindings:
+        flagTransactionQueueListener-in-0:
+          destination: flagtransactionexchange
+          group: flagtransactionpersonqueue
+      rabbit:
+        bindings:
+          flagTransactionQueueListener-in-0:
+            consumer:
+              queueNameGroupOnly: true
+              binding-routing-key-delimiter: ","
+              bindingRoutingKey: "flagtransactionpersonroutingkey"
+              exchangeType: fanout
+              autoBindDlq: false
+              maxConcurrency: 10
+              durableSubscription: true
+              dlqTtl: 900000
+
 logging:
   level:
     org:
       springframework:
         r2dbc: DEBUG
+person:
+  event:
+    save:
+      queue: savepersonqueue
+      exchange: savepersonexchange
+      routingKey: savepersonroutingkey
+    update:
+      queue: updatepersonqueue
+      exchange: updatepersonexchange
+      routingkey: updatepersonroutingkey
+    delete:
+      queue: deletepersonqueue
+      exchange: deletepersonexchange
+      routingkey: deletepersonroutingkey
+    flag:
+      queue: flagpersonqueue
+      exchange: flagpersonexchange
+      routingkey: flagpersonroutingkey
+    fraud:
+      queue: fraudpersonqueue
+      exchange: fraudpersonexchange
+      routingkey: fraudpersonroutingkey
+    unfraud:
+      queue: unfraudpersonqueue
+      exchange: unfraudpersonexchange
+      routingkey: unfraudpersonroutingkey

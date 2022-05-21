@@ -1,22 +1,23 @@
 package tn.keyrus.pfe.imdznd.userservice.dirtyworld.person.dao
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
-import tn.keyrus.pfe.imdznd.userservice.cleanworld.country.model.Country
 import tn.keyrus.pfe.imdznd.userservice.cleanworld.person.model.Person
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Year
 
 @Table("person")
 data class PersonDAO(
+
     @Id
-    val id: Long? = null,
+    @Column("id")
+    val personId: Long? = null,
     val seqUser: Int = 0,
     val failedSignInAttempts: Int = 0,
-    val birthYear: Year = Year.of(1990),
+    val birthYear: Int = 1990,
     val state: Person.PersonState = Person.PersonState.INACTIVE,
-    val country: Country = Country.of("x", "x", "x", 0, 0).get(),
+    val countryCode: String = "",
     val createdDate: LocalDateTime = LocalDateTime.now(),
     val termsVersion: LocalDate = LocalDate.now(),
     val phoneCountry: String = "",
@@ -27,10 +28,11 @@ data class PersonDAO(
 ) {
     fun toPerson() =
         Person.of(
+            personId,
             seqUser,
             failedSignInAttempts,
             birthYear,
-            country,
+            countryCode,
             createdDate,
             termsVersion,
             phoneCountry,
@@ -44,10 +46,11 @@ data class PersonDAO(
     companion object {
         fun Person.toDAO() =
             PersonDAO(
+                personId = personId,
                 seqUser = seqUser,
                 failedSignInAttempts = failedSignInAttempts,
                 birthYear = birthYear,
-                country = country,
+                countryCode = countryCode,
                 createdDate = createdDate,
                 termsVersion = termsVersion,
                 phoneCountry = phoneCountry,
@@ -58,4 +61,5 @@ data class PersonDAO(
                 fraudster = fraudster,
             )
     }
+
 }
